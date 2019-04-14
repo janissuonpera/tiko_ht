@@ -345,7 +345,7 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 		closeConnection();
-		System.out.println(items);
+		//System.out.println(items);
 		return items;
 	}
 	// Sets the job finished value into true.
