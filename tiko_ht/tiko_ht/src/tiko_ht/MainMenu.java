@@ -105,11 +105,16 @@ public class MainMenu extends Composite {
 			
 		});
 		
+		//Tuomaksen hinta-arvio dialogi
 		Button pricecalc_btn = new Button(this, SWT.NONE);
 		pricecalc_btn.addListener(SWT.Selection,new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4,false));
+				PriceEstimate dialog = new PriceEstimate(shell,style);
+				dialog.open();
 			}
 		});
 		pricecalc_btn.setText("Hinta-arvio");
