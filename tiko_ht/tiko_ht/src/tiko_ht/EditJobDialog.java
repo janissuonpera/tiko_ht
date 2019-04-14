@@ -19,6 +19,7 @@ public class EditJobDialog extends Dialog {
 
 	protected Object result;
 	protected Shell shell;
+	protected int style;
 	// Makes item list visible or not.
 	public boolean itemList_visible = false;
 	// Contains items and their amount.
@@ -37,6 +38,7 @@ public class EditJobDialog extends Dialog {
 		super(parent, style);
 		setText("Muokkaa työkohdetta");
 	}
+	
 	/**
 	 * Open the dialog.
 	 * 
@@ -137,6 +139,8 @@ public class EditJobDialog extends Dialog {
 				//Get list of items and tasks for the specific job
 				System.out.println(itemList);
 				System.out.println(task_list);
+				PriceDialog price = new PriceDialog(shell, style, itemList, task_list);
+				price.open();
 			}
 		});
 
@@ -192,5 +196,51 @@ public class EditJobDialog extends Dialog {
 			
 		});
 		
+	}
+}
+
+//New class that handles current price. Sums the price of tasks and items and gives the user the price in a new dialog
+class PriceDialog extends Dialog{
+	protected Object result;
+	protected Shell shell;
+	protected int style;
+	java.util.List<java.util.List<String>> itemList = null;
+	java.util.List<String> task_list = null;
+	
+	/**
+	 * Constructor.
+	 * Dialog for the current price. Tasks + items = price. 
+	 */
+	public PriceDialog(Shell parent, int style, Object itemList, Object task_list) {
+		super(parent, style);
+		setText("Hinta");
+		this.itemList = (java.util.List<java.util.List<String>>) itemList;
+		this.task_list = (java.util.List<String>) task_list;
+	}
+	
+	public Object open() {
+		createContents();
+		shell.open();
+		shell.layout();
+		Display display = getParent().getDisplay();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		return result;
+	}
+	private void createContents() {
+		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
+		shell.setSize(350, 200);
+		shell.setText(getText());
+		DBHandler db = new DBHandler();
+		shell.setLayout(null);
+		
+		Label tasks = new Label(shell, SWT.NONE);
+		tasks.setBounds(5, 5, 65, 15);
+		tasks.setText("Suoritukset:");
+		List task_list = new List(shell, SWT.BORDER);
+		task_list.setBounds(75, 5, 250, 150);
 	}
 }

@@ -91,11 +91,6 @@ public class MainMenu extends Composite {
 		
 		
 		Button editJob_btn = new Button(this, SWT.NONE);
-		editJob_btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-			}
-		});
 		editJob_btn.setText("Muokkaa tyokohdetta");
 		editJob_btn.addListener(SWT.Selection,new Listener() {
 
