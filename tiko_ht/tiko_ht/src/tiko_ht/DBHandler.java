@@ -391,5 +391,27 @@ public class DBHandler {
 				return;
 			}
 	}
+	
+	// Get job id with the job name.
+    public int getJobIdByName(String job_name) {
+        con = getConnection();
+        int job_id = 0;
+        try {
+            // Get the job id with the job name.
+            prep_stmt = con.prepareStatement(
+                    "SELECT tyokohde_id FROM tyokohde WHERE nimi = ?");
+            prep_stmt.setString(1, job_name);
+            result = prep_stmt.executeQuery();
+            while (result.next()) {
+                job_id = result.getInt(1);
+            }
+            prep_stmt.clearBatch();
+            prep_stmt.close();
+            result.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return job_id;
+    }
 
 }
