@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class EditJobDialog extends Dialog {
 
@@ -23,6 +25,8 @@ public class EditJobDialog extends Dialog {
 	java.util.List<java.util.List<String>> itemList = new ArrayList<java.util.List<String>>();
 	// Job list containing all jobs.
 	java.util.List<String> job_list = new ArrayList<String>();
+	// Task list containing all task for the selected job.
+	java.util.List<String> task_list = new ArrayList<String>();
 	/**
 	 * Create the dialog.
 	 * 
@@ -31,7 +35,7 @@ public class EditJobDialog extends Dialog {
 	 */
 	public EditJobDialog(Shell parent, int style) {
 		super(parent, style);
-		setText("Muokkaa työkohdetta");
+		setText("Muokkaa tyÃ¶kohdetta");
 	}
 	/**
 	 * Open the dialog.
@@ -68,7 +72,13 @@ public class EditJobDialog extends Dialog {
 		Label lblTykohteenValinnat = new Label(shell, SWT.NONE);
 		lblTykohteenValinnat.setBounds(249, 5, 107, 15);
 		lblTykohteenValinnat.setText("Ty\u00F6kohteen valinnat");
-
+		
+		List work_list = new List(shell, SWT.BORDER);
+		work_list.setBounds(5, 72, 160, 115);
+		
+		List items_list = new List(shell, SWT.BORDER);
+		items_list.setBounds(216, 148, 172, 117);	
+		
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
 		db.connect();
@@ -76,12 +86,40 @@ public class EditJobDialog extends Dialog {
 		for (int i = 0; i < job_list.size(); i++) {
 			job_dropdown.add(job_list.get(i));
 		}
+		job_dropdown.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event arg0) {
+				db.connect();
+				task_list = db.getTaskHours(job_dropdown.getText());
+				work_list.removeAll();
+				for (int i = 0; i < task_list.size(); i++) {
+					work_list.add(task_list.get(i));
+				}
+				db.connect();
+				itemList = db.getJobItems(job_dropdown.getText(), false);
+				items_list.removeAll();
+				for (int i = 0; i < itemList.get(0).size(); i++) {
+					items_list.add(
+							itemList.get(0).get(i) + itemList.get(1).get(i) + "Â€");
+				}
+			}
+			
+		});
 
 		Button finishJob_btn = new Button(shell, SWT.NONE);
 		finishJob_btn.setBounds(249, 26, 106, 25);
 		finishJob_btn.setToolTipText(
 				"Aseta kohde valmiiksi ja lis\u00E4\u00E4 lasku.");
 		finishJob_btn.setText("Aseta valmiiksi");
+		finishJob_btn.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event arg0) {
+				db.connect();
+				db.setJobFinished(job_dropdown.getText());
+			}
+		});
 
 		Button deleteJob_btn = new Button(shell, SWT.NONE);
 		deleteJob_btn.setBounds(249, 88, 107, 25);
@@ -96,45 +134,16 @@ public class EditJobDialog extends Dialog {
 		getPrice_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
-				System.out.println("Hei");
+				//Get list of items and tasks for the specific job
+				System.out.println(itemList);
+				System.out.println(task_list);
 			}
 		});
-		
-		
-		List items_list = new List(shell, SWT.BORDER);
-		items_list.setBounds(215, 119, 172, 117);
-		
-		
 
 		Label lblAnnaAlennustaTunneista = new Label(shell, SWT.NONE);
 		lblAnnaAlennustaTunneista.setBounds(4, 55, 114, 15);
 		lblAnnaAlennustaTunneista.setText("Suoritukset kohteessa");
 
-		Button getItems_btn = new Button(shell, SWT.NONE);
-		getItems_btn.setBounds(246, 242, 110, 25);
-		getItems_btn.setToolTipText(
-				"N\u00E4yt\u00E4 kohteeseen k\u00E4ytetyt tarvikkeet");
-		getItems_btn.setText("Kohteen tarvikkeet");
-		getItems_btn.addListener(SWT.Selection, new Listener() {
-
-			@Override
-			public void handleEvent(Event arg0) {
-				// Set item list visible.
-				db.connect();
-				itemList = db.getJobItems(job_dropdown.getText(), false);
-				// Get all items and their amount from the list.
-				if(!itemList.isEmpty())
-					items_list.removeAll();
-					for (int i = 0; i < itemList.get(0).size(); i++) {
-						items_list.add(
-								itemList.get(0).get(i) + itemList.get(1).get(i) + "€");
-					}
-			}
-
-		});
-
-		List work_list = new List(shell, SWT.BORDER);
-		work_list.setBounds(5, 72, 119, 115);
 
 		Label lblAnnaAlennusta = new Label(shell, SWT.NONE);
 		lblAnnaAlennusta.setBounds(0, 193, 165, 15);
@@ -145,16 +154,35 @@ public class EditJobDialog extends Dialog {
 		workType_dropdown.setBounds(5, 214, 132, 23);
 
 		Spinner taskDiscount_spinner = new Spinner(shell, SWT.BORDER);
-		taskDiscount_spinner.setBounds(5, 243, 47, 22);
+		taskDiscount_spinner.setBounds(5, 259, 47, 22);
 		taskDiscount_spinner.setToolTipText("%");
 
 		Button addDiscount_btn = new Button(shell, SWT.NONE);
-		addDiscount_btn.setBounds(5, 271, 82, 25);
+		addDiscount_btn.setBounds(5, 287, 82, 25);
 		addDiscount_btn.setText("Lis\u00E4\u00E4 alennus");
+		addDiscount_btn.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event arg0) {
+				db.connect();
+				db.addDiscount(job_dropdown.getText(),workType_dropdown.getText(),taskDiscount_spinner.getSelection());
+				db.connect();
+				task_list = db.getTaskHours(job_dropdown.getText());
+				work_list.removeAll();
+				for (int i = 0; i < task_list.size(); i++) {
+					work_list.add(task_list.get(i));
+				}
+			}
+			
+		});
 		
 		Button close_btn = new Button(shell, SWT.NONE);
 		close_btn.setBounds(341, 287, 75, 25);
 		close_btn.setText("Sulje");
+		
+		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBounds(5, 243, 90, 15);
+		lblNewLabel.setText("Alennusprosentti");
 		close_btn.addListener(SWT.Selection,new Listener() {
 
 			@Override
@@ -166,4 +194,3 @@ public class EditJobDialog extends Dialog {
 		
 	}
 }
-

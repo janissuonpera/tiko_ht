@@ -391,8 +391,26 @@ public class DBHandler {
 				return;
 			}
 	}
-	
-	// Get job id with the job name.
+
+
+    public List<String> getTaskHours(String job_name){
+        con = getConnection();
+        List<String> hoursAndTypes = new ArrayList<String>();
+        int job_id = getJobIdByName(job_name);
+        try {
+            prep_stmt = con.prepareStatement("SELECT tyyppi,tunnit,hinta FROM suoritus WHERE tyokohde_id = ?");
+            prep_stmt.setInt(1, job_id);
+            result = prep_stmt.executeQuery();
+            while(result.next()) {
+                hoursAndTypes.add(result.getString(1) +  " | " + String.valueOf(result.getInt(2)) + "h | " + String.valueOf(result.getDouble(3)) + "€" );
+            }
+        }catch(SQLException e) {
+            e.printStackTrace();
+        }
+        closeConnection();
+        return hoursAndTypes;
+    }
+// Get job id with the job name.
     public int getJobIdByName(String job_name) {
         con = getConnection();
         int job_id = 0;
@@ -413,5 +431,26 @@ public class DBHandler {
         }
         return job_id;
     }
+ // Adds a discount to the work type hours.
+    public void addDiscount(String job_name,String work_type, int discount_pct) {
+        con = getConnection();
+        double pct = Double.valueOf(discount_pct);
+        pct =(100-pct)/100;
+        int job_id = getJobIdByName(job_name);
 
+        String SQL = "UPDATE suoritus SET hinta = ? * hinta  WHERE tyokohde_id = ? AND tyyppi = ?";
+        try {
+            prep_stmt = con.prepareStatement(SQL);
+            prep_stmt.setDouble(1,pct);
+            prep_stmt.setInt(2, job_id);
+            prep_stmt.setString(3,work_type);
+
+            prep_stmt.executeUpdate();
+            con.commit();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        closeConnection();
+    }
 }
