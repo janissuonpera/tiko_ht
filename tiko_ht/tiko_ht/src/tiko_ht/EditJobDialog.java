@@ -92,6 +92,15 @@ public class EditJobDialog extends Dialog {
 		getPrice_btn.setBounds(249, 57, 106, 25);
 		getPrice_btn.setToolTipText("N\u00E4yt\u00E4 kohteen kokonaishinta");
 		getPrice_btn.setText("Kustannukset");
+		
+		getPrice_btn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				System.out.println("Hei");
+			}
+		});
+		
+		
 		List items_list = new List(shell, SWT.BORDER);
 		items_list.setBounds(215, 119, 172, 117);
 		

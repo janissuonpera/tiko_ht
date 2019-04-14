@@ -13,9 +13,9 @@ public class DBHandler {
 	private static final String PROTOKOLLA = "jdbc:postgresql:";
 	private static final String PALVELIN = "localhost";
 	private static final int PORTTI = 5432;
-	private static final String TIETOKANTA = "postgres";
-	private static final String KAYTTAJA = "postgres";
-	private static final String SALASANA = "qwerthyyn12";
+	private static final String TIETOKANTA = "Janis";
+	private static final String KAYTTAJA = "Janis";
+	private static final String SALASANA = "";
 	private final int REGULAR_WORK = 45;
 	private final int PLANNING_WORK = 55;
 	private final  int HELPING_WORK = 35;
