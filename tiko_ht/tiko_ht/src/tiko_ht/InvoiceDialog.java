@@ -204,7 +204,7 @@ public class InvoiceDialog extends Dialog {
 		DBHandler db = new DBHandler();
 		db.connect();
 		id_text.setText(Integer.toString(current_invoice.getLasku_id()));
-		kohde_text.setText(db.getJobNameById(current_invoice.getTyokohde_id()));
+		kohde_text.setText(db.getJobNameById(current_invoice.getTyokohde_id(),true));
 		pvm_text.setText(current_invoice.getPvm().toString());
 		erapvm_text.setText(current_invoice.getEra_pvm().toString());
 		tyyppi_text.setText(current_invoice.getTyyppi());
