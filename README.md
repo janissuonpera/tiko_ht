@@ -1,13 +1,14 @@
 # Uusimmat muokkaukset
 
-Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte työskennellä seuraavaks.
+Updatetkaa vaikka tÃ¤tÃ¤ kun teette isoja muokkauksia ja minkÃ¤ parissa aiotte tyÃ¶skennellÃ¤ seuraavaks.
 
 ## Janis
-- Viimeistelin työkohteen kustannukset napin dialogin
+- Viimeistelin tyÃ¶kohteen kustannukset napin dialogin
 - Loin tietoluokan laskuille: Invoice.java
 - Loin dialogiluokan laskuille: InvoiceDialog.java
-- Lisäsin laskuja koskevia metodeja DBHandleriin
+- LisÃ¤sin laskuja koskevia metodeja DBHandleriin
 ## Tuomas
 
 
 ## Oskari
+- Test
