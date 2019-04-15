@@ -11,6 +11,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 
 
 
@@ -118,8 +119,19 @@ public class MainMenu extends Composite {
 			}
 		});
 		pricecalc_btn.setText("Hinta-arvio");
-		new Label(this, SWT.NONE);
-
+		
+		Button invoices_btn = new Button(this, SWT.NONE);
+		invoices_btn.setText("Laskut");
+		invoices_btn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4,false));
+				InvoiceDialog dialog = new InvoiceDialog(shell,style);
+				dialog.open();
+			}			
+		});
 	}
 
 	@Override

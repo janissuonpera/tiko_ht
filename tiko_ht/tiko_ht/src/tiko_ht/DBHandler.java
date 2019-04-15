@@ -353,7 +353,14 @@ public class DBHandler {
 		Connection con = getConnection();
 		try {
 			prep_stmt = con.prepareStatement("UPDATE tyokohde SET valmis = true WHERE nimi = ?");
-			prep_stmt.setString(1,job_name);
+			prep_stmt.setString(1, job_name);
+			int did_update = prep_stmt.executeUpdate();
+			if(did_update==0) {
+				System.out.println("Update failed, returned 0 affected rows.");
+			}else {
+				con.commit();
+			}
+			prep_stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -431,6 +438,28 @@ public class DBHandler {
         }
         return job_id;
     }
+    
+ // Get job name with the job id.
+    public String getJobNameById(int job_id) {
+        con = getConnection();
+        String job_name = "";
+        try {
+            // Get the job id with the job name.
+            prep_stmt = con.prepareStatement(
+                    "SELECT nimi FROM tyokohde WHERE tyokohde_id = ?");
+            prep_stmt.setInt(1, job_id);
+            result = prep_stmt.executeQuery();
+            while (result.next()) {
+                job_name = result.getString(1);
+            }
+            prep_stmt.clearBatch();
+            prep_stmt.close();
+            result.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return job_name;
+    }
  // Adds a discount to the work type hours.
     public void addDiscount(String job_name,String work_type, int discount_pct) {
         con = getConnection();
@@ -453,4 +482,25 @@ public class DBHandler {
         }
         closeConnection();
     }
+    
+    //Fetches name of all invoices, returns invoice id and name
+	public List<String> getInvoices(){
+		List<String> invoices = new ArrayList<String>();
+		Connection con = getConnection();
+		try {
+			stmt = con.createStatement();
+			result = stmt.executeQuery("select lasku_id, tyokohde_id from lasku");
+			while (result.next()) {
+				String lasku_id = (Integer.toString(result.getInt(1)));
+				int tyokohde_id = result.getInt(2);
+				String tyokohde_nimi = getJobNameById(tyokohde_id);
+				invoices.add(lasku_id + " " + tyokohde_nimi);
+			}
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		return invoices;	
+	}
 }
