@@ -484,23 +484,55 @@ public class DBHandler {
     }
     
     //Fetches name of all invoices, returns invoice id and name
-	public List<String> getInvoices(){
+	public List<String> getInvoicesIdAndName(){
 		List<String> invoices = new ArrayList<String>();
 		Connection con = getConnection();
 		try {
 			stmt = con.createStatement();
-			result = stmt.executeQuery("select lasku_id, tyokohde_id from lasku");
-			while (result.next()) {
-				String lasku_id = (Integer.toString(result.getInt(1)));
-				int tyokohde_id = result.getInt(2);
+			ResultSet new_result = stmt.executeQuery("select lasku_id, tyokohde_id from lasku");
+			while (new_result.next()) {
+				String lasku_id = (Integer.toString(new_result.getInt(1)));
+				int tyokohde_id = new_result.getInt(2);
 				String tyokohde_nimi = getJobNameById(tyokohde_id);
 				invoices.add(lasku_id + " " + tyokohde_nimi);
 			}
 			stmt.close();
+			new_result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		closeConnection();
 		return invoices;	
+	}
+	
+	//Returns all invoice data
+	public Invoice getFullInvoice(int id) {
+		Invoice invoice = null;
+		Connection con = getConnection();
+		try {
+			stmt = con.createStatement();
+			prep_stmt = con.prepareStatement("select * from lasku where lasku_id = ?");
+			prep_stmt.setInt(1, id);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				int lasku_id = result.getInt(1);
+				int tyokohde_id = result.getInt(2);
+				Date pvm = result.getDate(3);
+				Date era_pvm = result.getDate(4);
+				String tyyppi = result.getString(5);
+				int lkm = result.getInt(6);
+				double tuntien_hinta = result.getDouble(7);
+				double hinta = result.getDouble(8);
+				boolean maksettu = result.getBoolean(9);
+				invoice = new Invoice(lasku_id, tyokohde_id, pvm, era_pvm, tyyppi, lkm, tuntien_hinta, hinta, maksettu);
+			}
+			stmt.close();
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		
+		return invoice;
 	}
 }
