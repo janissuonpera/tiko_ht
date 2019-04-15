@@ -13,9 +13,9 @@ public class DBHandler {
 	private static final String PROTOKOLLA = "jdbc:postgresql:";
 	private static final String PALVELIN = "localhost";
 	private static final int PORTTI = 5432;
-	private static final String TIETOKANTA = "Janis";
-	private static final String KAYTTAJA = "Janis";
-	private static final String SALASANA = "";
+	private static final String TIETOKANTA = "postgres";
+	private static final String KAYTTAJA = "postgres";
+	private static final String SALASANA = "qwerthyyn12";
 	private final int REGULAR_WORK = 45;
 	private final int PLANNING_WORK = 55;
 	private final  int HELPING_WORK = 35;
@@ -515,16 +515,16 @@ public class DBHandler {
 			prep_stmt.setInt(1, id);
 			result = prep_stmt.executeQuery();
 			while (result.next()) {
-				int lasku_id = result.getInt(1);
-				int tyokohde_id = result.getInt(2);
-				Date pvm = result.getDate(3);
-				Date era_pvm = result.getDate(4);
-				String tyyppi = result.getString(5);
-				int lkm = result.getInt(6);
-				double tuntien_hinta = result.getDouble(7);
-				double hinta = result.getDouble(8);
-				boolean maksettu = result.getBoolean(9);
-				invoice = new Invoice(lasku_id, tyokohde_id, pvm, era_pvm, tyyppi, lkm, tuntien_hinta, hinta, maksettu);
+				int invoice_id = result.getInt(1);
+				int job_id = result.getInt(2);
+				Date date = result.getDate(3);
+				Date due_date = result.getDate(4);
+				String type = result.getString(5);
+				int count = result.getInt(6);
+				double hour_price = result.getDouble(7);
+				double total_price = result.getDouble(8);
+				boolean paid = result.getBoolean(9);
+				invoice = new Invoice(invoice_id, job_id, date, due_date, type, count, hour_price, total_price, paid);
 			}
 			stmt.close();
 			result.close();
@@ -535,4 +535,5 @@ public class DBHandler {
 		
 		return invoice;
 	}
+	
 }
