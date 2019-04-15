@@ -11,4 +11,6 @@ Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte t
 
 
 ## Oskari
-- Test
+- Invoice will be created when job is set as finished.
+- New invoice will be created if payment is late.
+- Bug fixes
