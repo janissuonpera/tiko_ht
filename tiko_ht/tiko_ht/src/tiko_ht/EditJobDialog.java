@@ -36,9 +36,9 @@ public class EditJobDialog extends Dialog {
 	 */
 	public EditJobDialog(Shell parent, int style) {
 		super(parent, style);
-		setText("Muokkaa työkohdetta");
+		setText("Muokkaa ty\u00F6kohdetta");
 	}
-	
+
 	/**
 	 * Open the dialog.
 	 * 
@@ -74,13 +74,13 @@ public class EditJobDialog extends Dialog {
 		Label lblTykohteenValinnat = new Label(shell, SWT.NONE);
 		lblTykohteenValinnat.setBounds(249, 5, 107, 15);
 		lblTykohteenValinnat.setText("Ty\u00F6kohteen valinnat");
-		
+
 		List work_list = new List(shell, SWT.BORDER);
 		work_list.setBounds(5, 72, 160, 115);
-		
+
 		List items_list = new List(shell, SWT.BORDER);
-		items_list.setBounds(216, 148, 172, 117);	
-		
+		items_list.setBounds(216, 148, 172, 117);
+
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
 		db.connect();
@@ -102,11 +102,11 @@ public class EditJobDialog extends Dialog {
 				itemList = db.getJobItems(job_dropdown.getText(), false);
 				items_list.removeAll();
 				for (int i = 0; i < itemList.get(0).size(); i++) {
-					items_list.add(
-							itemList.get(0).get(i) + itemList.get(1).get(i) + "");
+					items_list.add(itemList.get(0).get(i)
+							+ itemList.get(1).get(i) + "�");
 				}
 			}
-			
+
 		});
 
 		Button finishJob_btn = new Button(shell, SWT.NONE);
@@ -120,6 +120,8 @@ public class EditJobDialog extends Dialog {
 			public void handleEvent(Event arg0) {
 				db.connect();
 				db.setJobFinished(job_dropdown.getText());
+				db.connect();
+				db.createInvoice(job_dropdown.getText());
 			}
 		});
 
@@ -132,14 +134,13 @@ public class EditJobDialog extends Dialog {
 		getPrice_btn.setBounds(249, 57, 106, 25);
 		getPrice_btn.setToolTipText("N\u00E4yt\u00E4 kohteen kokonaishinta");
 		getPrice_btn.setText("Kustannukset");
-		
+
 		getPrice_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
-				//Get list of items and tasks for the specific job
-				//System.out.println(itemList);
-				//System.out.println(task_list);
-				PriceDialog price = new PriceDialog(shell, style, itemList, task_list);
+				// Get list of items and tasks for the specific job
+				PriceDialog price = new PriceDialog(shell, style, itemList,
+						task_list);
 				price.open();
 			}
 		});
@@ -148,13 +149,13 @@ public class EditJobDialog extends Dialog {
 		lblAnnaAlennustaTunneista.setBounds(4, 55, 114, 15);
 		lblAnnaAlennustaTunneista.setText("Suoritukset kohteessa");
 
-
 		Label lblAnnaAlennusta = new Label(shell, SWT.NONE);
 		lblAnnaAlennusta.setBounds(0, 193, 165, 15);
 		lblAnnaAlennusta.setText("Anna alennusta tuntityyppiin");
 
 		Combo workType_dropdown = new Combo(shell, SWT.NONE);
-		workType_dropdown.setItems(new String[] {"Ty\u00F6", "Suunnittelu", "Aputy\u00F6"});
+		workType_dropdown.setItems(
+				new String[]{"Ty\u00F6", "Suunnittelu", "Aputy\u00F6"});
 		workType_dropdown.setBounds(5, 214, 132, 23);
 
 		Spinner taskDiscount_spinner = new Spinner(shell, SWT.BORDER);
@@ -169,7 +170,9 @@ public class EditJobDialog extends Dialog {
 			@Override
 			public void handleEvent(Event arg0) {
 				db.connect();
-				db.addDiscount(job_dropdown.getText(),workType_dropdown.getText(),taskDiscount_spinner.getSelection());
+				db.addDiscount(job_dropdown.getText(),
+						workType_dropdown.getText(),
+						taskDiscount_spinner.getSelection());
 				db.connect();
 				task_list = db.getTaskHours(job_dropdown.getText());
 				work_list.removeAll();
@@ -177,25 +180,24 @@ public class EditJobDialog extends Dialog {
 					work_list.add(task_list.get(i));
 				}
 			}
-			
+
 		});
-		
+
 		Button close_btn = new Button(shell, SWT.NONE);
 		close_btn.setBounds(341, 287, 75, 25);
 		close_btn.setText("Sulje");
-		
+
 		Label lblNewLabel = new Label(shell, SWT.NONE);
 		lblNewLabel.setBounds(5, 243, 90, 15);
 		lblNewLabel.setText("Alennusprosentti");
-		close_btn.addListener(SWT.Selection,new Listener() {
+		close_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event arg0) {
 				shell.dispose();
 			}
-			
+
 		});
-		
+
 	}
 }
-

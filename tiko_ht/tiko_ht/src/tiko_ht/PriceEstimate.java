@@ -64,7 +64,6 @@ public class PriceEstimate extends Dialog {
 	 */
 	private void createContents() {
 		DBHandler db = new DBHandler();
-		db.connect();
 		List<String> items = new ArrayList<String>();
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
@@ -99,7 +98,8 @@ public class PriceEstimate extends Dialog {
 		addWorkHours_btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if (WorkHoursSpinner.getSelection() > 0 && !WorkType.getText().equals("")) {
+				if (WorkHoursSpinner.getSelection() > 0
+						&& !WorkType.getText().equals("")) {
 					int worktype = 0;
 					String itemString = WorkType.getText() + " "
 							+ WorkHoursSpinner.getSelection() + "h\n";
@@ -111,7 +111,7 @@ public class PriceEstimate extends Dialog {
 						worktype = HELPING;
 					}
 					double price = worktype * WorkHoursSpinner.getSelection();
-					
+
 					ItemTextField.append(itemString);
 					totalPrice = totalPrice + price;
 					PriceEstimateTextField.setText(totalPrice + "€");
@@ -126,10 +126,11 @@ public class PriceEstimate extends Dialog {
 		lblTarvike.setText("Tarvike");
 
 		Combo ItemName_dropdown = new Combo(shell, SWT.READ_ONLY);
-		GridData gd_ItemName_dropdown = new GridData(SWT.FILL, SWT.FILL, true, false, 1,
-				1);
+		GridData gd_ItemName_dropdown = new GridData(SWT.FILL, SWT.FILL, true,
+				false, 1, 1);
 		gd_ItemName_dropdown.widthHint = -6;
 		ItemName_dropdown.setLayoutData(gd_ItemName_dropdown);
+		db.connect();
 		items = db.getAllItems().get(0);
 		ItemName_dropdown.add("");
 		for (String i : items) {
@@ -152,21 +153,21 @@ public class PriceEstimate extends Dialog {
 		addItem_btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				if (ItemAmountSpinner.getSelection() > 0 && !ItemName_dropdown.getText().equals("")) {
+				if (ItemAmountSpinner.getSelection() > 0
+						&& !ItemName_dropdown.getText().equals("")) {
 					try {
-						DBHandler db = new DBHandler();
-						db.connect();
 						String itemString = ItemName_dropdown.getText() + " "
 								+ ItemAmountSpinner.getSelection() + " kpl\n";
 						ItemTextField.append(itemString);
-
+						db.connect();
 						List<List<String>> items = db.getAllItems();
 						List<String> itemList1 = items.get(0);
 						List<String> itemList2 = items.get(1);
 						double itemPrice = 0;
 
 						for (int i = 0; i < itemList1.size(); i++) {
-							if (itemList1.get(i).equals(ItemName_dropdown.getText())) {
+							if (itemList1.get(i)
+									.equals(ItemName_dropdown.getText())) {
 								itemPrice = Double
 										.parseDouble(itemList2.get(i));
 								System.out.println(itemPrice);
@@ -185,7 +186,7 @@ public class PriceEstimate extends Dialog {
 					}
 					ItemAmountSpinner.setSelection(0);
 					ItemName_dropdown.select(0);
-					
+
 				}
 			}
 		});

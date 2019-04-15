@@ -1,6 +1,6 @@
 package tiko_ht;
 import java.sql.*;
-
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -13,8 +13,8 @@ public class DBHandler {
 	private static final String PROTOKOLLA = "jdbc:postgresql:";
 	private static final String PALVELIN = "localhost";
 	private static final int PORTTI = 5432;
-	private static final String TIETOKANTA = "Janis";
-	private static final String KAYTTAJA = "Janis";
+	private static final String TIETOKANTA = "postgres";
+	private static final String KAYTTAJA = "postgres";
 	private static final String SALASANA = "";
 	private final int REGULAR_WORK = 45;
 	private final int PLANNING_WORK = 55;
@@ -68,8 +68,6 @@ public class DBHandler {
 			while (result.next()) {
 				customers.add(result.getString(1));
 			}
-			return customers;
-
 		} catch (SQLException e) {
 
 			e.printStackTrace();
@@ -221,7 +219,7 @@ public class DBHandler {
 			task_id++;
 			
 			// Calculating total price of hours.
-			if(work_type.equals("Työ")) {
+			if(work_type.equals("TyÃ¶")) {
 				price = hours*REGULAR_WORK;
 			} else if(work_type.equals("Suunnittelu")) {
 				price = hours*PLANNING_WORK;
@@ -384,20 +382,38 @@ public class DBHandler {
 		return ready;
 	}
 
-	// Close connection
-	public void closeConnection() {
-		Connection con = getConnection();
-		if (con != null)
-
-			try { // jos yhteyden luominen ei onnistunut, con == null
-				con.close();
-
-			} catch (SQLException poikkeus) {
-				System.out.println(
-						"Yhteyden sulkeminen tietokantaan ei onnistunut. Lopetetaan ohjelman suoritus.");
-				return;
+	//Close connection
+			public void closeConnection() {
+				if (con != null)
+					try {
+						con.close();
+					} catch (SQLException poikkeus) {
+						System.out.println(
+								"Yhteyden sulkeminen tietokantaan ei onnistunut. Lopetetaan ohjelman suoritus.");
+						return;
+					}
+				if (prep_stmt != null) {
+					try {
+						prep_stmt.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				if (stmt != null) {
+					try {
+						stmt.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+				if (result != null) {
+					try {
+						stmt.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
 			}
-	}
 
 
     public List<String> getTaskHours(String job_name){
@@ -409,7 +425,7 @@ public class DBHandler {
             prep_stmt.setInt(1, job_id);
             result = prep_stmt.executeQuery();
             while(result.next()) {
-                hoursAndTypes.add(result.getString(1) +  " | " + String.valueOf(result.getInt(2)) + "h | " + String.valueOf(result.getDouble(3)) + "€" );
+                hoursAndTypes.add(result.getString(1) +  " | " + String.valueOf(result.getInt(2)) + "h | " + String.valueOf(result.getDouble(3)) + "â‚¬Â€" );
             }
         }catch(SQLException e) {
             e.printStackTrace();
@@ -505,6 +521,49 @@ public class DBHandler {
 		return invoices;	
 	}
 	
+	// Search if there are unpaid and due date passed invoices. Create new
+		// invoice if that's the case.
+		public void checkInvoiceState() {
+			con = getConnection();
+			java.sql.Date currentDate = java.sql.Date
+					.valueOf(LocalDateTime.now().toLocalDate());
+			try {
+				ResultSet prep_result = null;
+				stmt = con.createStatement();
+				// Select job_id's from invoices.
+				result = stmt.executeQuery("SELECT tyokohde_id FROM lasku");
+				// Selects the most recent invoice for the job.
+				prep_stmt = con.prepareStatement("SELECT era_pvm,maksettu "
+						+ " FROM  lasku "
+						+ " WHERE lasku_lkm=(SELECT MAX(lasku_lkm) FROM lasku) AND tyokohde_id=?");
+
+				while (result.next()) {
+					// Save job id.
+					int job_id = result.getInt(1);
+					// Query the most recent invoice with the current job id.
+					prep_stmt.setInt(1, job_id);
+					prep_result = prep_stmt.executeQuery();
+					while (prep_result.next()) {
+						// If the most recent invoice hasn't been paid and the due
+						// date has passed, make new invoice.
+						if (prep_result.getBoolean(2) == false
+								&& currentDate.after(prep_result.getDate(1))) {
+							String job_name = getJobNameById(job_id);
+							createInvoice(job_name);
+						}
+					}
+					prep_stmt.clearParameters();	
+				}
+				prep_result.close();
+				con.commit();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				closeConnection();
+			}
+			
+			closeConnection();
+		}
+	
 	//Returns all invoice data
 	public Invoice getFullInvoice(int id) {
 		Invoice invoice = null;
@@ -534,6 +593,108 @@ public class DBHandler {
 		closeConnection();
 		
 		return invoice;
+	}
+	
+	public void createInvoice(String job_name) {
+		int job_id = getJobIdByName(job_name);
+		int invoice_id = 0;
+		int invoice_count = 0;
+		double finalPrice = 0;
+		double hoursPrice = 0;
+		String invoice_type = "Normaali";
+		// Get current date in sql format.
+		java.sql.Date date = java.sql.Date
+				.valueOf(LocalDateTime.now().toLocalDate());
+		// Set due date to be 1 month after today.
+		java.sql.Date dueDate = java.sql.Date
+				.valueOf(LocalDateTime.now().plusMonths(1).toLocalDate());
+		con = getConnection();
+
+		try {
+			// Get the next available invoice_id.
+			result = stmt.executeQuery("SELECT lasku_id FROM lasku");
+			while (result.next()) {
+				invoice_id = result.getInt(1);
+			}
+			invoice_id++;
+
+			// Get invoice count and due date from all invoices of selected job.
+			prep_stmt = con.prepareStatement(
+					"SELECT lasku_lkm,era_pvm,hinta FROM lasku WHERE tyokohde_id = ?");
+			prep_stmt.setInt(1, job_id);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				invoice_count = result.getInt(1);
+				finalPrice = result.getDouble(3);
+				// If the invoice hasn't been paid in time, set due date to be
+				// in 5 days from the last due date.
+				dueDate = result.getDate(2);
+			}
+			invoice_count++;
+			if (invoice_count > 1) {
+				dueDate = java.sql.Date
+						.valueOf(dueDate.toLocalDate().plusDays(5));
+			}
+			prep_stmt.clearBatch();
+
+			// Get total price of hours.
+			prep_stmt = con
+					.prepareStatement("SELECT SUM(hinta) as kokonais_hinta "
+							+ " FROM suoritus " + " WHERE tyokohde_id = ? "
+							+ " group by tyokohde_id");
+			prep_stmt.setInt(1, job_id);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				hoursPrice = result.getDouble(1);
+			}
+
+			if (invoice_count == 1) {
+				// Query to fetch total hour price + item price.
+				prep_stmt = con.prepareStatement("SELECT SUM(hinta) as hinnat "
+						+ " FROM suoritus " + " WHERE tyokohde_id = ? "
+						+ " group by tyokohde_id " + " UNION "
+						+ " SELECT SUM(stk.hinta) as hinnat2 "
+						+ " FROM suoritus_tarvike as stk JOIN suoritus ON stk.suoritus_id = suoritus.suoritus_id "
+						+ " WHERE tyokohde_id = ?");
+				prep_stmt.setInt(1, job_id);
+				prep_stmt.setInt(2, job_id);
+				result = prep_stmt.executeQuery();
+				while (result.next()) {
+					// Get total price of hours from the second row of query.
+					finalPrice += result.getDouble(1);
+				}
+				prep_stmt.clearParameters();
+			}
+
+			// Set invoice type depending on invoice count.
+			if (invoice_count == 2) {
+				invoice_type = "Muistutus";
+				// Add billing fee.
+				finalPrice += 5;
+			} else if (invoice_count > 2) {
+				invoice_type = "Karhu";
+				// Add late payment fee and billing fee.
+				finalPrice = finalPrice * 1.16 + 5;
+			}
+
+			prep_stmt = con.prepareStatement(
+					"INSERT INTO lasku VALUES (?,?,?,?,?,?,?,?,?)");
+			prep_stmt.setInt(1, invoice_id);
+			prep_stmt.setInt(2, job_id);
+			prep_stmt.setDate(3, date);
+			prep_stmt.setDate(4, dueDate);
+			prep_stmt.setString(5, invoice_type);
+			prep_stmt.setInt(6, invoice_count);
+			prep_stmt.setDouble(7, hoursPrice);
+			prep_stmt.setDouble(8, finalPrice);
+			prep_stmt.setBoolean(9, false);
+			prep_stmt.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			closeConnection();
+		}
+		closeConnection();
 	}
 	
 }

@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Button;
 
-
 public class SaveTaskDialog extends Dialog {
 
 	protected Object result;
@@ -66,7 +65,7 @@ public class SaveTaskDialog extends Dialog {
 	private void createContents() {
 		// Initialize database handler.
 		DBHandler db = new DBHandler();
-		
+
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setSize(448, 272);
 		shell.setText(getText());
@@ -132,7 +131,7 @@ public class SaveTaskDialog extends Dialog {
 		lblLisTarvike.setText("Valitse tarvike");
 
 		Combo item_dropdown = new Combo(shell, SWT.READ_ONLY);
-		
+
 		GridData gd_item_dropdown = new GridData(SWT.LEFT, SWT.CENTER, true,
 				false, 1, 2);
 		gd_item_dropdown.widthHint = 136;
@@ -143,7 +142,6 @@ public class SaveTaskDialog extends Dialog {
 		for (int i = 0; i < itemList.get(0).size(); i++) {
 			item_dropdown.add(itemList.get(0).get(i));
 		}
-		
 
 		Button selectedItems_btn = new Button(shell, SWT.NONE);
 
@@ -180,10 +178,10 @@ public class SaveTaskDialog extends Dialog {
 				false, false, 1, 1);
 		gd_item_amount_spinner.widthHint = 58;
 		item_amount_spinner.setLayoutData(gd_item_amount_spinner);
-		
+
 		Label lblAlennus = new Label(shell, SWT.NONE);
 		lblAlennus.setText("Alennus(%)");
-		
+
 		Spinner discount_spinner = new Spinner(shell, SWT.BORDER);
 		new Label(shell, SWT.NONE);
 		new Label(shell, SWT.NONE);
@@ -233,12 +231,11 @@ public class SaveTaskDialog extends Dialog {
 
 			@Override
 			public void handleEvent(Event arg0) {
-				System.out.println("Saving task");
 				db.connect();
 				db.createTask(job_dropdown.getText(),
 						worktype_dropdown.getText(),
 						hour_spinner.getSelection(), date_time, selected_items,
-						item_amount,discount_pct);
+						item_amount, discount_pct);
 			}
 		});
 
