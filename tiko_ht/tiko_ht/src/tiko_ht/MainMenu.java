@@ -39,6 +39,9 @@ public class MainMenu extends Composite {
 	public MainMenu(Composite parent, int style) {
 		super(parent, style);
 		setLayout(new GridLayout(2, false));
+		DBHandler db = new DBHandler();
+		db.connect();
+		db.checkInvoiceState();
 		
 		Label createNew_lbl = new Label(this, SWT.NONE);
 		createNew_lbl.setText("Luo uusi");
