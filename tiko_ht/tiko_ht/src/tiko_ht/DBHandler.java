@@ -407,7 +407,7 @@ public class DBHandler {
 			while (result.next()) {
 				hoursAndTypes.add(result.getString(1) + " | "
 						+ String.valueOf(result.getInt(2)) + "h | "
-						+ String.valueOf(result.getDouble(3)) + "€");
+						+ String.valueOf(result.getDouble(3)));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
