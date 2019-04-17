@@ -85,13 +85,97 @@ public class EditJobDialog extends Dialog {
 		job_dropdown.setBounds(5, 26, 201, 23);
 		db.connect();
 		job_list = db.getJobs();
+		job_dropdown.add("");
 		for (int i = 0; i < job_list.size(); i++) {
 			job_dropdown.add(job_list.get(i));
 		}
+
+		Label resultLabel = new Label(shell, SWT.NONE);
+		resultLabel.setBounds(181, 119, 235, 15);
+
+		Button finishJob_btn = new Button(shell, SWT.NONE);
+		finishJob_btn.setBounds(249, 26, 106, 25);
+		finishJob_btn.setToolTipText(
+				"Aseta kohde valmiiksi ja lis\u00E4\u00E4 lasku.");
+		finishJob_btn.setText("Aseta valmiiksi");
+		finishJob_btn.setEnabled(false);
+
+		Button deleteJob_btn = new Button(shell, SWT.NONE);
+		deleteJob_btn.setBounds(249, 88, 107, 25);
+		deleteJob_btn.setToolTipText("Poista kohde tietokannasta.");
+		deleteJob_btn.setText("Poista kohde");
+		deleteJob_btn.setEnabled(false);
+
+		Button getPrice_btn = new Button(shell, SWT.NONE);
+		getPrice_btn.setBounds(249, 57, 106, 25);
+		getPrice_btn.setToolTipText("N\u00E4yt\u00E4 kohteen kokonaishinta");
+		getPrice_btn.setText("Kustannukset");
+		getPrice_btn.setEnabled(false);
+
+		Label lblAnnaAlennustaTunneista = new Label(shell, SWT.NONE);
+		lblAnnaAlennustaTunneista.setBounds(4, 55, 114, 15);
+		lblAnnaAlennustaTunneista.setText("Suoritukset kohteessa");
+
+		Label lblAnnaAlennusta = new Label(shell, SWT.NONE);
+		lblAnnaAlennusta.setBounds(0, 193, 165, 15);
+		lblAnnaAlennusta.setText("Anna alennusta tuntityyppiin");
+
+		Combo workType_dropdown = new Combo(shell, SWT.NONE);
+		workType_dropdown.setItems(
+				new String[]{"", "Ty\u00F6", "Suunnittelu", "Aputy\u00F6"});
+		workType_dropdown.setBounds(5, 214, 132, 23);
+
+		Spinner taskDiscount_spinner = new Spinner(shell, SWT.BORDER);
+		taskDiscount_spinner.setBounds(5, 259, 47, 22);
+		taskDiscount_spinner.setToolTipText("%");
+
+		Button addDiscount_btn = new Button(shell, SWT.NONE);
+		addDiscount_btn.setBounds(5, 287, 82, 25);
+		addDiscount_btn.setText("Lis\u00E4\u00E4 alennus");
+		addDiscount_btn.setEnabled(false);
+
+		Button close_btn = new Button(shell, SWT.NONE);
+		close_btn.setBounds(341, 287, 75, 25);
+		close_btn.setText("Sulje");
+
+		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBounds(5, 243, 90, 15);
+		lblNewLabel.setText("Alennusprosentti");
+
+		/*
+		 * Click listener methods
+		 * 
+		 */
+		// Listens for changes in work type dropdown-list and sets discount button enabled or not..
+		workType_dropdown.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				if (!workType_dropdown.getText().equals("")
+						&& taskDiscount_spinner.getSelection() > 0) {
+					addDiscount_btn.setEnabled(true);
+				} else {
+					addDiscount_btn.setEnabled(false);
+				}
+			}
+		});
+		// Changes the enabled value of discount button
+		taskDiscount_spinner.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				if (!workType_dropdown.getText().equals("")
+						&& taskDiscount_spinner.getSelection() > 0) {
+					addDiscount_btn.setEnabled(true);
+				} else {
+					addDiscount_btn.setEnabled(false);
+				}
+			}
+		});
+		// Gets the tasks and items for selected job.
 		job_dropdown.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event arg0) {
+
 				db.connect();
 				task_list = db.getTaskHours(job_dropdown.getText());
 				work_list.removeAll();
@@ -105,68 +189,27 @@ public class EditJobDialog extends Dialog {
 					items_list.add(itemList.get(0).get(i)
 							+ itemList.get(1).get(i) + " e");
 				}
+
+				if (job_dropdown.getText().equals("")) {
+					deleteJob_btn.setEnabled(false);
+					getPrice_btn.setEnabled(false);
+					finishJob_btn.setEnabled(false);
+				} else {
+					deleteJob_btn.setEnabled(true);
+					getPrice_btn.setEnabled(true);
+					finishJob_btn.setEnabled(true);
+				}
 			}
-
 		});
-
-		Button finishJob_btn = new Button(shell, SWT.NONE);
-		finishJob_btn.setBounds(249, 26, 106, 25);
-		finishJob_btn.setToolTipText(
-				"Aseta kohde valmiiksi ja lis\u00E4\u00E4 lasku.");
-		finishJob_btn.setText("Aseta valmiiksi");
-		finishJob_btn.addListener(SWT.Selection, new Listener() {
-
+		// Closes the dialog window.
+		close_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
-				db.connect();
-				db.setJobFinished(job_dropdown.getText());
-				db.connect();
-				db.createInvoice(job_dropdown.getText());
+				shell.dispose();
 			}
 		});
-
-		Button deleteJob_btn = new Button(shell, SWT.NONE);
-		deleteJob_btn.setBounds(249, 88, 107, 25);
-		deleteJob_btn.setToolTipText("Poista kohde tietokannasta.");
-		deleteJob_btn.setText("Poista kohde");
-
-		Button getPrice_btn = new Button(shell, SWT.NONE);
-		getPrice_btn.setBounds(249, 57, 106, 25);
-		getPrice_btn.setToolTipText("N\u00E4yt\u00E4 kohteen kokonaishinta");
-		getPrice_btn.setText("Kustannukset");
-
-		getPrice_btn.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event arg0) {
-				// Get list of items and tasks for the specific job
-				PriceDialog price = new PriceDialog(shell, style, itemList,
-						task_list);
-				price.open();
-			}
-		});
-
-		Label lblAnnaAlennustaTunneista = new Label(shell, SWT.NONE);
-		lblAnnaAlennustaTunneista.setBounds(4, 55, 114, 15);
-		lblAnnaAlennustaTunneista.setText("Suoritukset kohteessa");
-
-		Label lblAnnaAlennusta = new Label(shell, SWT.NONE);
-		lblAnnaAlennusta.setBounds(0, 193, 165, 15);
-		lblAnnaAlennusta.setText("Anna alennusta tuntityyppiin");
-
-		Combo workType_dropdown = new Combo(shell, SWT.NONE);
-		workType_dropdown.setItems(
-				new String[]{"Ty\u00F6", "Suunnittelu", "Aputy\u00F6"});
-		workType_dropdown.setBounds(5, 214, 132, 23);
-
-		Spinner taskDiscount_spinner = new Spinner(shell, SWT.BORDER);
-		taskDiscount_spinner.setBounds(5, 259, 47, 22);
-		taskDiscount_spinner.setToolTipText("%");
-
-		Button addDiscount_btn = new Button(shell, SWT.NONE);
-		addDiscount_btn.setBounds(5, 287, 82, 25);
-		addDiscount_btn.setText("Lis\u00E4\u00E4 alennus");
+		// Adds a discount to hour type.
 		addDiscount_btn.addListener(SWT.Selection, new Listener() {
-
 			@Override
 			public void handleEvent(Event arg0) {
 				db.connect();
@@ -180,23 +223,45 @@ public class EditJobDialog extends Dialog {
 					work_list.add(task_list.get(i));
 				}
 			}
-
 		});
-
-		Button close_btn = new Button(shell, SWT.NONE);
-		close_btn.setBounds(341, 287, 75, 25);
-		close_btn.setText("Sulje");
-
-		Label lblNewLabel = new Label(shell, SWT.NONE);
-		lblNewLabel.setBounds(5, 243, 90, 15);
-		lblNewLabel.setText("Alennusprosentti");
-		close_btn.addListener(SWT.Selection, new Listener() {
+		// Spawns price dialog window to show total price.
+		getPrice_btn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				// Get list of items and tasks for the specific job
+				PriceDialog price = new PriceDialog(shell, style, itemList,
+						task_list);
+				price.open();
+			}
+		});
+		// Deletes the selected from database completely.
+		deleteJob_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event arg0) {
-				shell.dispose();
+				db.connect();
+				boolean deleted = db.deleteJob(job_dropdown.getText());
+				resultLabel.setText((deleted)
+						? "Työ poistettu."
+						: "Virhe työn poistamisessa.");
+				
+				// Remove everything about the deleted job.
+				work_list.removeAll();
+				items_list.removeAll();
+				job_dropdown.remove(job_dropdown.getText());
+				job_dropdown.select(0);
 			}
+		});
+		// Sets the job finished and creates invoice.
+		finishJob_btn.addListener(SWT.Selection, new Listener() {
 
+			@Override
+			public void handleEvent(Event arg0) {
+				db.connect();
+				db.setJobFinished(job_dropdown.getText());
+				resultLabel
+						.setText("Työ asetettu valmistuneeksi ja lasku luotu.");
+			}
 		});
 
 	}

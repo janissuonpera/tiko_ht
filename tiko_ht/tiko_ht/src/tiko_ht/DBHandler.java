@@ -223,7 +223,7 @@ public class DBHandler {
 			task_id++;
 
 			// Calculating total price of hours.
-			if (work_type.equals("TyÃ¶")) {
+			if (work_type.equals("Työ")) {
 				price = hours * REGULAR_WORK;
 			} else if (work_type.equals("Suunnittelu")) {
 				price = hours * PLANNING_WORK;
@@ -370,6 +370,7 @@ public class DBHandler {
 			} else {
 				con.commit();
 			}
+			createInvoice(job_name);
 			prep_stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -684,6 +685,24 @@ public class DBHandler {
 			closeConnection();
 		}
 		closeConnection();
+	}
+	public boolean deleteJob(String job_name) {
+		con = getConnection();
+		int job_id =  getJobIdByName(job_name);
+		try {
+			prep_stmt = con.prepareStatement("DELETE FROM tyokohde WHERE tyokohde_id = ?");
+			prep_stmt.setInt(1,job_id);
+			int changedRows = prep_stmt.executeUpdate();
+			if(changedRows > 0) {
+				con.commit();
+				closeConnection();
+				return true;
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		return false;
 	}
 	// Close connection
 	public void closeConnection() {

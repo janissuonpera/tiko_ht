@@ -103,7 +103,7 @@ public class PriceEstimate extends Dialog {
 					int worktype = 0;
 					String itemString = WorkType.getText() + " "
 							+ WorkHoursSpinner.getSelection() + "h\n";
-					if (WorkType.getText().equals("Työ")) {
+					if (WorkType.getText().equals("Ty\u00F6")) {
 						worktype = REGULAR_WORK;
 					} else if (WorkType.getText().equals("Suunnittelu")) {
 						worktype = PLANNING_WORK;

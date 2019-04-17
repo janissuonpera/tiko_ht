@@ -40,7 +40,7 @@ public class SaveTaskDialog extends Dialog {
 	 */
 	public SaveTaskDialog(Shell parent, int style) {
 		super(parent, style);
-		setText("Tallenna työsuoritus");
+		setText("Tallenna ty\u00F6suoritus");
 	}
 	/**
 	 * Open the dialog.
@@ -72,7 +72,7 @@ public class SaveTaskDialog extends Dialog {
 		shell.setLayout(null);
 
 		Label queryResultLabel = new Label(shell, SWT.NONE);
-		queryResultLabel.setBounds(354, 189, 83, 15);
+		queryResultLabel.setBounds(259, 189, 178, 15);
 
 		Label lblValitseKohde = new Label(shell, SWT.NONE);
 		lblValitseKohde.setBounds(20, 9, 74, 15);
@@ -211,7 +211,7 @@ public class SaveTaskDialog extends Dialog {
 					job_dropdown.select(0);
 					item_dropdown.select(0);
 					worktype_dropdown.select(0);
-					queryResultLabel.setText("Lisäys onnistui!");
+					queryResultLabel.setText("Lis\u00E4ys onnistui!");
 				} else {
 					queryResultLabel.setText("Virhe annetuissa tiedoissa!");
 				}

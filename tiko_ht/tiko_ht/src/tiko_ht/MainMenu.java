@@ -77,10 +77,10 @@ public class MainMenu extends Composite {
 				dialog.open();
 			}
 		});
-		SavePerf_btn.setText("Tallenna tyosuoritus");
+		SavePerf_btn.setText("Tallenna ty\u00F6suoritus");
 		
 		Button createJob_btn = new Button(this, SWT.NONE);
-		createJob_btn.setText("Tyokohde");
+		createJob_btn.setText("Ty\u00F6kohde");
 		createJob_btn.addListener(SWT.Selection,new Listener() {
 
 			@Override
@@ -95,7 +95,7 @@ public class MainMenu extends Composite {
 		
 		
 		Button editJob_btn = new Button(this, SWT.NONE);
-		editJob_btn.setText("Muokkaa tyokohdetta");
+		editJob_btn.setText("Muokkaa ty\u00F6kohdetta");
 		editJob_btn.addListener(SWT.Selection,new Listener() {
 
 			@Override
