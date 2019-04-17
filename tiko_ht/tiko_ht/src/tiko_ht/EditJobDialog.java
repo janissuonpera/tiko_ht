@@ -96,14 +96,14 @@ public class EditJobDialog extends Dialog {
 				task_list = db.getTaskHours(job_dropdown.getText());
 				work_list.removeAll();
 				for (int i = 0; i < task_list.size(); i++) {
-					work_list.add(task_list.get(i));
+					work_list.add(task_list.get(i) + "€");
 				}
 				db.connect();
 				itemList = db.getJobItems(job_dropdown.getText(), false);
 				items_list.removeAll();
 				for (int i = 0; i < itemList.get(0).size(); i++) {
 					items_list.add(itemList.get(0).get(i)
-							+ itemList.get(1).get(i) + "�");
+							+ itemList.get(1).get(i) + "€");
 				}
 			}
 
