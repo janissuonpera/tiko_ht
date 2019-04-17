@@ -89,7 +89,7 @@ public class PriceDialog extends Dialog {
 		Label sumLabel = new Label(shell, SWT.NONE);
 		sumLabel.setFont(
 				SWTResourceManager.getFont("Segoe UI", 13, SWT.NORMAL));
-		sumLabel.setBounds(137, 371, 65, 24);
+		sumLabel.setBounds(137, 371, 165, 24);
 		sumLabel.setText(task_sum + item_sum + " euroa");
 	}
 }
