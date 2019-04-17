@@ -58,12 +58,12 @@ public class PriceDialog extends Dialog {
 		taskList.setBounds(75, 5, 250, 150);
 		double task_sum = 0;
 		for (int i = 0; i < task_list.size(); i++) {
-			taskList.add(task_list.get(i) + "€");
+			taskList.add(task_list.get(i) + " e");
 			task_sum += Double.parseDouble(
 					task_list.get(i).split(" \\| ")[2]);
 		}
 		taskList.add("----------------------------------------------");
-		taskList.add("Suoritusten hinta: " + task_sum + "€");
+		taskList.add("Suoritusten hinta: " + task_sum + " euroa");
 
 		// Adds all the items to item_list list-element in dialog and sums their
 		// total price at the bottom.
@@ -73,12 +73,12 @@ public class PriceDialog extends Dialog {
 		for (int i = 0; i < item_list.get(0).size(); i++) {
 			System.out.println(item_list.get(0).size());
 			itemList.add(item_list.get(0).get(i) + ": "
-					+ item_list.get(1).get(i) + "€");
+					+ item_list.get(1).get(i) + " e");
 			item_sum += Double
 					.parseDouble(item_list.get(1).get(i).split(" \\| ")[2]);
 		}
 		itemList.add("----------------------------------------------");
-		itemList.add("Tarvikkeiden hinta: " + item_sum + "€");
+		itemList.add("Tarvikkeiden hinta: " + item_sum + " euroa");
 
 		Label lblKokoHinta = new Label(shell, SWT.NONE);
 		lblKokoHinta.setFont(
@@ -90,6 +90,6 @@ public class PriceDialog extends Dialog {
 		sumLabel.setFont(
 				SWTResourceManager.getFont("Segoe UI", 13, SWT.NORMAL));
 		sumLabel.setBounds(137, 371, 65, 24);
-		sumLabel.setText(task_sum + item_sum + "€");
+		sumLabel.setText(task_sum + item_sum + " euroa");
 	}
 }
