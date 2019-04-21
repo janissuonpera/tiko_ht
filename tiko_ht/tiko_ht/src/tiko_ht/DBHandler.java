@@ -227,7 +227,7 @@ public class DBHandler {
 			task_id++;
 
 			// Calculating total price of hours.
-			if (work_type.equals("Ty√∂")) {
+			if (work_type.equals("Tyˆ")) {
 				price = hours * REGULAR_WORK;
 			} else if (work_type.equals("Suunnittelu")) {
 				price = hours * PLANNING_WORK;
@@ -606,7 +606,7 @@ public class DBHandler {
 
 		try {
 			// Get the next available invoice_id.
-			result = stmt.executeQuery("SELECT lasku_id FROM lasku");
+			result = stmt.executeQuery("SELECT lasku_id FROM lasku ORDER BY lasku_id");
 			while (result.next()) {
 				invoice_id = result.getInt(1);
 			}
@@ -725,7 +725,7 @@ public class DBHandler {
 			writer.newLine();
 
 			// Get job info and print it.
-			writer.write("Ty√∂kohteen tiedot:");
+			writer.write("Tyˆkohteen tiedot:");
 			writer.newLine();
 			writer.write("-------------------------------------");
 			writer.newLine();
@@ -739,7 +739,7 @@ public class DBHandler {
 				writer.write("Osoite: " + result.getString(2));
 				writer.newLine();
 				writer.write(
-						"Urakka: " + ((result.getBoolean(3)) ? "Kyll√§" : "Ei"));
+						"Urakka: " + ((result.getBoolean(3)) ? "Kyll‰" : "Ei"));
 				writer.newLine();
 				writer.newLine();
 			}
@@ -764,7 +764,7 @@ public class DBHandler {
 						? "Yritys"
 						: "Yksityis-asiakas"));
 				writer.newLine();
-				writer.write("Henkil√∂tunnus: " + (result.getString(5).isEmpty()
+				writer.write("Henkilˆtunnus: " + (result.getString(5).isEmpty()
 						? "Ei tietokannassa"
 						: result.getString(5)));
 				writer.newLine();
@@ -773,7 +773,7 @@ public class DBHandler {
 			prep_stmt.clearBatch();
 
 			// Get all items used for the job.
-			writer.write("K√§ytetyt tarvikkeet");
+			writer.write("K‰ytetyt tarvikkeet");
 			writer.newLine();
 			writer.write("-------------------------");
 			writer.newLine();
@@ -787,10 +787,10 @@ public class DBHandler {
 			while (result.next()) {
 				writer.write("Nimi: " + result.getString(1));
 				writer.newLine();
-				writer.write("M√§√§r√§: " + result.getDouble(2) + " "
+				writer.write("M‰‰r‰: " + result.getDouble(2) + " "
 						+ result.getString(3));
 				writer.newLine();
-				writer.write("Yksikk√∂hinta: " + result.getDouble(4) + " euroa");
+				writer.write("Yksikkˆhinta: " + result.getDouble(4) + " euroa");
 				writer.newLine();
 				writer.write(
 						"Kokonaishinta: " + result.getDouble(5) + " euroa");
@@ -835,13 +835,13 @@ public class DBHandler {
 			writer.write("Laskun tyyppi: " + invoice.getTyyppi());
 			writer.newLine();
 			writer.newLine();
-			writer.write("Er√§p√§iv√§: " + invoice.getEra_pvm());
+			writer.write("Er‰p‰iv‰: " + invoice.getEra_pvm());
 			writer.newLine();
 			writer.write(
-					"Maksa lasku er√§p√§iv√§√§n menness√§. Tilinumero: FI86 2139 2199 2938293");
+					"Maksa lasku er‰p‰iv‰‰n menness‰. Tilinumero: FI86 2139 2199 2938293");
 			writer.newLine();
 			writer.newLine();
-			writer.write("Terveisin, Seppo S√§hk√∂t√§rsky Oy.");
+			writer.write("Terveisin, Seppo S‰hkˆt‰rsky Oy.");
 			writer.newLine();
 			writer.close();
 		} catch (Exception e) {
