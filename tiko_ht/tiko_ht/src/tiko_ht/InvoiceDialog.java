@@ -13,6 +13,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class InvoiceDialog extends Dialog {
 
@@ -64,7 +67,7 @@ public class InvoiceDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
-		shell.setSize(365, 499);
+		shell.setSize(365, 540);
 		shell.setText(getText());
 		DBHandler db = new DBHandler();
 		shell.setLayout(null);
@@ -183,6 +186,29 @@ public class InvoiceDialog extends Dialog {
 
 		maksettu_text = new Text(shell, SWT.BORDER);
 		maksettu_text.setBounds(175, 434, 175, 21);
+
+		Button delete_btn = new Button(shell, SWT.NONE);
+		delete_btn.setBounds(10, 476, 75, 25);
+		delete_btn.setText("Poista lasku");
+
+		Label status_label = new Label(shell, SWT.NONE);
+		status_label.setBounds(172, 486, 166, 15);
+		delete_btn.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event arg0) {
+				db.connect();
+				boolean deleted = db
+						.deleteInvoice(current_invoice.getLasku_id());
+				if (deleted) {
+					shell.dispose();
+				} else {
+					status_label.setText("Poisto epäonnistui.");
+				}
+			}
+
+		});
+
 		db.connect();
 		invoices_names = db.getInvoicesIdAndName();
 		for (int i = 0; i < invoices_names.size(); i++) {
@@ -204,7 +230,8 @@ public class InvoiceDialog extends Dialog {
 		DBHandler db = new DBHandler();
 		db.connect();
 		id_text.setText(Integer.toString(current_invoice.getLasku_id()));
-		kohde_text.setText(db.getJobNameById(current_invoice.getTyokohde_id(),true));
+		kohde_text.setText(
+				db.getJobNameById(current_invoice.getTyokohde_id(), true));
 		pvm_text.setText(current_invoice.getPvm().toString());
 		erapvm_text.setText(current_invoice.getEra_pvm().toString());
 		tyyppi_text.setText(current_invoice.getTyyppi());
