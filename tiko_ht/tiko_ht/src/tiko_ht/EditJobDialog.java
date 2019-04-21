@@ -192,7 +192,6 @@ public class EditJobDialog extends Dialog {
 
 				items_list.removeAll();
 				for (String[] itemObj : itemList) {
-					System.out.println(itemObj[0]);
 					items_list.add(itemObj[0] + " " + itemObj[3] + "e");
 				}
 

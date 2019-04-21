@@ -257,7 +257,6 @@ public class DBHandler {
 						if (Integer.parseInt(items.get(i)[2]) > 0) {
 							pct = Double.valueOf(items.get(i)[2]);
 							pct = (100 - pct) / 100;
-							System.out.println(pct);
 							total_item_price *= pct;
 						}
 						// Set parameters
