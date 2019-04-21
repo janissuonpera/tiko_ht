@@ -1,4 +1,8 @@
 package tiko_ht;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -223,7 +227,7 @@ public class DBHandler {
 			task_id++;
 
 			// Calculating total price of hours.
-			if (work_type.equals("Ty�")) {
+			if (work_type.equals("Työ")) {
 				price = hours * REGULAR_WORK;
 			} else if (work_type.equals("Suunnittelu")) {
 				price = hours * PLANNING_WORK;
@@ -555,7 +559,7 @@ public class DBHandler {
 	// Returns all invoice data
 	public Invoice getFullInvoice(int id) {
 		Invoice invoice = null;
-		Connection con = getConnection();
+		con = getConnection();
 		try {
 			stmt = con.createStatement();
 			prep_stmt = con
@@ -684,26 +688,186 @@ public class DBHandler {
 			e.printStackTrace();
 			closeConnection();
 		}
+		printInvoice(invoice_id);
 		closeConnection();
 	}
 	public boolean deleteJob(String job_name) {
 		con = getConnection();
-		int job_id =  getJobIdByName(job_name);
+		int job_id = getJobIdByName(job_name);
 		try {
-			prep_stmt = con.prepareStatement("DELETE FROM tyokohde WHERE tyokohde_id = ?");
-			prep_stmt.setInt(1,job_id);
+			prep_stmt = con.prepareStatement(
+					"DELETE FROM tyokohde WHERE tyokohde_id = ?");
+			prep_stmt.setInt(1, job_id);
 			int changedRows = prep_stmt.executeUpdate();
-			if(changedRows > 0) {
+			if (changedRows > 0) {
 				con.commit();
 				closeConnection();
 				return true;
 			}
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		closeConnection();
 		return false;
 	}
+	// Writes all data from invoice to a text file.
+	public void printInvoice(int invoice_id) {
+		Invoice invoice = getFullInvoice(invoice_id);
+		connect();
+		con = getConnection();
+		// Get job id.
+		int job_id = invoice.getTyokohde_id();
+		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream("lasku_" + invoice_id + ".txt"),
+				Charset.defaultCharset()))) {
+			writer.write("Lasku (Tunnus: " + invoice_id + ")");
+			writer.newLine();
+			writer.newLine();
+
+			// Get job info and print it.
+			writer.write("Työkohteen tiedot:");
+			writer.newLine();
+			writer.write("-------------------------------------");
+			writer.newLine();
+			prep_stmt = con.prepareStatement(
+					"SELECT nimi,osoite,urakka FROM tyokohde WHERE tyokohde_id = ?");
+			prep_stmt.setInt(1, job_id);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				writer.write("Nimi: " + result.getString(1));
+				writer.newLine();
+				writer.write("Osoite: " + result.getString(2));
+				writer.newLine();
+				writer.write(
+						"Urakka: " + ((result.getBoolean(3)) ? "Kyllä" : "Ei"));
+				writer.newLine();
+				writer.newLine();
+			}
+			prep_stmt.clearBatch();
+
+			// Get customer info and print it.
+			prep_stmt = con.prepareStatement(
+					"SELECT * FROM asiakas WHERE asiakas_id =("
+							+ "SELECT asiakas_id FROM tyokohde WHERE tyokohde_id = ?)");
+			prep_stmt.setInt(1, job_id);
+			result = prep_stmt.executeQuery();
+			writer.write("Asiakkaan tiedot:");
+			writer.newLine();
+			writer.write("-------------------------------------");
+			writer.newLine();
+			while (result.next()) {
+				writer.write("Kohde: " + result.getString(2));
+				writer.newLine();
+				writer.write("Osoite: " + result.getString(3));
+				writer.newLine();
+				writer.write("Status: " + ((result.getBoolean(4))
+						? "Yritys"
+						: "Yksityis-asiakas"));
+				writer.newLine();
+				writer.write("Henkilötunnus: " + (result.getString(5).isEmpty()
+						? "Ei tietokannassa"
+						: result.getString(5)));
+				writer.newLine();
+				writer.newLine();
+			}
+			prep_stmt.clearBatch();
+
+			// Get all items used for the job.
+			writer.write("Käytetyt tarvikkeet");
+			writer.newLine();
+			writer.write("-------------------------");
+			writer.newLine();
+			prep_stmt = con.prepareStatement(
+					"SELECT tarvike.nimi, maara,yksikko, tarvike.myynti_hinta, stk.hinta, stk.alennus_prosentti "
+							+ " FROM ((suoritus_tarvike as stk JOIN suoritus as st ON stk.suoritus_id = st.suoritus_id) "
+							+ " JOIN tarvike ON stk.tarvike_id = tarvike.tarvike_id)JOIN tyokohde ON st.tyokohde_id = tyokohde.tyokohde_id "
+							+ " WHERE tyokohde.tyokohde_id = ?");
+			prep_stmt.setInt(1, job_id);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				writer.write("Nimi: " + result.getString(1));
+				writer.newLine();
+				writer.write("Määrä: " + result.getDouble(2) + " "
+						+ result.getString(3));
+				writer.newLine();
+				writer.write("Yksikköhinta: " + result.getDouble(4) + " euroa");
+				writer.newLine();
+				writer.write(
+						"Kokonaishinta: " + result.getDouble(5) + " euroa");
+				writer.newLine();
+				writer.write("Alennusprosentti: " + result.getInt(6) + "%");
+				writer.newLine();
+				writer.newLine();
+			}
+			prep_stmt.clearBatch();
+
+			// Get all hours and their types and print.
+			prep_stmt = con
+					.prepareStatement("select tyyppi, SUM(tunnit), SUM(hinta) "
+							+ " FROM suoritus " + " WHERE tyokohde_id=? "
+							+ " GROUP BY 1");
+			prep_stmt.setInt(1, job_id);
+			writer.write("Tuntierittely: ");
+			writer.newLine();
+			writer.write("-------------------------");
+			writer.newLine();
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				writer.write(result.getString(1));
+				writer.newLine();
+				writer.write(String.valueOf(result.getInt(2)) + " tuntia");
+				writer.newLine();
+				writer.write(String.valueOf(result.getDouble(3)) + " euroa");
+				writer.newLine();
+				writer.newLine();
+			}
+			prep_stmt.clearBatch();
+			writer.write("-------------------------");
+			// Get basic info for the invoice and print.
+			writer.newLine();
+			writer.write("Tuntien hinta yhteensa: "
+					+ String.valueOf(invoice.getTuntien_hinta()) + " euroa");
+			writer.newLine();
+			writer.write("Kokonaishinta: " + String.valueOf(invoice.getHinta())
+					+ " euroa");
+			writer.newLine();
+			writer.newLine();
+			writer.write("Laskun tyyppi: " + invoice.getTyyppi());
+			writer.newLine();
+			writer.newLine();
+			writer.write("Eräpäivä: " + invoice.getEra_pvm());
+			writer.newLine();
+			writer.write(
+					"Maksa lasku eräpäivään mennessä. Tilinumero: FI86 2139 2199 2938293");
+			writer.newLine();
+			writer.newLine();
+			writer.write("Terveisin, Seppo Sähkötärsky Oy.");
+			writer.newLine();
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public boolean deleteInvoice(int invoice_id) {
+		con = getConnection();
+		int success = 0;
+		try {
+			prep_stmt = con
+					.prepareStatement("DELETE FROM lasku WHERE lasku_id = ?");
+			prep_stmt.setInt(1, invoice_id);
+			success = prep_stmt.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		if (success >= 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	// Close connection
 	public void closeConnection() {
 		if (con != null)
