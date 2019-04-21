@@ -146,7 +146,8 @@ public class EditJobDialog extends Dialog {
 		 * Click listener methods
 		 * 
 		 */
-		// Listens for changes in work type dropdown-list and sets discount button enabled or not..
+		// Listens for changes in work type dropdown-list and sets discount
+		// button enabled or not..
 		workType_dropdown.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
@@ -242,9 +243,9 @@ public class EditJobDialog extends Dialog {
 				db.connect();
 				boolean deleted = db.deleteJob(job_dropdown.getText());
 				resultLabel.setText((deleted)
-						? "Työ poistettu."
-						: "Virhe työn poistamisessa.");
-				
+						? "TyÃ¶ poistettu."
+						: "Virhe tyÃ¶n poistamisessa.");
+
 				// Remove everything about the deleted job.
 				work_list.removeAll();
 				items_list.removeAll();
@@ -260,7 +261,7 @@ public class EditJobDialog extends Dialog {
 				db.connect();
 				db.setJobFinished(job_dropdown.getText());
 				resultLabel
-						.setText("Työ asetettu valmistuneeksi ja lasku luotu.");
+						.setText("TyÃ¶ asetettu valmistuneeksi ja lasku luotu.");
 			}
 		});
 
