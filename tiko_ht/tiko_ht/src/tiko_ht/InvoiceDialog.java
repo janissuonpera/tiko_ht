@@ -203,7 +203,7 @@ public class InvoiceDialog extends Dialog {
 				if (deleted) {
 					shell.dispose();
 				} else {
-					status_label.setText("Poisto epäonnistui.");
+					status_label.setText("Poisto ep\u00E4onnistui.");
 				}
 			}
 

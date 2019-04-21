@@ -154,37 +154,29 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 	}
+	// Gets all items from database and return two dimensional arraylist.
+	public List<String[]> getAllItems() {
+		List<String[]> items = new ArrayList<String[]>();
 
-	public List<List<String>> getAllItems() {
-		List<List<String>> items = new ArrayList<List<String>>();
-		List<String> names = new ArrayList<String>();
-		List<String> prices = new ArrayList<String>();
-
-		Connection con = getConnection();
+		con = getConnection();
 		try {
 			stmt = con.createStatement();
 			result = stmt.executeQuery(
-					"select nimi,myynti_hinta from tarvike WHERE varasto_tilanne > 0");
+					"select nimi,myynti_hinta,yksikko from tarvike WHERE varasto_tilanne > 0");
 			while (result.next()) {
-				names.add(result.getString(1));
-				prices.add(result.getString(2));
+				String[] item = {result.getString(1),result.getString(2),result.getString(3)};
+				items.add(item);
 			}
-			items.add(names);
-			items.add(prices);
 			stmt.close();
-
 		} catch (SQLException e) {
-
 			e.printStackTrace();
 		}
-
 		closeConnection();
 		return items;
 	}
 
 	public void createTask(String job_name, String work_type, int hours,
-			DateTime date, List<String> items, List<Integer> item_counts,
-			List<Integer> discount_pct) {
+			DateTime date, List<String[]> items) {
 		int job_id = 0;
 		int task_id = 0;
 		// Price of hours * work type cost.
@@ -255,25 +247,25 @@ public class DBHandler {
 				result = stmt.executeQuery(
 						"SELECT tarvike_id,nimi,myynti_hinta from tarvike");
 				while (result.next()) {
-					if (items.get(i).equals(result.getString(2))) {
+					if (items.get(i)[0].equals(result.getString(2))) {
 						item_id = result.getInt(1);
 						item_price = result.getDouble(3);
 						// Calculate total price percentage.
-						total_item_price = item_price * item_counts.get(i);
+						total_item_price = item_price
+								* Integer.parseInt(items.get(i)[1]);
 						// Check if there is a discount percentage.
-						if (discount_pct.get(i) > 0) {
-							pct = Double.valueOf(discount_pct.get(i));
+						if (Integer.parseInt(items.get(i)[2]) > 0) {
+							pct = Double.valueOf(items.get(i)[2]);
 							pct = (100 - pct) / 100;
 							System.out.println(pct);
 							total_item_price *= pct;
-							System.out.println(total_item_price);
 						}
 						// Set parameters
 						prep_stmt.setInt(1, item_id);
 						prep_stmt.setInt(2, task_id);
-						prep_stmt.setDouble(3, item_counts.get(i));
+						prep_stmt.setDouble(3, Double.valueOf(items.get(i)[1]));
 						prep_stmt.setDouble(4, total_item_price);
-						prep_stmt.setInt(5, discount_pct.get(i));
+						prep_stmt.setInt(5, Integer.parseInt(items.get(i)[2]));
 						prep_stmt.executeUpdate();
 						prep_stmt.clearParameters();
 					}
@@ -305,14 +297,10 @@ public class DBHandler {
 		return jobs;
 	}
 	// Gets the used items for the chosen job.
-	public List<List<String>> getJobItems(String job_name,
-			boolean getOnlyPrices) {
-		// Contains items with names and their data
-		List<List<String>> items = new ArrayList<List<String>>();
-		// Contains item names.
-		List<String> item_names = new ArrayList<String>();
-		// Contains item amount, unit and total price.
-		List<String> item_data = new ArrayList<String>();
+	public List<String[]> getJobItems(String job_name, boolean getOnlyPrices) {
+
+		List<String[]> items = new ArrayList<String[]>();
+
 		// Job identifier
 		int job_id = 0;
 		// SQL query string to get all items and their count and total price
@@ -339,26 +327,29 @@ public class DBHandler {
 			prep_stmt = con.prepareStatement(SQL);
 			prep_stmt.setInt(1, job_id);
 			result = prep_stmt.executeQuery();
+
 			while (result.next()) {
-				item_names.add(result.getString(1));
+				String[] item = new String[4];
+				// Insert name
+				item[0] = result.getString(1);
 				if (getOnlyPrices == true) {
-					item_data.add(" " + String.valueOf(result.getDouble(4)));
+					item[1] = String.valueOf(result.getDouble(4));
 				} else {
-					item_data.add(" | " + String.valueOf(result.getDouble(2))
-							+ " " + result.getString(3) + " | "
-							+ String.valueOf(result.getDouble(4)));
+					// Insert amount
+					item[1] = String.valueOf(result.getDouble(2));
+					// Insert unit
+					item[2] = result.getString(3);
+					// Insert price
+					item[3] = String.valueOf(result.getDouble(4));
 				}
+				items.add(item);
 			}
 			prep_stmt.close();
 			result.close();
-			items.add(item_names);
-			items.add(item_data);
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		closeConnection();
-		// System.out.println(items);
 		return items;
 	}
 	// Sets the job finished value into true.
@@ -400,6 +391,7 @@ public class DBHandler {
 		return ready;
 	}
 
+	// Returns the hours of done for a specific job.
 	public List<String> getTaskHours(String job_name) {
 		con = getConnection();
 		List<String> hoursAndTypes = new ArrayList<String>();
@@ -496,7 +488,7 @@ public class DBHandler {
 		try {
 			stmt = con.createStatement();
 			ResultSet new_result = stmt
-					.executeQuery("select lasku_id, tyokohde_id from lasku");
+					.executeQuery("select lasku_id, tyokohde_id from lasku ORDER BY lasku_id");
 			while (new_result.next()) {
 				String lasku_id = (Integer.toString(new_result.getInt(1)));
 				int tyokohde_id = new_result.getInt(2);
@@ -606,7 +598,8 @@ public class DBHandler {
 
 		try {
 			// Get the next available invoice_id.
-			result = stmt.executeQuery("SELECT lasku_id FROM lasku ORDER BY lasku_id");
+			result = stmt.executeQuery(
+					"SELECT lasku_id FROM lasku ORDER BY lasku_id");
 			while (result.next()) {
 				invoice_id = result.getInt(1);
 			}
@@ -764,8 +757,8 @@ public class DBHandler {
 						? "Yritys"
 						: "Yksityis-asiakas"));
 				writer.newLine();
-				writer.write("Henkilötunnus: " + (result.getString(5).isEmpty()
-						? "Ei tietokannassa"
+				writer.write("Henkilötunnus: " + (result.getString(5) == null
+						? "Ei saatavilla"
 						: result.getString(5)));
 				writer.newLine();
 				writer.newLine();
@@ -848,6 +841,7 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 	}
+	// Delets the selected invoice.
 	public boolean deleteInvoice(int invoice_id) {
 		con = getConnection();
 		int success = 0;
@@ -866,6 +860,67 @@ public class DBHandler {
 		} else {
 			return false;
 		}
+	}
+	// Fetches all contracts from the database and returns their name as a list.
+	public List<String> getContracts() {
+		List<String> contracts = new ArrayList<String>();
+		con = getConnection();
+		try {
+			stmt = con.createStatement();
+			result = stmt.executeQuery(
+					"SELECT nimi FROM tyokohde WHERE urakka=true");
+			while (result.next()) {
+				contracts.add(result.getString(1));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		return contracts;
+	}
+	// Returns the contracts which have offers made of as a list..
+	public List<String> getContractOffers(){
+		con = getConnection();
+		List<String> contractOffers = new ArrayList<String>();
+		try {
+			stmt = con.createStatement();
+			result = stmt.executeQuery("SELECT nimi FROM tyokohde WHERE tyokohde_id=(SELECT tyokohde_id FROM urakkatarjous)");
+			while(result.next()) {
+				contractOffers.add(result.getString(1));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		return contractOffers;
+	}
+
+	// Creates a contract and adds it to the database (urakkatarjous table)
+	public void createContract(String job_name, int instalments) {
+		con = getConnection();
+		int contract_id = 0;
+		int job_id = getJobIdByName(job_name);
+		try {
+			stmt = con.createStatement();
+			// Get the next available contract id.
+			result = stmt.executeQuery(
+					"SELECT urakka_id FROM urakkatarjous ORDER BY urakka_id");
+			while (result.next()) {
+				contract_id = result.getInt(1);
+			}
+			contract_id++;
+
+			prep_stmt = con.prepareStatement(
+					"INSERT INTO urakkatarjous VALUES(?,?,?)");
+			prep_stmt.setInt(1, contract_id);
+			prep_stmt.setInt(2, job_id);
+			prep_stmt.setInt(3, instalments);
+			prep_stmt.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
 	}
 
 	// Close connection
