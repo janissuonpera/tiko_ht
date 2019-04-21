@@ -23,7 +23,7 @@ public class EditJobDialog extends Dialog {
 	// Makes item list visible or not.
 	public boolean itemList_visible = false;
 	// Contains items and their amount.
-	java.util.List<String[]> itemList = new ArrayList<String[]>();
+	java.util.List<java.util.List<String>> itemList = new ArrayList<java.util.List<String>>();
 	// Job list containing all jobs.
 	java.util.List<String> job_list = new ArrayList<String>();
 	// Task list containing all task for the selected job.
@@ -79,7 +79,7 @@ public class EditJobDialog extends Dialog {
 		work_list.setBounds(5, 72, 160, 115);
 
 		List items_list = new List(shell, SWT.BORDER);
-		items_list.setBounds(219, 152, 172, 117);
+		items_list.setBounds(216, 148, 172, 117);
 
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
@@ -91,7 +91,7 @@ public class EditJobDialog extends Dialog {
 		}
 
 		Label resultLabel = new Label(shell, SWT.NONE);
-		resultLabel.setBounds(93, 292, 235, 15);
+		resultLabel.setBounds(181, 119, 235, 15);
 
 		Button finishJob_btn = new Button(shell, SWT.NONE);
 		finishJob_btn.setBounds(249, 26, 106, 25);
@@ -141,10 +141,6 @@ public class EditJobDialog extends Dialog {
 		Label lblNewLabel = new Label(shell, SWT.NONE);
 		lblNewLabel.setBounds(5, 243, 90, 15);
 		lblNewLabel.setText("Alennusprosentti");
-		
-		Label lblKohteeseenKytetytTarvikkeet = new Label(shell, SWT.NONE);
-		lblKohteeseenKytetytTarvikkeet.setBounds(219, 131, 182, 15);
-		lblKohteeseenKytetytTarvikkeet.setText("Kohteeseen k\u00E4ytetyt tarvikkeet");
 
 		/*
 		 * Click listener methods
@@ -189,11 +185,10 @@ public class EditJobDialog extends Dialog {
 				}
 				db.connect();
 				itemList = db.getJobItems(job_dropdown.getText(), false);
-
 				items_list.removeAll();
-				for (String[] itemObj : itemList) {
-					System.out.println(itemObj[0]);
-					items_list.add(itemObj[0] + " " + itemObj[3] + "e");
+				for (int i = 0; i < itemList.get(0).size(); i++) {
+					items_list.add(itemList.get(0).get(i)
+							+ itemList.get(1).get(i) + " e");
 				}
 
 				if (job_dropdown.getText().equals("")) {

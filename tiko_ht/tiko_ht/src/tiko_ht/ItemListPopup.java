@@ -32,7 +32,7 @@ public class ItemListPopup extends Dialog {
 	 * 
 	 * @return the result
 	 */
-	public Object open(java.util.List<String[]> selected_items) {
+	public Object open(java.util.List<String> selected_items) {
 		createContents(selected_items);
 		shell.open();
 		shell.layout();
@@ -47,7 +47,7 @@ public class ItemListPopup extends Dialog {
 	/**
 	 * Create contents of the dialog.
 	 */
-	private void createContents(java.util.List<String[]> selected_items) {
+	private void createContents(java.util.List<String> selected_items) {
 		shell = new Shell(getParent(), getStyle());
 		shell.setSize(202, 315);
 		shell.setText(getText());
@@ -55,7 +55,7 @@ public class ItemListPopup extends Dialog {
 		list.setBounds(21, 31, 148, 224);
 		// Populate the item list.
 		for (int i = 0; i < selected_items.size(); i++) {
-			list.add(selected_items.get(i)[0]);
+			list.add(selected_items.get(i));
 		}
 
 		Button btnOk = new Button(shell, SWT.NONE);
