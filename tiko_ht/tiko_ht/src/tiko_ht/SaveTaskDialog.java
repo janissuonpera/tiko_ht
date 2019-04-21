@@ -208,6 +208,7 @@ public class SaveTaskDialog extends Dialog {
 							worktype_dropdown.getText(),
 							hour_spinner.getSelection(), date_time,
 							selected_items, item_amount, discount_pct);
+					clearLists();
 					job_dropdown.select(0);
 					item_dropdown.select(0);
 					worktype_dropdown.select(0);
@@ -239,5 +240,10 @@ public class SaveTaskDialog extends Dialog {
 				}
 			}
 		});
+	}
+	public void clearLists() {
+		selected_items.clear();
+		item_amount.clear();
+		discount_pct.clear();
 	}
 }
