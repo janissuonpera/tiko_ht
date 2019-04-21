@@ -9,23 +9,20 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-
-
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class MainMenu extends Composite {
-	public static void main(String [] args) {
-	
+	public static void main(String[] args) {
+
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setLayout(new GridLayout(1,false));
-		new MainMenu(shell,SWT.NONE);
+		shell.setLayout(new GridLayout(1, false));
+		new MainMenu(shell, SWT.CLOSE | SWT.TITLE | SWT.BORDER
+				| SWT.APPLICATION_MODAL | SWT.MIN);
 		shell.pack();
 		shell.open();
-		while(!shell.isDisposed()) {
-			if(!display.readAndDispatch())
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
 				display.sleep();
 		}
 		display.dispose();
@@ -33,112 +30,145 @@ public class MainMenu extends Composite {
 
 	/**
 	 * Create the composite.
+	 * 
 	 * @param parent
 	 * @param style
 	 */
 	public MainMenu(Composite parent, int style) {
 		super(parent, style);
-		setLayout(new GridLayout(2, false));
+		setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 		DBHandler db = new DBHandler();
 		db.connect();
 		db.checkInvoiceState();
-		
+		setLayout(null);
+
 		Label createNew_lbl = new Label(this, SWT.NONE);
+		createNew_lbl.setBounds(51, 20, 45, 15);
 		createNew_lbl.setText("Luo uusi");
-		
+
 		Label edit_lbl = new Label(this, SWT.NONE);
+		edit_lbl.setBounds(207, 20, 55, 15);
 		edit_lbl.setText("Muokkaus");
-		
+
+		Label label = new Label(this, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label.setBounds(10, 227, 337, 2);
+
 		Button AddCustomer_btn = new Button(this, SWT.NONE);
+		AddCustomer_btn.setBounds(38, 62, 78, 25);
 		AddCustomer_btn.setText("Asiakas");
-		AddCustomer_btn.addListener(SWT.Selection, new Listener(){
-			
-			@Override
-			public void handleEvent(Event event) {
-				
-				Display display = getParent().getDisplay();
-				Shell shell = new Shell(display);
-				shell.setLayout(new GridLayout(4,false));
-				AddCustomer dialog = new AddCustomer(shell,style);
-				dialog.open();
-				
 
-			}
-		});
-			
 		Button SavePerf_btn = new Button(this, SWT.NONE);
-		SavePerf_btn.addListener(SWT.Selection, new Listener(){
-			@Override
-			public void handleEvent(Event event) {
-				Display display = getParent().getDisplay();
-				Shell shell = new Shell(display);
-				shell.setLayout(new GridLayout(4,false));
-				SaveTaskDialog dialog = new SaveTaskDialog(shell,style);
-				dialog.open();
-			}
-		});
+		SavePerf_btn.setBounds(173, 62, 128, 25);
+
 		SavePerf_btn.setText("Tallenna ty\u00F6suoritus");
-		
+
 		Button createJob_btn = new Button(this, SWT.NONE);
+		createJob_btn.setBounds(38, 99, 78, 25);
 		createJob_btn.setText("Ty\u00F6kohde");
-		createJob_btn.addListener(SWT.Selection,new Listener() {
 
-			@Override
-			public void handleEvent(Event event) {
-				Display display = getParent().getDisplay();
-				Shell shell = new Shell(display);
-				shell.setLayout(new GridLayout(4,false));
-				JobCreationDialog dialog = new JobCreationDialog(shell,style);
-				dialog.open();
-			}
-		});
-		
-		
 		Button editJob_btn = new Button(this, SWT.NONE);
+		editJob_btn.setBounds(173, 99, 128, 25);
 		editJob_btn.setText("Muokkaa ty\u00F6kohdetta");
-		editJob_btn.addListener(SWT.Selection,new Listener() {
 
-			@Override
-			public void handleEvent(Event arg0) {
-				Display display = getParent().getDisplay();
-				Shell shell = new Shell(display);
-				shell.setLayout(new GridLayout(4,false));
-				EditJobDialog dialog = new EditJobDialog(shell,style);
-				dialog.open();
-			}
-			
-		});
-		
-		//Tuomaksen hinta-arvio dialogi
+		// Price calculation dialog.
 		Button pricecalc_btn = new Button(this, SWT.NONE);
-		pricecalc_btn.addListener(SWT.Selection,new Listener() {
-			@Override
-			public void handleEvent(Event e) {
-				Display display = getParent().getDisplay();
-				Shell shell = new Shell(display);
-				shell.setLayout(new GridLayout(4,false));
-				PriceEstimate dialog = new PriceEstimate(shell,style);
-				dialog.open();
-			}
-		});
+		pricecalc_btn.setBounds(38, 130, 78, 25);
 		pricecalc_btn.setText("Hinta-arvio");
-		
+
 		Button invoices_btn = new Button(this, SWT.NONE);
+		invoices_btn.setBounds(173, 130, 128, 25);
 		invoices_btn.setText("Laskut");
+
+		Button newContract_btn = new Button(this, SWT.NONE);
+		newContract_btn.setBounds(38, 161, 84, 25);
+
+		newContract_btn.setText("Urakkatarjous");
+
+		/* Button listener for dialogs. */
+
 		invoices_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
 				Display display = getParent().getDisplay();
 				Shell shell = new Shell(display);
-				shell.setLayout(new GridLayout(4,false));
-				InvoiceDialog dialog = new InvoiceDialog(shell,style);
+				shell.setLayout(new GridLayout(4, false));
+				InvoiceDialog dialog = new InvoiceDialog(shell, style);
 				dialog.open();
-			}			
+			}
 		});
+
+		AddCustomer_btn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4, false));
+				AddCustomer dialog = new AddCustomer(shell, style);
+				dialog.open();
+
+			}
+		});
+
+		SavePerf_btn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4, false));
+				SaveTaskDialog dialog = new SaveTaskDialog(shell, style);
+				dialog.open();
+			}
+		});
+
+		newContract_btn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				ContractCreationDialog dialog = new ContractCreationDialog(
+						shell, style);
+				dialog.open();
+			}
+		});
+
+		pricecalc_btn.addListener(SWT.Selection, new Listener() {
+			@Override
+			public void handleEvent(Event e) {
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4, false));
+				PriceEstimateDialog dialog = new PriceEstimateDialog(shell, style);
+				dialog.open();
+			}
+		});
+
+		editJob_btn.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event arg0) {
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4, false));
+				EditJobDialog dialog = new EditJobDialog(shell, style);
+				dialog.open();
+			}
+
+		});
+		createJob_btn.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event event) {
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4, false));
+				JobCreationDialog dialog = new JobCreationDialog(shell, style);
+				dialog.open();
+			}
+		});
+
 	}
 
-	@Override
-	protected void checkSubclass() {
-		// Disable the check that prevents subclassing of SWT components
-	}
 }

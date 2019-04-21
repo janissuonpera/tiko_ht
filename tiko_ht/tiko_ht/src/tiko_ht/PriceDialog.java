@@ -12,17 +12,17 @@ public class PriceDialog extends Dialog {
 	protected Object result;
 	protected Shell shell;
 	protected int style;
-	java.util.List<java.util.List<String>> item_list = null;
+	java.util.List<String[]> item_list = null;
 	java.util.List<String> task_list = null;
 
 	/**
 	 * Constructor. Dialog for the current price. Tasks + items = price.
 	 */
-	public PriceDialog(Shell parent, int style, Object itemList,
-			Object task_list) {
+	public PriceDialog(Shell parent, int style, java.util.List<String[]> itemList,
+			 java.util.List<String> task_list) {
 		super(parent, style);
 		setText("Hinta");
-		this.item_list = (java.util.List<java.util.List<String>>) itemList;
+		this.item_list = (java.util.List<String[]>) itemList;
 		this.task_list = (java.util.List<String>) task_list;
 	}
 
@@ -70,12 +70,12 @@ public class PriceDialog extends Dialog {
 		double item_sum = 0;
 		List itemList = new List(shell, SWT.BORDER);
 		itemList.setBounds(75, 185, 250, 150);
-		for (int i = 0; i < item_list.get(0).size(); i++) {
-			System.out.println(item_list.get(0).size());
-			itemList.add(item_list.get(0).get(i) + ": "
-					+ item_list.get(1).get(i) + " e");
+		// Go through every item and add their name and price to the list.
+		for(String[] item : item_list) {
+			itemList.add(item[0] + ": "
+					+ item[3] + " e");
 			item_sum += Double
-					.parseDouble(item_list.get(1).get(i).split(" \\| ")[2]);
+					.parseDouble(item[3]);
 		}
 		itemList.add("----------------------------------------------");
 		itemList.add("Tarvikkeiden hinta: " + item_sum + " euroa");
