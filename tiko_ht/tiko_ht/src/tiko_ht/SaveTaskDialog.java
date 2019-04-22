@@ -6,13 +6,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.swt.SWT;
-
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Spinner;
@@ -23,7 +19,7 @@ public class SaveTaskDialog extends Dialog {
 
 	protected Object result;
 	protected Shell shell;
-	public List<String> jobs = new ArrayList<String>();
+	public List<String[]> jobs = new ArrayList<String[]>();
 	// Contains user selected items
 	// public List<String> selected_items = new ArrayList<String>();
 
@@ -83,8 +79,8 @@ public class SaveTaskDialog extends Dialog {
 		// Populate the job dropdown list.
 		jobs = db.getJobs(true);
 		job_dropdown.add("");
-		for (int i = 0; i < jobs.size(); i++) {
-			job_dropdown.add(jobs.get(i));
+		for(String [] job : jobs) {
+			job_dropdown.add(job[0]);
 		}
 
 		Label lblAnnaPivmr = new Label(shell, SWT.NONE);

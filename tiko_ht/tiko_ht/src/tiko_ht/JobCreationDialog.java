@@ -112,6 +112,7 @@ public class JobCreationDialog extends Dialog {
 		radioButton_pos.setText("Kyllä");
 
 		Button radiobutton_neg = new Button(shell, SWT.RADIO);
+		radiobutton_neg.setSelection(true);
 		radiobutton_neg.setText("Ei");
 		new Label(shell, SWT.NONE);
 		new Label(shell, SWT.NONE);

@@ -12,18 +12,17 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 
 public class EditJobDialog extends Dialog {
 
 	protected Object result;
 	protected Shell shell;
 	protected int style;
+	String jobType = "";
 	// Contains items and their amount.
 	java.util.List<String[]> itemList = new ArrayList<String[]>();
 	// Job list containing all jobs.
-	java.util.List<String> job_list = new ArrayList<String>();
+	java.util.List<String[]> job_list = new ArrayList<String[]>();
 	// Task list containing all task for the selected job.
 	java.util.List<String> task_list = new ArrayList<String>();
 	/**
@@ -60,7 +59,7 @@ public class EditJobDialog extends Dialog {
 	private void createContents() {
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
-		shell.setSize(432, 351);
+		shell.setSize(477, 351);
 		shell.setText(getText());
 		DBHandler db = new DBHandler();
 		shell.setLayout(null);
@@ -70,42 +69,42 @@ public class EditJobDialog extends Dialog {
 		lblValitseTykohde.setText("Valitse ty\u00F6kohde");
 
 		Label lblTykohteenValinnat = new Label(shell, SWT.NONE);
-		lblTykohteenValinnat.setBounds(249, 5, 107, 15);
+		lblTykohteenValinnat.setBounds(284, 5, 107, 15);
 		lblTykohteenValinnat.setText("Ty\u00F6kohteen valinnat");
 
 		List work_list = new List(shell, SWT.BORDER);
 		work_list.setBounds(5, 72, 160, 115);
 
 		List items_list = new List(shell, SWT.BORDER);
-		items_list.setBounds(219, 152, 172, 117);
+		items_list.setBounds(249, 152, 172, 117);
 
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
 		db.connect();
 		job_list = db.getJobs(false);
 		job_dropdown.add("");
-		for (int i = 0; i < job_list.size(); i++) {
-			job_dropdown.add(job_list.get(i));
+		for (String[] job : job_list) {
+			job_dropdown.add(job[0]);
 		}
 
 		Label resultLabel = new Label(shell, SWT.NONE);
-		resultLabel.setBounds(93, 292, 235, 15);
+		resultLabel.setBounds(121, 292, 235, 15);
 
 		Button finishJob_btn = new Button(shell, SWT.NONE);
-		finishJob_btn.setBounds(249, 26, 106, 25);
+		finishJob_btn.setBounds(285, 24, 106, 25);
 		finishJob_btn.setToolTipText(
 				"Aseta kohde valmiiksi ja lis\u00E4\u00E4 lasku.");
 		finishJob_btn.setText("Aseta valmiiksi");
 		finishJob_btn.setEnabled(false);
 
 		Button deleteJob_btn = new Button(shell, SWT.NONE);
-		deleteJob_btn.setBounds(249, 88, 107, 25);
+		deleteJob_btn.setBounds(284, 89, 107, 25);
 		deleteJob_btn.setToolTipText("Poista kohde tietokannasta.");
 		deleteJob_btn.setText("Poista kohde");
 		deleteJob_btn.setEnabled(false);
 
 		Button getPrice_btn = new Button(shell, SWT.NONE);
-		getPrice_btn.setBounds(249, 57, 106, 25);
+		getPrice_btn.setBounds(285, 55, 106, 25);
 		getPrice_btn.setToolTipText("N\u00E4yt\u00E4 kohteen kokonaishinta");
 		getPrice_btn.setText("Kustannukset");
 		getPrice_btn.setEnabled(false);
@@ -133,16 +132,24 @@ public class EditJobDialog extends Dialog {
 		addDiscount_btn.setEnabled(false);
 
 		Button close_btn = new Button(shell, SWT.NONE);
-		close_btn.setBounds(341, 287, 75, 25);
+		close_btn.setBounds(386, 287, 75, 25);
 		close_btn.setText("Sulje");
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
 		lblNewLabel.setBounds(5, 243, 90, 15);
 		lblNewLabel.setText("Alennusprosentti");
-		
+
 		Label lblKohteeseenKytetytTarvikkeet = new Label(shell, SWT.NONE);
-		lblKohteeseenKytetytTarvikkeet.setBounds(219, 131, 182, 15);
-		lblKohteeseenKytetytTarvikkeet.setText("Kohteeseen k\u00E4ytetyt tarvikkeet");
+		lblKohteeseenKytetytTarvikkeet.setBounds(253, 131, 182, 15);
+		lblKohteeseenKytetytTarvikkeet
+				.setText("Kohteeseen k\u00E4ytetyt tarvikkeet");
+
+		Label lblKohteenTyyppi = new Label(shell, SWT.BORDER);
+		lblKohteenTyyppi.setBounds(173, 55, 82, 25);
+		lblKohteenTyyppi.setText("Kohteen tyyppi");
+
+		Label jobtype_label = new Label(shell, SWT.NONE);
+		jobtype_label.setBounds(171, 89, 55, 15);
 
 		/*
 		 * Click listener methods
@@ -178,21 +185,40 @@ public class EditJobDialog extends Dialog {
 
 			@Override
 			public void handleEvent(Event arg0) {
+				// Check that the selection is not the first null value.
+				jobType = "";
+				if (job_dropdown.getSelectionIndex() > 0) {
+					// Check if the job is a contract or not.
+					boolean contractBool = Boolean.valueOf(job_list
+							.get(job_dropdown.getSelectionIndex() - 1)[1]);
+					// Rename the label depending of the contract bool value.
+					if (contractBool) {
+						jobType = "Urakka";
+					} else {
+						jobType = "Tuntityö";
+					}
 
-				db.connect();
-				task_list = db.getTaskHours(job_dropdown.getText());
-				work_list.removeAll();
-				for (int i = 0; i < task_list.size(); i++) {
-					work_list.add(task_list.get(i) + " e");
+					db.connect();
+					task_list = db.getTaskHours(job_dropdown.getText());
+					work_list.removeAll();
+					for (int i = 0; i < task_list.size(); i++) {
+						work_list.add(task_list.get(i) + " e");
+					}
+					db.connect();
+					if (jobType.equals("Tuntityö")) {
+						itemList = db.getJobItems(job_dropdown.getText(),
+								false,true);
+					} else if (jobType.equals("Urakka")) {
+						itemList = db.getContractItems(job_dropdown.getText(),true);
+					}
+
+					items_list.removeAll();
+					for (String[] item : itemList) {
+						items_list.add(item[0] + " | "+item[1] + item[2] +" | "+ item[3] + "e");
+					}
 				}
-				db.connect();
-				itemList = db.getJobItems(job_dropdown.getText(), false);
 
-				items_list.removeAll();
-				for (String[] itemObj : itemList) {
-					items_list.add(itemObj[0] + " " + itemObj[3] + "e");
-				}
-
+				jobtype_label.setText(jobType);
 				if (job_dropdown.getText().equals("")) {
 					deleteJob_btn.setEnabled(false);
 					getPrice_btn.setEnabled(false);

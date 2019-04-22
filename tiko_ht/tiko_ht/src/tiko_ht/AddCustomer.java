@@ -2,17 +2,13 @@ package tiko_ht;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.layout.GridLayout;
+
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.custom.ViewForm;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 
@@ -20,9 +16,9 @@ public class AddCustomer extends Dialog {
 
 	protected Object result;
 	protected Shell shell;
-	private Text Hetu;
-	private Text NameBox;
-	private Text Address;
+	private Text ssn_text;
+	private Text name_text;
+	private Text address_text;
 	private boolean Company;
 
 	/**
@@ -59,149 +55,87 @@ public class AddCustomer extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
-		shell.setSize(433, 169);
+		shell.setSize(381, 169);
 		shell.setText(getText());
-		shell.setLayout(new GridLayout(10, false));
+		shell.setLayout(null);
 
 		Label lblNimi = new Label(shell, SWT.NONE);
-		lblNimi.setLayoutData(
-				new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		lblNimi.setBounds(9, 8, 31, 15);
 		lblNimi.setText("Nimi*");
 
-		NameBox = new Text(shell, SWT.BORDER);
-		NameBox.setLayoutData(
-				new GridData(SWT.FILL, SWT.CENTER, true, false, 5, 1));
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
+		name_text = new Text(shell, SWT.BORDER);
+		name_text.setBounds(49, 5, 150, 21);
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBounds(342, 8, 0, 15);
 		lblNewLabel.setText("");
 
 		Label lblOsoite = new Label(shell, SWT.NONE);
-		lblOsoite.setLayoutData(
-				new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		lblOsoite.setBounds(5, 34, 39, 15);
 		lblOsoite.setText("Osoite*");
 
-		Address = new Text(shell, SWT.BORDER);
-		GridData gd_Address = new GridData(SWT.FILL, SWT.FILL, true, false, 5,
-				1);
-		gd_Address.widthHint = 170;
-		Address.setLayoutData(gd_Address);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
+		address_text = new Text(shell, SWT.BORDER);
+		address_text.setBounds(49, 31, 150, 21);
 
 		Label lblYritys = new Label(shell, SWT.NONE);
-		lblYritys.setLayoutData(
-				new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		lblYritys.setBounds(8, 61, 33, 15);
 		lblYritys.setText("Yritys*");
 
-		Button NoButton = new Button(shell, SWT.RADIO);
-		NoButton.addSelectionListener(new SelectionAdapter() {
+		Button negative_radio = new Button(shell, SWT.RADIO);
+		negative_radio.setSelection(true);
+		negative_radio.setBounds(65, 57, 44, 23);
+		negative_radio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Company = false;
 			}
 		});
-		GridData gd_NoButton = new GridData(SWT.CENTER, SWT.CENTER, true, false,
-				2, 1);
-		gd_NoButton.widthHint = 44;
-		gd_NoButton.heightHint = 23;
-		NoButton.setLayoutData(gd_NoButton);
-		NoButton.setText("Ei");
+		negative_radio.setText("Ei");
 
-		Button YesButton = new Button(shell, SWT.RADIO);
-		YesButton.addSelectionListener(new SelectionAdapter() {
+		Button positive_radio = new Button(shell, SWT.RADIO);
+		positive_radio.setBounds(131, 60, 68, 16);
+		positive_radio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Company = true;
 			}
 		});
-
-		GridData gd_YesButton = new GridData(SWT.CENTER, SWT.CENTER, true,
-				false, 3, 1);
-		gd_YesButton.widthHint = 122;
-		YesButton.setLayoutData(gd_YesButton);
-		YesButton.setText("Kyll‰");
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
+		positive_radio.setText("Kyll‰");
 
 		Label lblHetu = new Label(shell, SWT.NONE);
-		lblHetu.setLayoutData(
-				new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+		lblHetu.setBounds(11, 88, 26, 15);
 		lblHetu.setText("Hetu");
 
-		Hetu = new Text(shell, SWT.BORDER);
-		GridData gd_Hetu = new GridData(SWT.FILL, SWT.CENTER, true, false, 5,
-				1);
-		gd_Hetu.widthHint = 95;
-		Hetu.setLayoutData(gd_Hetu);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
+		ssn_text = new Text(shell, SWT.BORDER);
+		ssn_text.setBounds(49, 85, 150, 21);
 
 		Label lblVaaditutTiedot = new Label(shell, SWT.NONE);
-		lblVaaditutTiedot.setLayoutData(
-				new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		lblVaaditutTiedot.setBounds(5, 116, 85, 15);
 		lblVaaditutTiedot.setText("* Vaaditut tiedot");
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
 
-		Button CancelAddCustomer = new Button(shell, SWT.NONE);
-		CancelAddCustomer.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				shell.dispose();
-			}
-		});
-		GridData gd_CancelAddCustomer = new GridData(SWT.RIGHT, SWT.CENTER,
-				false, false, 1, 1);
-		gd_CancelAddCustomer.widthHint = 87;
-		CancelAddCustomer.setLayoutData(gd_CancelAddCustomer);
-		CancelAddCustomer.setText("Peruuta");
+		Button cancel_btn = new Button(shell, SWT.NONE);
+		cancel_btn.setBounds(194, 111, 87, 25);
+		
+		cancel_btn.setText("Peruuta");
 
-		Button AddCustomer = new Button(shell, SWT.NONE);
-		AddCustomer.addMouseListener(new MouseAdapter() {
+		Button done_btn = new Button(shell, SWT.NONE);
+		done_btn.setBounds(287, 111, 80, 25);
+		
+		done_btn.setText("Lis‰‰ Asiakas");
+		
+		done_btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				sendData();
 				shell.dispose();
 			}
 		});
-		AddCustomer.setText("Lis‰‰ Asiakas");
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-
-		DragSource dragSource = new DragSource(shell, DND.DROP_MOVE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-
-		ViewForm viewForm = new ViewForm(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-
+		cancel_btn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				shell.dispose();
+			}
+		});
 	}
 
 	public boolean getCompany() {
@@ -212,8 +146,8 @@ public class AddCustomer extends Dialog {
 		try {
 			DBHandler db = new DBHandler();
 			db.connect();
-			db.createCustomer(this.NameBox.getText(), this.Address.getText(),
-					this.Company, this.Hetu.getText());
+			db.createCustomer(this.name_text.getText(), this.address_text.getText(),
+					this.Company, this.ssn_text.getText());
 		} catch (Exception e) {
 			System.out.println("Failed to add a customer");
 			System.out.println(e);

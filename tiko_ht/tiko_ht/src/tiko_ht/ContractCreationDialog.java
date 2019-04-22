@@ -16,9 +16,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Scale;
-import org.eclipse.swt.widgets.Slider;
-import org.eclipse.swt.widgets.Menu;
+
 
 public class ContractCreationDialog extends Dialog {
 
