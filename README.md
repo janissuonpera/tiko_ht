@@ -17,11 +17,14 @@ Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte t
 
 - To do:
   - ALV-tavaroihin
+  
+  Almost done:
    - Urakkatarjous ja sen lasku
+   
+   Done:
    - Laskun tulostus missä näkyy tunnit ja kaikki muutkin tiedot alveineen.
    
-- Done:
-  -Messed up commits in some way.
+
    
 Muutokset tauluihin:
 ---------------------
