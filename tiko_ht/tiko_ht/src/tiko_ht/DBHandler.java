@@ -265,9 +265,10 @@ public class DBHandler {
 		Connection con = getConnection();
 		try {
 			stmt = con.createStatement();
-			if(exceptContracts) {
-				result = stmt.executeQuery("select nimi from tyokohde WHERE urakka=false");
-			}else {
+			if (exceptContracts) {
+				result = stmt.executeQuery(
+						"select nimi from tyokohde WHERE urakka=false");
+			} else {
 				result = stmt.executeQuery("select nimi from tyokohde");
 			}
 			while (result.next()) {
@@ -557,7 +558,7 @@ public class DBHandler {
 		// Get job id by its name
 		int job_id = getJobIdByName(job_name);
 		// Get next free task id.
-		int invoice_id = getNextTaskId();
+		int invoice_id = 0;
 		int invoice_count = 0;
 		double final_price = 0;
 		double hours_price = 0;
@@ -572,6 +573,14 @@ public class DBHandler {
 
 		try {
 
+			// Get the next available invoice_id.
+			result = stmt.executeQuery(
+					"SELECT lasku_id FROM lasku ORDER BY lasku_id");
+			while (result.next()) {
+				invoice_id = result.getInt(1);
+			}
+			invoice_id++;
+
 			// Get invoice count and due date from all invoices of selected job.
 			prep_stmt = con.prepareStatement(
 					"SELECT lasku_lkm,era_pvm,hinta FROM lasku WHERE tyokohde_id = ?");
@@ -580,11 +589,11 @@ public class DBHandler {
 			while (result.next()) {
 				invoice_count = result.getInt(1);
 				final_price = result.getDouble(3);
-				// If the invoice hasn't been paid in time, set due date to be
-				// in 5 days from the last due date.
 				dueDate = result.getDate(2);
 			}
 			invoice_count++;
+			// If the invoice hasn't been paid in time, set due date to be
+			// in 5 days from the last due date.
 			if (invoice_count > 1) {
 				dueDate = java.sql.Date
 						.valueOf(dueDate.toLocalDate().plusDays(5));
@@ -913,14 +922,15 @@ public class DBHandler {
 		try {
 
 			// Get the contract id with the name of the contract.
-			prep_stmt = con.prepareStatement("SELECT urakka_id FROM urakkatarjous WHERE tyokohde_id = (SELECT tyokohde_id FROM tyokohde WHERE nimi = ?)");
+			prep_stmt = con.prepareStatement(
+					"SELECT urakka_id FROM urakkatarjous WHERE tyokohde_id = (SELECT tyokohde_id FROM tyokohde WHERE nimi = ?)");
 			prep_stmt.setString(1, contract);
 			result = prep_stmt.executeQuery();
 			while (result.next()) {
 				contract_id = result.getInt(1);
 			}
 			prep_stmt.clearBatch();
-			
+
 			prep_stmt = con.prepareStatement(taskSQL);
 			// Add data to suoritus-table.
 			for (String[] hour : hours) {
