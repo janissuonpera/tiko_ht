@@ -32,10 +32,13 @@ public class PriceEstimateDialog extends Dialog {
 	private final int PLANNING_WORK = 55;
 	private final int HELPING = 35;
 	private double totalPrice = 0;
-	// Contains all items and their price in the database.
+	// Contains all items, their price and their units in the database.
 	List<String[]> items = new ArrayList<String[]>();
-	// Contains the selected items and their amounts.
+	// Contains the user selected items and their amounts.
 	List<String[]> selected_items = new ArrayList<String[]>();
+	// Contains the user selected hours, types and total price.
+	List<String[]> selected_hours = new ArrayList<String[]>();
+	// Contains contract offers.
 	List<String> contractOffers = new ArrayList<String>();
 
 	/**
@@ -140,6 +143,7 @@ public class PriceEstimateDialog extends Dialog {
 		addToContract_btn.setText("Lis\u00E4\u00E4 urakkaan");
 
 		Combo contracts_dropdown = new Combo(shell, SWT.NONE);
+		contracts_dropdown.setToolTipText("Listassa n\u00E4kyy vain urakat, joihin ei ole viel\u00E4 lis\u00E4tty tarvikkeita tai tunteja.");
 		contracts_dropdown.setBounds(10, 300, 179, 23);
 		// Get the contract offers into a list.
 		db.connect();
@@ -156,15 +160,23 @@ public class PriceEstimateDialog extends Dialog {
 		lblLisListanSislt.setBounds(10, 244, 160, 15);
 		lblLisListanSislt
 				.setText("Lis\u00E4\u00E4 listan sis\u00E4lt\u00F6 urakkaan");
+		
+		Label result_label = new Label(shell, SWT.NONE);
+		result_label.setBounds(10, 179, 232, 15);
+		
+		
 		// Adds work hours into the list.
 		addWorkHours_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
+				// Validate selections
 				if (workHours_spinner.getSelection() > 0
 						&& !workType_dropdown.getText().equals("")) {
+				
 					int worktype = 0;
-					String itemString = workType_dropdown.getText() + " "
+					String hoursAndType = workType_dropdown.getText() + " "
 							+ workHours_spinner.getSelection() + "h\n";
+					
 					if (workType_dropdown.getText().equals("Ty\u00F6")) {
 						worktype = REGULAR_WORK;
 					} else if (workType_dropdown.getText()
@@ -174,8 +186,10 @@ public class PriceEstimateDialog extends Dialog {
 						worktype = HELPING;
 					}
 					double price = worktype * workHours_spinner.getSelection();
-
-					ItemTextField.append(itemString);
+					// Save selected values into an array.
+					String [] hours = {workType_dropdown.getText(),String.valueOf(workHours_spinner.getSelection()),String.valueOf(price)};
+					selected_hours.add(hours);
+					ItemTextField.append(hoursAndType);
 					totalPrice = totalPrice + price;
 					PriceEstimateTextField.setText(totalPrice + "€");
 					workHours_spinner.setSelection(0);
@@ -238,10 +252,14 @@ public class PriceEstimateDialog extends Dialog {
 				if (!contracts_dropdown.getText().equals("")
 						&& totalPrice > 0) {
 					db.connect();
-					// Need to add items into urakka_tarvike table
-					// Need to add hours into suoritus table.
+					boolean result = db.addToContract(contracts_dropdown.getText(),selected_items,selected_hours);
+					if(result) {
+						shell.dispose();
+					} else {
+						result_label.setText("Lisäys epäonnistui");
+					}
 				} else {
-					System.out.println("error in adding to contract.");
+					result_label.setText("Epäonnistui. Tarkista antamasi tiedot.");
 				}
 			}
 		});

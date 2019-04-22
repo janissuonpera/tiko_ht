@@ -70,6 +70,7 @@ public class ContractCreationDialog extends Dialog {
 		contracts = db.getContracts();
 
 		Combo contract_dropdown = new Combo(shell, SWT.NONE);
+		contract_dropdown.setToolTipText("Listassa n\u00E4kyy vain ty\u00F6kohteet, joista ei ole viel\u00E4 tehty urakkatarjousta.");
 		contract_dropdown.setBounds(106, 7, 191, 23);
 		// Insert contracts into the dropdown list.
 		for (String contract : contracts) {
@@ -132,6 +133,7 @@ public class ContractCreationDialog extends Dialog {
 				} else {
 					db.createContract(contract_dropdown.getText(), 1);
 				}
+				shell.dispose();
 			}
 		});
 		// Listens for radio button press, and sets the pay in instalments

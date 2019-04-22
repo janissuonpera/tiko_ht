@@ -20,8 +20,6 @@ public class EditJobDialog extends Dialog {
 	protected Object result;
 	protected Shell shell;
 	protected int style;
-	// Makes item list visible or not.
-	public boolean itemList_visible = false;
 	// Contains items and their amount.
 	java.util.List<String[]> itemList = new ArrayList<String[]>();
 	// Job list containing all jobs.
@@ -84,7 +82,7 @@ public class EditJobDialog extends Dialog {
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
 		db.connect();
-		job_list = db.getJobs();
+		job_list = db.getJobs(false);
 		job_dropdown.add("");
 		for (int i = 0; i < job_list.size(); i++) {
 			job_dropdown.add(job_list.get(i));

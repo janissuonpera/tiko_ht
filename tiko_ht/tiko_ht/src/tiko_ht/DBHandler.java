@@ -164,7 +164,8 @@ public class DBHandler {
 			result = stmt.executeQuery(
 					"select nimi,myynti_hinta,yksikko from tarvike WHERE varasto_tilanne > 0");
 			while (result.next()) {
-				String[] item = {result.getString(1),result.getString(2),result.getString(3)};
+				String[] item = {result.getString(1), result.getString(2),
+						result.getString(3)};
 				items.add(item);
 			}
 			stmt.close();
@@ -177,8 +178,10 @@ public class DBHandler {
 
 	public void createTask(String job_name, String work_type, int hours,
 			DateTime date, List<String[]> items) {
-		int job_id = 0;
-		int task_id = 0;
+		// Get job id by its name
+		int job_id = getJobIdByName(job_name);
+		// Get next available task id.
+		int task_id = getNextTaskId();
 		// Price of hours * work type cost.
 		double price = 0;
 
@@ -195,29 +198,7 @@ public class DBHandler {
 
 		String itemSQL = " INSERT INTO suoritus_tarvike VALUES(?,?,?,?,?)";
 
-		// Find the job id with job name.
 		try {
-			prep_stmt = con.prepareStatement(
-					"SELECT tyokohde_id from tyokohde WHERE nimi = ?");
-			// Find the customer id with customer name.'
-			prep_stmt.setString(1, job_name);
-			result = prep_stmt.executeQuery();
-			while (result.next()) {
-				job_id = result.getInt(1);
-			}
-			prep_stmt.clearBatch();
-
-			// Find next task id, that's free.
-			stmt = con.createStatement();
-			result = stmt.executeQuery(
-					"SELECT suoritus_id from suoritus ORDER BY suoritus_id");
-			// Find next available task id.
-			while (result.next()) {
-				task_id = result.getInt(1);
-			}
-			// Add one into task id to make a new id.
-			task_id++;
-
 			// Calculating total price of hours.
 			if (work_type.equals("Työ")) {
 				price = hours * REGULAR_WORK;
@@ -279,12 +260,16 @@ public class DBHandler {
 
 	}
 	// Fetch jobs and return them as array list.
-	public List<String> getJobs() {
+	public List<String> getJobs(boolean exceptContracts) {
 		List<String> jobs = new ArrayList<String>();
 		Connection con = getConnection();
 		try {
 			stmt = con.createStatement();
-			result = stmt.executeQuery("select nimi from tyokohde");
+			if(exceptContracts) {
+				result = stmt.executeQuery("select nimi from tyokohde WHERE urakka=false");
+			}else {
+				result = stmt.executeQuery("select nimi from tyokohde");
+			}
 			while (result.next()) {
 				jobs.add(result.getString(1));
 			}
@@ -300,8 +285,8 @@ public class DBHandler {
 
 		List<String[]> items = new ArrayList<String[]>();
 
-		// Job identifier
-		int job_id = 0;
+		// Get job identifier by its name
+		int job_id = getJobIdByName(job_name);
 		// SQL query string to get all items and their count and total price
 		// from the job
 		String SQL = "SELECT tarvike.nimi, maara, tarvike.yksikko,stk.hinta "
@@ -311,18 +296,6 @@ public class DBHandler {
 
 		Connection con = getConnection();
 		try {
-			// Get the job id with the job name.
-			prep_stmt = con.prepareStatement(
-					"SELECT tyokohde_id FROM tyokohde WHERE nimi = ?");
-			prep_stmt.setString(1, job_name);
-			result = prep_stmt.executeQuery();
-			while (result.next()) {
-				job_id = result.getInt(1);
-			}
-			prep_stmt.clearBatch();
-			prep_stmt.close();
-			result.close();
-
 			prep_stmt = con.prepareStatement(SQL);
 			prep_stmt.setInt(1, job_id);
 			result = prep_stmt.executeQuery();
@@ -351,6 +324,7 @@ public class DBHandler {
 		closeConnection();
 		return items;
 	}
+
 	// Sets the job finished value into true.
 	public void setJobFinished(String job_name) {
 		Connection con = getConnection();
@@ -365,7 +339,6 @@ public class DBHandler {
 				con.commit();
 			}
 			createInvoice(job_name);
-			prep_stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -486,8 +459,8 @@ public class DBHandler {
 		Connection con = getConnection();
 		try {
 			stmt = con.createStatement();
-			ResultSet new_result = stmt
-					.executeQuery("select lasku_id, tyokohde_id from lasku ORDER BY lasku_id");
+			ResultSet new_result = stmt.executeQuery(
+					"select lasku_id, tyokohde_id from lasku ORDER BY lasku_id");
 			while (new_result.next()) {
 				String lasku_id = (Integer.toString(new_result.getInt(1)));
 				int tyokohde_id = new_result.getInt(2);
@@ -581,11 +554,13 @@ public class DBHandler {
 	}
 
 	public void createInvoice(String job_name) {
+		// Get job id by its name
 		int job_id = getJobIdByName(job_name);
-		int invoice_id = 0;
+		// Get next free task id.
+		int invoice_id = getNextTaskId();
 		int invoice_count = 0;
-		double finalPrice = 0;
-		double hoursPrice = 0;
+		double final_price = 0;
+		double hours_price = 0;
 		String invoice_type = "Normaali";
 		// Get current date in sql format.
 		java.sql.Date date = java.sql.Date
@@ -596,13 +571,6 @@ public class DBHandler {
 		con = getConnection();
 
 		try {
-			// Get the next available invoice_id.
-			result = stmt.executeQuery(
-					"SELECT lasku_id FROM lasku ORDER BY lasku_id");
-			while (result.next()) {
-				invoice_id = result.getInt(1);
-			}
-			invoice_id++;
 
 			// Get invoice count and due date from all invoices of selected job.
 			prep_stmt = con.prepareStatement(
@@ -611,7 +579,7 @@ public class DBHandler {
 			result = prep_stmt.executeQuery();
 			while (result.next()) {
 				invoice_count = result.getInt(1);
-				finalPrice = result.getDouble(3);
+				final_price = result.getDouble(3);
 				// If the invoice hasn't been paid in time, set due date to be
 				// in 5 days from the last due date.
 				dueDate = result.getDate(2);
@@ -631,7 +599,7 @@ public class DBHandler {
 			prep_stmt.setInt(1, job_id);
 			result = prep_stmt.executeQuery();
 			while (result.next()) {
-				hoursPrice = result.getDouble(1);
+				hours_price = result.getDouble(1);
 			}
 
 			if (invoice_count == 1) {
@@ -647,7 +615,7 @@ public class DBHandler {
 				result = prep_stmt.executeQuery();
 				while (result.next()) {
 					// Get total price of hours from the second row of query.
-					finalPrice += result.getDouble(1);
+					final_price += result.getDouble(1);
 				}
 				prep_stmt.clearParameters();
 			}
@@ -656,11 +624,11 @@ public class DBHandler {
 			if (invoice_count == 2) {
 				invoice_type = "Muistutus";
 				// Add billing fee.
-				finalPrice += 5;
+				final_price += 5;
 			} else if (invoice_count > 2) {
 				invoice_type = "Karhu";
 				// Add late payment fee and billing fee.
-				finalPrice = finalPrice * 1.16 + 5;
+				final_price = final_price * 1.16 + 5;
 			}
 
 			prep_stmt = con.prepareStatement(
@@ -671,8 +639,8 @@ public class DBHandler {
 			prep_stmt.setDate(4, dueDate);
 			prep_stmt.setString(5, invoice_type);
 			prep_stmt.setInt(6, invoice_count);
-			prep_stmt.setDouble(7, hoursPrice);
-			prep_stmt.setDouble(8, finalPrice);
+			prep_stmt.setDouble(7, hours_price);
+			prep_stmt.setDouble(8, final_price);
 			prep_stmt.setBoolean(9, false);
 			prep_stmt.executeUpdate();
 			con.commit();
@@ -683,6 +651,8 @@ public class DBHandler {
 		printInvoice(invoice_id);
 		closeConnection();
 	}
+
+	// Deletes the selected job.
 	public boolean deleteJob(String job_name) {
 		con = getConnection();
 		int job_id = getJobIdByName(job_name);
@@ -867,7 +837,7 @@ public class DBHandler {
 		try {
 			stmt = con.createStatement();
 			result = stmt.executeQuery(
-					"SELECT nimi FROM tyokohde WHERE urakka=true");
+					"SELECT nimi FROM tyokohde WHERE urakka=true AND tyokohde_id NOT IN(SELECT tyokohde_id FROM urakkatarjous)");
 			while (result.next()) {
 				contracts.add(result.getString(1));
 			}
@@ -878,13 +848,14 @@ public class DBHandler {
 		return contracts;
 	}
 	// Returns the contracts which have offers made of as a list..
-	public List<String> getContractOffers(){
+	public List<String> getContractOffers() {
 		con = getConnection();
 		List<String> contractOffers = new ArrayList<String>();
 		try {
 			stmt = con.createStatement();
-			result = stmt.executeQuery("SELECT nimi FROM tyokohde WHERE tyokohde_id=(SELECT tyokohde_id FROM urakkatarjous)");
-			while(result.next()) {
+			result = stmt.executeQuery(
+					"SELECT nimi FROM tyokohde WHERE tyokohde_id IN (SELECT tyokohde_id FROM urakkatarjous WHERE urakka_id NOT IN(select urakka_id from urakkalista))");
+			while (result.next()) {
 				contractOffers.add(result.getString(1));
 			}
 		} catch (SQLException e) {
@@ -903,7 +874,7 @@ public class DBHandler {
 			stmt = con.createStatement();
 			// Get the next available contract id.
 			result = stmt.executeQuery(
-					"SELECT urakka_id FROM urakkatarjous ORDER BY urakka_id");
+					"SELECT urakka_id FROM urakkatarjous ORDER BY urakka_id ");
 			while (result.next()) {
 				contract_id = result.getInt(1);
 			}
@@ -920,6 +891,96 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 		closeConnection();
+	}
+
+	// Adds items to urakka_Tarvike table and hours and types to suoritus table.
+	public boolean addToContract(String contract, List<String[]> items,
+			List<String[]> hours) {
+		// Get job id by its name.
+		int job_id = getJobIdByName(contract);
+		// Identifier for the contract.
+		int contract_id = 0;
+		// Get next available task with the method.
+		int task_id = getNextTaskId();
+		// Get current date.
+		Calendar cal = Calendar.getInstance();
+		java.sql.Date sql_date = new java.sql.Date(cal.getTimeInMillis());
+
+		String taskSQL = "INSERT INTO suoritus VALUES(?,?,?,?,?,?)";
+		String itemSQL = "INSERT INTO urakkalista VALUES (?,?,?)";
+		con = getConnection();
+
+		try {
+
+			// Get the contract id with the name of the contract.
+			prep_stmt = con.prepareStatement("SELECT urakka_id FROM urakkatarjous WHERE tyokohde_id = (SELECT tyokohde_id FROM tyokohde WHERE nimi = ?)");
+			prep_stmt.setString(1, contract);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				contract_id = result.getInt(1);
+			}
+			prep_stmt.clearBatch();
+			
+			prep_stmt = con.prepareStatement(taskSQL);
+			// Add data to suoritus-table.
+			for (String[] hour : hours) {
+				prep_stmt.setInt(1, task_id);
+				prep_stmt.setInt(2, job_id);
+				prep_stmt.setDate(3, sql_date);
+				prep_stmt.setInt(4, Integer.parseInt(hour[1]));
+				prep_stmt.setString(5, hour[0]);
+				prep_stmt.setDouble(6, Double.valueOf(hour[2]));
+				prep_stmt.executeUpdate();
+			}
+			prep_stmt.clearBatch();
+			// Get item id for each item and then insert the item into
+			// urakkalista table.
+			prep_stmt = con.prepareStatement(
+					"SELECT tarvike_id FROM tarvike WHERE nimi = ?");
+			PreparedStatement insert_stmt = con.prepareStatement(itemSQL);
+			int item_id = 0;
+			// Loop through items.
+			for (String[] item : items) {
+				prep_stmt.setString(1, item[0]);
+				result = prep_stmt.executeQuery();
+				while (result.next()) {
+					// Get item id
+					item_id = result.getInt(1);
+				}
+				// Add item to urakkalista-table.
+				insert_stmt.setInt(1, contract_id);
+				insert_stmt.setInt(2, item_id);
+				insert_stmt.setDouble(3, Double.valueOf(item[1]));
+				insert_stmt.executeUpdate();
+			}
+			// Commit the changes.
+			con.commit();
+		} catch (SQLException e) {
+			return false;
+		}
+		closeConnection();
+		return true;
+	}
+	// Returns next free task id.
+	public int getNextTaskId() {
+		int task_id = 0;
+		con = getConnection();
+		// Find next task id, that's free.
+		try {
+			stmt = con.createStatement();
+			result = stmt.executeQuery(
+					"SELECT suoritus_id from suoritus ORDER BY suoritus_id");
+			// Find next available task id.
+			while (result.next()) {
+				task_id = result.getInt(1);
+			}
+			// Add one into task id to make a new id.
+			task_id++;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		System.out.println(task_id);
+		return task_id;
 	}
 
 	// Close connection

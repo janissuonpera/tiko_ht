@@ -81,7 +81,7 @@ public class SaveTaskDialog extends Dialog {
 		job_dropdown.setBounds(115, 5, 234, 23);
 		db.connect();
 		// Populate the job dropdown list.
-		jobs = db.getJobs();
+		jobs = db.getJobs(true);
 		job_dropdown.add("");
 		for (int i = 0; i < jobs.size(); i++) {
 			job_dropdown.add(jobs.get(i));
