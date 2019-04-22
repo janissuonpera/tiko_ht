@@ -17,9 +17,10 @@ Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte t
 
 - To do:
   - ALV-tavaroihin
+  - Urakkatarjouksen lasku ja muokkaa työkohde-dialogin tarvikelista urakoille(tarvikkeet ei sijaitse suoritus_tarvike taulussa urakan kohdalla)
   
-  Almost done:
-   - Urakkatarjous ja sen lasku
+   Done:
+   - Urakkatarjouksen tekeminen ja sinne tavaroiden ja tuntien lisäys.
    
    Done:
    - Laskun tulostus missä näkyy tunnit ja kaikki muutkin tiedot alveineen.
