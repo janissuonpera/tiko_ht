@@ -76,7 +76,7 @@ public class JobCreationDialog extends Dialog {
 				false, false, 2, 1);
 		gd_customer_dropdown.widthHint = 169;
 		customer_dropdown.setLayoutData(gd_customer_dropdown);
-		db.connect();
+		
 		customers = db.getCustomers();
 
 		for (int i = 0; i < customers.size(); i++) {
@@ -134,7 +134,7 @@ public class JobCreationDialog extends Dialog {
 		btnCreateJob.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				db.connect();
+				
 				db.createJob(customer_dropdown.getText(),
 						jobName_field.getText(), jobAddress_field.getText(),
 						radioButton_pos.getSelection());

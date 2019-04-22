@@ -96,7 +96,7 @@ public class PriceEstimateDialog extends Dialog {
 
 		Combo ItemName_dropdown = new Combo(shell, SWT.READ_ONLY);
 		ItemName_dropdown.setBounds(61, 35, 171, 23);
-		db.connect();
+		
 		items = db.getAllItems();
 		ItemName_dropdown.add("");
 		for (String[] item : items) {
@@ -137,7 +137,7 @@ public class PriceEstimateDialog extends Dialog {
 		contracts_dropdown.setToolTipText("Listassa n\u00E4kyy vain urakat, joihin ei ole viel\u00E4 lis\u00E4tty tarvikkeita tai tunteja.");
 		contracts_dropdown.setBounds(10, 300, 179, 23);
 		// Get the contract offers into a list.
-		db.connect();
+		
 		contractOffers = db.getContractOffers();
 		for (String contract : contractOffers) {
 			contracts_dropdown.add(contract);
@@ -248,7 +248,7 @@ public class PriceEstimateDialog extends Dialog {
 				// into, do it.
 				if (!contracts_dropdown.getText().equals("")
 						&& totalPrice > 0) {
-					db.connect();
+					
 					boolean result = db.addToContract(contracts_dropdown.getText(),selected_items,selected_hours);
 					if(result) {
 						shell.dispose();

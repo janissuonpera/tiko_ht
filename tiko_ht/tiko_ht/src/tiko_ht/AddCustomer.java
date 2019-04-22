@@ -145,7 +145,7 @@ public class AddCustomer extends Dialog {
 	public void sendData() {
 		try {
 			DBHandler db = new DBHandler();
-			db.connect();
+			
 			db.createCustomer(this.name_text.getText(), this.address_text.getText(),
 					this.Company, this.ssn_text.getText());
 		} catch (Exception e) {

@@ -80,7 +80,7 @@ public class EditJobDialog extends Dialog {
 
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
-		db.connect();
+		
 		job_list = db.getJobs(false);
 		job_dropdown.add("");
 		for (String[] job : job_list) {
@@ -196,15 +196,14 @@ public class EditJobDialog extends Dialog {
 						jobType = "Urakka";
 					} else {
 						jobType = "Tuntityö";
-					}
+					}					
 
-					db.connect();
 					task_list = db.getTaskHours(job_dropdown.getText());
 					work_list.removeAll();
 					for (int i = 0; i < task_list.size(); i++) {
 						work_list.add(task_list.get(i) + " e");
 					}
-					db.connect();
+					
 					if (jobType.equals("Tuntityö")) {
 						itemList = db.getJobItems(job_dropdown.getText(),
 								false,true);
@@ -226,7 +225,12 @@ public class EditJobDialog extends Dialog {
 				} else {
 					deleteJob_btn.setEnabled(true);
 					getPrice_btn.setEnabled(true);
-					finishJob_btn.setEnabled(true);
+					//Check if job is finished or not, and disable button accordingly
+					if(db.getFinishedValue(job_dropdown.getText())) {
+						finishJob_btn.setEnabled(false);
+					}else {
+						finishJob_btn.setEnabled(true);
+					}
 				}
 			}
 		});
@@ -241,11 +245,11 @@ public class EditJobDialog extends Dialog {
 		addDiscount_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
-				db.connect();
+				
 				db.addDiscount(job_dropdown.getText(),
 						workType_dropdown.getText(),
 						taskDiscount_spinner.getSelection());
-				db.connect();
+				
 				task_list = db.getTaskHours(job_dropdown.getText());
 				work_list.removeAll();
 				for (int i = 0; i < task_list.size(); i++) {
@@ -268,7 +272,7 @@ public class EditJobDialog extends Dialog {
 
 			@Override
 			public void handleEvent(Event arg0) {
-				db.connect();
+				
 				boolean deleted = db.deleteJob(job_dropdown.getText());
 				resultLabel.setText((deleted)
 						? "Työ poistettu."
@@ -285,11 +289,11 @@ public class EditJobDialog extends Dialog {
 		finishJob_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override
-			public void handleEvent(Event arg0) {
-				db.connect();
+			public void handleEvent(Event arg0) {				
 				db.setJobFinished(job_dropdown.getText());
 				resultLabel
 						.setText("Työ asetettu valmistuneeksi ja lasku luotu.");
+				finishJob_btn.setEnabled(false);
 			}
 		});
 

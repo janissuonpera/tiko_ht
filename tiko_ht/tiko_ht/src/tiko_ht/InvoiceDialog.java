@@ -193,7 +193,7 @@ public class InvoiceDialog extends Dialog {
 
 			@Override
 			public void handleEvent(Event arg0) {
-				db.connect();
+				
 				boolean deleted = db
 						.deleteInvoice(current_invoice.getLasku_id());
 				if (deleted) {
@@ -205,7 +205,7 @@ public class InvoiceDialog extends Dialog {
 
 		});
 
-		db.connect();
+		
 		invoices_names = db.getInvoicesIdAndName();
 		for (int i = 0; i < invoices_names.size(); i++) {
 			invoice_dropdown.add(invoices_names.get(i));
@@ -215,7 +215,7 @@ public class InvoiceDialog extends Dialog {
 			public void handleEvent(Event arg0) {
 				String curr_invoice = invoice_dropdown.getText();
 				int invoice_id = Integer.parseInt(curr_invoice.split(" ")[0]);
-				db.connect();
+				
 				current_invoice = db.getFullInvoice(invoice_id);
 				updateTexts();
 			}
@@ -224,7 +224,7 @@ public class InvoiceDialog extends Dialog {
 
 	public void updateTexts() {
 		DBHandler db = new DBHandler();
-		db.connect();
+		
 		id_text.setText(Integer.toString(current_invoice.getLasku_id()));
 		kohde_text.setText(
 				db.getJobNameById(current_invoice.getTyokohde_id(), true));

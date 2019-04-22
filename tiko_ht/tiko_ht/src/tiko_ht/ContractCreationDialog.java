@@ -64,7 +64,7 @@ public class ContractCreationDialog extends Dialog {
 		lblValitseTykohde.setBounds(10, 10, 90, 15);
 		lblValitseTykohde.setText("Valitse ty\u00F6kohde");
 
-		db.connect();
+		
 		contracts = db.getContracts();
 
 		Combo contract_dropdown = new Combo(shell, SWT.NONE);
@@ -124,7 +124,7 @@ public class ContractCreationDialog extends Dialog {
 		done_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				db.connect();
+				
 				if (positive_radio.getSelection()) {
 					int instalments = instalments_spinner.getSelection();
 					db.createContract(contract_dropdown.getText(), instalments);

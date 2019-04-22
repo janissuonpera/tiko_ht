@@ -75,7 +75,7 @@ public class SaveTaskDialog extends Dialog {
 
 		Combo job_dropdown = new Combo(shell, SWT.READ_ONLY);
 		job_dropdown.setBounds(115, 5, 234, 23);
-		db.connect();
+		
 		// Populate the job dropdown list.
 		jobs = db.getJobs(true);
 		job_dropdown.add("");
@@ -112,7 +112,7 @@ public class SaveTaskDialog extends Dialog {
 
 		Combo item_dropdown = new Combo(shell, SWT.READ_ONLY);
 		item_dropdown.setBounds(115, 123, 88, 23);
-		db.connect();
+		
 		// Populate the item dropdown list.
 		item_dropdown.add("");
 		itemList = db.getAllItems();
@@ -230,7 +230,7 @@ public class SaveTaskDialog extends Dialog {
 						|| item_amount_spinner.getSelection() > 0
 								&& !item_dropdown.getText().equals("")
 								&& !selected_items.isEmpty()) {
-					db.connect();
+					
 					// Create a new task with the selected information.
 					db.createTask(job_dropdown.getText(),
 							worktype_dropdown.getText(),

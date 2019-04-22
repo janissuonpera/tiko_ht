@@ -64,6 +64,7 @@ public class DBHandler {
 	}
 	// Get customers.
 	public List<String> getCustomers() {
+		connect();
 		Connection con = getConnection();
 		List<String> customers = new ArrayList<String>();
 		try {
@@ -87,6 +88,7 @@ public class DBHandler {
 				+ "VALUES(?,?,?,?,?)";
 
 		try {
+			connect();
 			prep_stmt = con.prepareStatement(SQL);
 			stmt = getConnection().createStatement();
 			ResultSet rts = stmt.executeQuery("SELECT asiakas_id from asiakas");
@@ -112,13 +114,13 @@ public class DBHandler {
 	// Create a new job.
 	public void createJob(String customer_name, String job_name, String address,
 			Boolean contract) {
+		connect();
 		Connection con = getConnection();
 		int customer_id = 0;
 		int job_id = 0;
 		String SQL = "INSERT INTO tyokohde(tyokohde_id,asiakas_id,nimi,osoite,valmis,urakka)"
 				+ "VALUES(?,?,?,?,?,?)";
 		try {
-
 			prep_stmt = con.prepareStatement(
 					"SELECT asiakas_id from asiakas WHERE nimi = ?");
 			// Find the customer id with customer name.'
@@ -157,7 +159,7 @@ public class DBHandler {
 	// Gets all items from database and return two dimensional arraylist.
 	public List<String[]> getAllItems() {
 		List<String[]> items = new ArrayList<String[]>();
-
+		connect();
 		con = getConnection();
 		try {
 			stmt = con.createStatement();
@@ -189,8 +191,9 @@ public class DBHandler {
 		Calendar cal = Calendar.getInstance();
 		cal.set(date.getYear(), date.getMonth(), date.getDay());
 		java.sql.Date sql_date = new java.sql.Date(cal.getTimeInMillis());
-
+		
 		// Get connection.
+		connect();
 		Connection con = getConnection();
 
 		// Initialize SQL statement strings.
@@ -262,6 +265,7 @@ public class DBHandler {
 	// Fetch jobs and return them as array list.
 	public List<String[]> getJobs(boolean exceptContracts) {
 		List<String[]> jobs = new ArrayList<String[]>();
+		connect();
 		Connection con = getConnection();
 		try {
 			stmt = con.createStatement();
@@ -303,7 +307,7 @@ public class DBHandler {
 				+ " FROM ((suoritus_tarvike as stk JOIN suoritus as st ON stk.suoritus_id = st.suoritus_id)JOIN tarvike ON stk.tarvike_id = tarvike.tarvike_id) "
 				+ " JOIN tyokohde ON st.tyokohde_id = tyokohde.tyokohde_id"
 				+ " WHERE tyokohde.tyokohde_id = ? ";
-
+		connect();
 		Connection con = getConnection();
 		try {
 			prep_stmt = con.prepareStatement(SQL);
@@ -343,6 +347,7 @@ public class DBHandler {
 
 	// Sets the job finished value into true.
 	public void setJobFinished(String job_name) {
+		connect();
 		Connection con = getConnection();
 		try {
 			prep_stmt = con.prepareStatement(
@@ -362,6 +367,7 @@ public class DBHandler {
 	}
 	// Gets the job finished boolean value.
 	public boolean getFinishedValue(String job_name) {
+		connect();
 		Connection con = getConnection();
 		boolean ready = false;
 		try {
@@ -381,6 +387,7 @@ public class DBHandler {
 
 	// Returns the hours of done for a specific job.
 	public List<String> getTaskHours(String job_name) {
+		connect();
 		con = getConnection();
 		List<String> hoursAndTypes = new ArrayList<String>();
 		int job_id = getJobIdByName(job_name);
@@ -402,6 +409,7 @@ public class DBHandler {
 	}
 	// Get job id with the job name.
 	public int getJobIdByName(String job_name) {
+		connect();
 		con = getConnection();
 		int job_id = 0;
 		try {
@@ -424,6 +432,7 @@ public class DBHandler {
 
 	// Get job name with the job id.
 	public String getJobNameById(int job_id, boolean closeConnection) {
+		connect();
 		con = getConnection();
 		String job_name = "";
 		try {
@@ -448,6 +457,7 @@ public class DBHandler {
 	// Adds a discount to the work type hours.
 	public void addDiscount(String job_name, String work_type,
 			int discount_pct) {
+		connect();
 		con = getConnection();
 		double pct = Double.valueOf(discount_pct);
 		pct = (100 - pct) / 100;
@@ -472,6 +482,7 @@ public class DBHandler {
 	// Fetches name of all invoices, returns invoice id and name
 	public List<String> getInvoicesIdAndName() {
 		List<String> invoices = new ArrayList<String>();
+		connect();
 		Connection con = getConnection();
 		try {
 			stmt = con.createStatement();
@@ -495,6 +506,7 @@ public class DBHandler {
 	// Search if there are unpaid and due date passed invoices. Create new
 	// invoice if that's the case.
 	public void checkInvoiceState() {
+		connect();
 		con = getConnection();
 		java.sql.Date currentDate = java.sql.Date
 				.valueOf(LocalDateTime.now().toLocalDate());
@@ -539,6 +551,7 @@ public class DBHandler {
 	// Returns all invoice data
 	public Invoice getFullInvoice(int id) {
 		Invoice invoice = null;
+		connect();
 		con = getConnection();
 		try {
 			stmt = con.createStatement();
@@ -585,6 +598,7 @@ public class DBHandler {
 		// Set due date to be 1 month after today.
 		java.sql.Date dueDate = java.sql.Date
 				.valueOf(LocalDateTime.now().plusMonths(1).toLocalDate());
+		connect();
 		con = getConnection();
 
 		try {
@@ -715,6 +729,7 @@ public class DBHandler {
 
 	// Deletes the selected job.
 	public boolean deleteJob(String job_name) {
+		connect();
 		con = getConnection();
 		int job_id = getJobIdByName(job_name);
 		try {
@@ -926,6 +941,7 @@ public class DBHandler {
 	}
 	// Delets the selected invoice.
 	public boolean deleteInvoice(int invoice_id) {
+		connect();
 		con = getConnection();
 		int success = 0;
 		try {
@@ -947,6 +963,7 @@ public class DBHandler {
 	// Fetches all contracts from the database and returns their name as a list.
 	public List<String> getContracts() {
 		List<String> contracts = new ArrayList<String>();
+		connect();
 		con = getConnection();
 		try {
 			stmt = con.createStatement();
@@ -963,6 +980,7 @@ public class DBHandler {
 	}
 	// Returns the contracts which have offers made of as a list..
 	public List<String> getContractOffers() {
+		connect();
 		con = getConnection();
 		List<String> contractOffers = new ArrayList<String>();
 		try {
@@ -981,6 +999,7 @@ public class DBHandler {
 
 	// Creates a contract and adds it to the database (urakkatarjous table)
 	public void createContract(String job_name, int instalments) {
+		connect();
 		con = getConnection();
 		int contract_id = 0;
 		int job_id = getJobIdByName(job_name);
@@ -1022,6 +1041,7 @@ public class DBHandler {
 
 		String taskSQL = "INSERT INTO suoritus VALUES(?,?,?,?,?,?)";
 		String itemSQL = "INSERT INTO urakkalista VALUES (?,?,?)";
+		connect();
 		con = getConnection();
 
 		try {
@@ -1088,7 +1108,7 @@ public class DBHandler {
 		String itemSQL = "SELECT tarvike.nimi,maara,yksikko,(maara*myynti_hinta),kirjallisuus "
 				+ "FROM tarvike,urakkalista WHERE tarvike.tarvike_id = urakkalista.tarvike_id "
 				+ "AND urakka_id IN (SELECT urakka_id FROM urakkatarjous WHERE tyokohde_id = ?)";
-
+		connect();
 		con = getConnection();
 		try {
 			prep_stmt = con.prepareStatement(itemSQL);
@@ -1123,6 +1143,7 @@ public class DBHandler {
 	// Returns next free task id.
 	public int getNextTaskId() {
 		int task_id = 0;
+		connect();
 		con = getConnection();
 		// Find next task id, that's free.
 		try {

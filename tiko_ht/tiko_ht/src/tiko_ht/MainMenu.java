@@ -40,7 +40,7 @@ public class MainMenu extends Composite {
 				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 		DBHandler db = new DBHandler();
-		db.connect();
+		
 		db.checkInvoiceState();
 		setLayout(null);
 
