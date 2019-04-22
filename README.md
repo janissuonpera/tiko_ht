@@ -29,10 +29,26 @@ Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte t
    
 Muutokset tauluihin:
 ---------------------
+21.4
 ALTER TABLE urakkatarjous DROP COLUMN alennus_prosentti;
-
+Aikaisemmin
+-------------
 ALTER TABLE tiko_ht.suoritus DROP CONSTRAINT suoritus_tyokohde_id_fkey, ADD CONSTRAINT suoritus_tyokohde_id_fkey FOREIGN KEY(tyokohde_id) REFERENCES tyokohde ON DELETE CASCADE;
 
 ALTER TABLE tiko_ht.suoritus_tarvike DROP CONSTRAINT suoritus_tarvike_suoritus_id_fkey, ADD CONSTRAINT suoritus_tarvike_suoritus_id_fkey FOREIGN KEY(suoritus_id) REFERENCES tiko_ht.suoritus ON DELETE CASCADE;
 
 ALTER TABLE tiko_ht.lasku DROP CONSTRAINT lasku_tyokohde_id_fkey, ADD CONSTRAINT lasku_tyokohde_id_fkey FOREIGN KEY(tyokohde_id) REFERENCES tiko_ht.tyokohde ON DELETE CASCADE;
+--------------------
+
+22.4
+ALTER TABLE tiko_ht.urakkalista 
+DROP CONSTRAINT urakkalista_urakka_id_fkey, 
+ADD CONSTRAINT urakkalista_urakka_id_fkey 
+FOREIGN KEY(urakka_id) 
+REFERENCES tiko_ht.urakkatarjous ON DELETE CASCADE;
+
+22.4
+ALTER TABLE tiko_ht.urakkatarjous DROP CONSTRAINT urakkatarjous_tyokohde_id_fkey, 
+ADD CONSTRAINT urakkatarjous_tyokohde_id_fkey FOREIGN KEY(tyokohde_id) 
+REFERENCES tiko_ht.tyokohde ON DELETE CASCADE;
+
