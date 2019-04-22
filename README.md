@@ -16,6 +16,8 @@ Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte t
 - Bug fixes
 
 - To do:
+  
+  Done:
   - ALV-tavaroihin
   
   
