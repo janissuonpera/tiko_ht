@@ -1,4 +1,4 @@
-# Uusimmat muokkaukset
+﻿# Uusimmat muokkaukset
 
 Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte työskennellä seuraavaks.
 
@@ -7,6 +7,9 @@ Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte t
 - Loin tietoluokan laskuille: Invoice.java
 - Loin dialogiluokan laskuille: InvoiceDialog.java
 - Lisäsin laskuja koskevia metodeja DBHandleriin
+- Korjasin työkohteiden aseta valmiiksi -napin toiminnallisuuden
+- Poistin kaikki db.connect(); kutsut luokissa ja lisäsin connect(); jokaiseen metodiin itse dbhandlerissa.
+- Muokkasin hieman buildpath, koska ei toiminut mulla. Saattaa aiheuttaa erroria tulevaisuudessa.
 ## Tuomas
 
 
