@@ -214,6 +214,12 @@ public class PriceEstimateDialog extends Dialog {
 							if (items.get(i)[0]
 									.equals(ItemName_dropdown.getText())) {
 								itemPrice = Double.parseDouble(items.get(i)[1]);
+								// Checks which tax to use
+								if(Boolean.valueOf(items.get(i)[3])) { 
+	                                   itemPrice=itemPrice*1.10;
+	                                }else {
+	                                   itemPrice=itemPrice*1.24;
+	                                }
 								// End the loop.
 								i = items.size();
 							}

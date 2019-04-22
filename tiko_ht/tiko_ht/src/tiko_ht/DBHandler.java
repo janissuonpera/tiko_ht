@@ -162,10 +162,10 @@ public class DBHandler {
 		try {
 			stmt = con.createStatement();
 			result = stmt.executeQuery(
-					"select nimi,myynti_hinta,yksikko from tarvike WHERE varasto_tilanne > 0");
+					"select nimi,myynti_hinta,yksikko,kirjallisuus from tarvike WHERE varasto_tilanne > 0");
 			while (result.next()) {
 				String[] item = {result.getString(1), result.getString(2),
-						result.getString(3)};
+						result.getString(3), result.getString(4)};
 				items.add(item);
 			}
 			stmt.close();
@@ -299,7 +299,7 @@ public class DBHandler {
 		int job_id = getJobIdByName(job_name);
 		// SQL query string to get all items and their count and total price
 		// from the job
-		String SQL = "SELECT tarvike.nimi, maara, tarvike.yksikko,stk.hinta,myynti_hinta,alennus_prosentti "
+		String SQL = "SELECT tarvike.nimi, maara, tarvike.yksikko,stk.hinta,myynti_hinta,alennus_prosentti,kirjallisuus "
 				+ " FROM ((suoritus_tarvike as stk JOIN suoritus as st ON stk.suoritus_id = st.suoritus_id)JOIN tarvike ON stk.tarvike_id = tarvike.tarvike_id) "
 				+ " JOIN tyokohde ON st.tyokohde_id = tyokohde.tyokohde_id"
 				+ " WHERE tyokohde.tyokohde_id = ? ";
@@ -311,7 +311,7 @@ public class DBHandler {
 			result = prep_stmt.executeQuery();
 
 			while (result.next()) {
-				String[] item = new String[6];
+				String[] item = new String[7];
 				// Insert name
 				item[0] = result.getString(1);
 				if (getOnlyPrices == true) {
@@ -327,6 +327,8 @@ public class DBHandler {
 					item[4] = String.valueOf(result.getDouble(5));
 					// Insert discount pct
 					item[5] = String.valueOf(result.getInt(6));
+					// Insert tax identifier
+					item[6] = result.getString(7);
 				}
 				items.add(item);
 			}
@@ -637,43 +639,48 @@ public class DBHandler {
 				// If the job is a contract, get the item prices from
 				// urakkalista-table.
 				if (contract) {
-					// Query to fetch total hour price + item price.
-					prep_stmt = con
-							.prepareStatement("SELECT SUM(myynti_hinta * maara)"
+					// Query to fetch total hour price
+					prep_stmt = con.prepareStatement(
+							"SELECT (myynti_hinta * maara),kirjallisuus"
 									+ " FROM tarvike as tk JOIN urakkalista as ul ON tk.tarvike_id = ul.tarvike_id "
-									+ " WHERE urakka_id IN(select urakka_id FROM urakkatarjous WHERE tyokohde_id = ?)"
-									+ " UNION "
-									+ " SELECT SUM(hinta)FROM suoritus  WHERE tyokohde_id = ?");
+									+ " WHERE urakka_id IN(select urakka_id FROM urakkatarjous WHERE tyokohde_id = ?)");
 					prep_stmt.setInt(1, job_id);
-					prep_stmt.setInt(2, job_id);
 					result = prep_stmt.executeQuery();
 					while (result.next()) {
-						// Add the returned rows into the final price.
-						final_price += result.getDouble(1);
+						// If the item is literature, add 10% tax. Else, add 24%
+						// tax.
+						if (result.getBoolean(2)) {
+							final_price += result.getDouble(1) * 1.10;
+						} else {
+							final_price += result.getDouble(1) * 1.24;
+						}
 					}
+					final_price += hours_price;
 					prep_stmt.clearParameters();
 
 					// If the job is not a contract, get the item price from the
 					// suoritus_tarvike-table.
 				} else {
-					// Query to fetch total hour price + item price.
-					prep_stmt = con.prepareStatement("SELECT SUM(hinta) "
-							+ " FROM suoritus " + " WHERE tyokohde_id = ? "
-							+ " group by tyokohde_id " + " UNION "
-							+ " SELECT SUM(stk.hinta) "
-							+ " FROM suoritus_tarvike as stk JOIN suoritus ON stk.suoritus_id = suoritus.suoritus_id "
-							+ " WHERE tyokohde_id = ?");
+					// Query to fetch item prices and their tax value.
+					prep_stmt = con
+							.prepareStatement("SELECT (stk.hinta),kirjallisuus "
+									+ " FROM suoritus_tarvike as stk JOIN suoritus ON stk.suoritus_id = suoritus.suoritus_id "
+									+ "JOIN tarvike ON stk.tarvike_id = tarvike.tarvike_id "
+									+ " WHERE tyokohde_id = ?");
 					prep_stmt.setInt(1, job_id);
-					prep_stmt.setInt(2, job_id);
 					result = prep_stmt.executeQuery();
 					while (result.next()) {
-						// Add the returned rows into the final price.
-						final_price += result.getDouble(1);
+						// If the item is literature, add 10% tax. Else, add 24%
+						// tax.
+						if (result.getBoolean(2)) {
+							final_price += result.getDouble(1) * 1.10;
+						} else {
+							final_price += result.getDouble(1) * 1.24;
+						}
 					}
-					prep_stmt.clearParameters();
+					final_price += hours_price;
 				}
 			}
-
 			// Set invoice type depending on invoice count.
 			if (invoice_count == 2) {
 				invoice_type = "Muistutus";
@@ -806,34 +813,67 @@ public class DBHandler {
 			writer.newLine();
 			writer.write("-------------------------");
 			writer.newLine();
+			double taxPct = 1.24;
+			double taxlessPrice = 0;
 			if (!contract) {
 				List<String[]> items = getJobItems(job_name, false, false);
 				for (String[] item : items) {
-
+					taxlessPrice += Double.valueOf(item[3]);
+					// Calculate tax
+					if (Boolean.valueOf(item[4])) {
+						taxPct = 1.10;
+					} else {
+						taxPct = 1.24;
+					}
 					writer.write("Nimi: " + item[0]);
 					writer.newLine();
 					writer.write("Määrä: " + item[1] + " " + item[2]);
 					writer.newLine();
-					writer.write("Yksikköhinta: " + item[4] + " euroa");
+					writer.write("Yksikköhinta: " + Double.parseDouble(item[4]) * taxPct + " euroa");
 					writer.newLine();
-					writer.write("Kokonaishinta: " + item[3] + " euroa");
+					writer.write("Kokonaishinta: "
+							+ String.valueOf(
+									Double.parseDouble(item[3]) * taxPct)
+							+ " euroa");
 					writer.newLine();
 					writer.write("Alennusprosentti: " + item[5] + "%");
+					writer.newLine();
+					writer.write("Arvonlisävero %: " + ((taxPct-1)*100));
+					writer.newLine();
+					writer.write(
+							"Arvonlisäveroton-hinta: " + item[3] + " euroa");
 					writer.newLine();
 					writer.newLine();
 				}
 			} else {
 				List<String[]> items = getContractItems(job_name, false);
 				for (String[] item : items) {
+					taxlessPrice += Double.valueOf(item[3]);
+					// Calculate tax.
+					if (Boolean.valueOf(item[4])) {
+						// If it's literature, tax is 10%
+						taxPct = 1.10;
+					} else {
+						taxPct = 1.24;
+					}
 					writer.write("Nimi: " + item[0]);
 					writer.newLine();
 					writer.write("Määrä: " + item[1] + " " + item[2]);
 					writer.newLine();
-					writer.write("Kokonaishinta: " + item[3] + " euroa");
+					writer.write("Kokonaishinta: "
+							+ String.valueOf(
+									(Double.parseDouble(item[3]) * taxPct))
+							+ " euroa");
+					writer.newLine();
+					writer.write("Arvonlisävero %: " + ((taxPct-1)*100));
+					writer.newLine();
+					writer.write(
+							"Arvonlisäveroton-hinta: " + item[3] + " euroa");
 					writer.newLine();
 					writer.newLine();
 				}
 			}
+			taxlessPrice += (invoice.getTuntien_hinta() * 0.80645);
 
 			// Get all hours and their types and print.
 			prep_stmt = con
@@ -865,6 +905,8 @@ public class DBHandler {
 			writer.write("Kokonaishinta: " + String.valueOf(invoice.getHinta())
 					+ " euroa");
 			writer.newLine();
+			writer.write("Arvonlisäveroton-hinta: "
+					+ String.valueOf(taxlessPrice) + " euroa");
 			writer.newLine();
 			writer.write("Laskun tyyppi: " + invoice.getTyyppi());
 			writer.newLine();
@@ -1043,7 +1085,7 @@ public class DBHandler {
 		// List for fetched items.
 		List<String[]> items = new ArrayList<String[]>();
 		int job_id = getJobIdByName(job_name);
-		String itemSQL = "SELECT tarvike.nimi,maara,yksikko,(maara*myynti_hinta) "
+		String itemSQL = "SELECT tarvike.nimi,maara,yksikko,(maara*myynti_hinta),kirjallisuus "
 				+ "FROM tarvike,urakkalista WHERE tarvike.tarvike_id = urakkalista.tarvike_id "
 				+ "AND urakka_id IN (SELECT urakka_id FROM urakkatarjous WHERE tyokohde_id = ?)";
 
@@ -1055,12 +1097,18 @@ public class DBHandler {
 			while (result.next()) {
 				// Add the fetched item into a string array and the add the
 				// array into a list.
-				// Order is [0] name, [1] amount, [2] unit, [3] total price, [4]
-				// unit price
-				String[] item = {result.getString(1),
-						String.valueOf(result.getDouble(2)),
-						result.getString(3),
-						String.valueOf(result.getDouble(4))};
+				// Order is , , , ,
+				String[] item = new String[6];
+				// [0] name
+				item[0] = result.getString(1);
+				// [1] amount
+				item[1] = String.valueOf(result.getDouble(2));
+				// [2] unit
+				item[2] = result.getString(3);
+				// [3] total price
+				item[3] = String.valueOf(result.getDouble(4));
+				// [4] tax identifier
+				item[4] = String.valueOf(result.getBoolean(5));
 				items.add(item);
 			}
 		} catch (SQLException e) {
