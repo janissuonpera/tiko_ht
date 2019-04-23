@@ -72,10 +72,10 @@ public class EditJobDialog extends Dialog {
 		lblTykohteenValinnat.setBounds(284, 5, 107, 15);
 		lblTykohteenValinnat.setText("Ty\u00F6kohteen valinnat");
 
-		List work_list = new List(shell, SWT.BORDER);
+		List work_list = new List(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		work_list.setBounds(5, 72, 160, 115);
 
-		List items_list = new List(shell, SWT.BORDER);
+		List items_list = new List(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		items_list.setBounds(249, 152, 172, 117);
 
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
