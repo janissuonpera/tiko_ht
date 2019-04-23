@@ -13,7 +13,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
@@ -151,6 +154,15 @@ public class InventoryDialog extends Dialog {
 									itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.24 + " e");
 								}
 							}
+							//The archived file is renamed after the date when it was archived
+							Date date = new Date();
+							SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");  
+							String stored_inventory = "./historia/" + formatter.format(date) + "_hinnasto.txt";
+							
+							//Rename and move files
+							Files.move(Paths.get("./nykyinen_hinnasto.txt"), Paths.get(stored_inventory), StandardCopyOption.REPLACE_EXISTING);
+							Files.move(Paths.get("./uusi_hinnasto.txt"), Paths.get("./nykyinen_hinnasto.txt"), StandardCopyOption.REPLACE_EXISTING);
+							
 						} catch (UnsupportedEncodingException e) {
 							e.printStackTrace();
 						} catch (IOException e) {

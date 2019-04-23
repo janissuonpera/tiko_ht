@@ -2,7 +2,5 @@ Pistorasia,10.00,kpl,false
 Naula,00.30,kpl,false
 Moottorisaha,25.00,kpl,false
 Maapora,150.00,kpl,false
-Jakoavain,10,kpl,false,12
-Opas,20,kpl,true,2
-Ruuvi,0.10,kpl,false,500
-Ovi,120,kpl,false,5
+Jakoavain,20,kpl,false,12
+Opas,50,kpl,true,2
