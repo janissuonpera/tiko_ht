@@ -819,7 +819,7 @@ public class DBHandler {
 					taxlessPrice += Double.valueOf(item[3]);
 					// Calculate tax
 					if (Boolean.valueOf(item[4])) {
-						taxPct = 1.10;
+						taxPct = 1.1;
 					} else {
 						taxPct = 1.24;
 					}
@@ -835,12 +835,12 @@ public class DBHandler {
 									Double.parseDouble(item[3]) * taxPct)
 							+ " euroa");
 					writer.newLine();
+					writer.write(
+                            "Arvonlis‰veroton-hinta: " + item[3] + " euroa");
+					writer.newLine();
 					writer.write("Alennusprosentti: " + item[5] + "%");
 					writer.newLine();
 					writer.write("Arvonlis‰vero %: " + ((taxPct - 1) * 100));
-					writer.newLine();
-					writer.write(
-							"Arvonlis‰veroton-hinta: " + item[3] + " euroa");
 					writer.newLine();
 					writer.newLine();
 				}
@@ -851,7 +851,7 @@ public class DBHandler {
 					// Calculate tax.
 					if (Boolean.valueOf(item[4])) {
 						// If it's literature, tax is 10%
-						taxPct = 1.10;
+						taxPct = 1.1;
 					} else {
 						taxPct = 1.24;
 					}
@@ -864,10 +864,10 @@ public class DBHandler {
 									(Double.parseDouble(item[3]) * taxPct))
 							+ " euroa");
 					writer.newLine();
-					writer.write("Arvonlis‰vero %: " + ((taxPct - 1) * 100));
-					writer.newLine();
 					writer.write(
-							"Arvonlis‰veroton-hinta: " + item[3] + " euroa");
+                            "Arvonlis‰veroton-hinta: " + item[3] + " euroa");
+					writer.newLine();
+					writer.write("Arvonlis‰vero %: " + ((taxPct - 1) * 100));
 					writer.newLine();
 					writer.newLine();
 				}
@@ -888,11 +888,13 @@ public class DBHandler {
 			result = prep_stmt.executeQuery();
 			
 			while (result.next()) {
-				writer.write(result.getString(1));
+				writer.write("Tyyppi: "+result.getString(1));
 				writer.newLine();
-				writer.write(String.valueOf(result.getInt(2)) + " tuntia");
+				writer.write("M‰‰r‰: " + String.valueOf(result.getInt(2)) + " tuntia");
 				writer.newLine();
-				writer.write(String.valueOf(result.getDouble(3)) + " euroa");
+				writer.write("Hinta: " + String.valueOf(result.getDouble(3)) + " euroa");
+				writer.newLine();
+				writer.write("Arvonlis‰vero: 24%");
 				writer.newLine();
 				writer.newLine();
 			}

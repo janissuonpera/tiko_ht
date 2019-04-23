@@ -153,7 +153,7 @@ public class SaveTaskDialog extends Dialog {
 
 		Button cancel_btn = new Button(shell, SWT.NONE);
 		cancel_btn.setBounds(296, 214, 53, 25);
-		cancel_btn.setText("Peruuta");
+		cancel_btn.setText("Sulje");
 		cancel_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
