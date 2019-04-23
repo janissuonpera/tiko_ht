@@ -28,10 +28,6 @@ public class DBHandler {
 	public Statement stmt;
 	public ResultSet result;
 
-	// Getter
-	public Connection getConnection() {
-		return con;
-	}
 	// Setter
 	public void setConnection(Connection new_con) {
 		con = new_con;
@@ -88,7 +84,7 @@ public class DBHandler {
 		connect();
 		try {
 			prep_stmt = con.prepareStatement(SQL);
-			stmt = getConnection().createStatement();
+			stmt = con.createStatement();
 			ResultSet rts = stmt.executeQuery("SELECT asiakas_id from asiakas");
 			while (rts.next()) {
 				customer_id = rts.getInt(1);
