@@ -78,13 +78,17 @@ public class MainMenu extends Composite {
 		pricecalc_btn.setText("Hinta-arvio");
 
 		Button invoices_btn = new Button(this, SWT.NONE);
-		invoices_btn.setBounds(173, 130, 128, 25);
+		invoices_btn.setBounds(173, 161, 128, 25);
 		invoices_btn.setText("Laskut");
 
 		Button newContract_btn = new Button(this, SWT.NONE);
 		newContract_btn.setBounds(38, 161, 84, 25);
 
 		newContract_btn.setText("Urakkatarjous");
+		
+		Button items_btn = new Button(this, SWT.NONE);
+		items_btn.setBounds(173, 130, 128, 25);
+		items_btn.setText("Tarvikkeet");
 
 		/* Button listener for dialogs. */
 
@@ -168,7 +172,18 @@ public class MainMenu extends Composite {
 				dialog.open();
 			}
 		});
-
+		
+		//Add listener to button that opens a dialog to inventory of items
+		items_btn.addListener(SWT.Selection,  new Listener() {
+			@Override
+			public void handleEvent(Event arg0) {
+				Display display = getParent().getDisplay();
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(4, false));
+				InventoryDialog dialog = new InventoryDialog(shell, style);
+				dialog.open();
+			}			
+		});
+		
 	}
-
 }

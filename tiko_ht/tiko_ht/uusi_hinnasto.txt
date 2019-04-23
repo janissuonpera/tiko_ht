@@ -1,0 +1,8 @@
+INSERT INTO tarvike
+VALUES (1,'Pistorasia',10.00,50.00,'kpl',false,500);
+INSERT INTO tarvike
+VALUES (2,'Naula',00.30,1.00,'kpl',false,500);
+INSERT INTO tarvike
+VALUES (3,'Moottorisaha',25.00,120.00,'kpl',false,10);
+INSERT INTO tarvike
+VALUES (4,'Maapora',150.00,400.00,'kpl',false,40);

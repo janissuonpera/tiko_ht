@@ -151,10 +151,10 @@ public class DBHandler {
 		try {
 			stmt = con.createStatement();
 			result = stmt.executeQuery(
-					"select nimi,myynti_hinta,yksikko,kirjallisuus from tarvike WHERE varasto_tilanne > 0");
+					"select nimi,myynti_hinta,yksikko,kirjallisuus,varasto_tilanne from tarvike WHERE varasto_tilanne > 0");
 			while (result.next()) {
 				String[] item = {result.getString(1), result.getString(2),
-						result.getString(3), result.getString(4)};
+						result.getString(3), result.getString(4), result.getString(5)};
 				items.add(item);
 			}
 			stmt.close();

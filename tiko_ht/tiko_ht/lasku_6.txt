@@ -1,0 +1,29 @@
+Lasku (Tunnus: 6)
+
+Työkohteen tiedot:
+-------------------------------------
+Nimi: xd
+Osoite: asd
+Urakka: Kyllä
+
+Asiakkaan tiedot:
+-------------------------------------
+Kohde: Janis Suonperä
+Osoite: Näsilinnankatu 31 b 28
+Status: Yksityis-asiakas
+Henkilötunnus: 010195-213D
+
+Käytetyt tarvikkeet
+-------------------------
+Tuntierittely: 
+-------------------------
+-------------------------
+Tuntien hinta yhteensa: 0.0 euroa
+Kokonaishinta: 0.0 euroa
+Arvonlisäveroton-hinta: 0.0 euroa
+Laskun tyyppi: Normaali
+
+Eräpäivä: 2019-05-23
+Maksa lasku eräpäivään mennessä. Tilinumero: FI86 2139 2199 2938293
+
+Terveisin, Seppo Sähkötärsky Oy.
