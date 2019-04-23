@@ -17,8 +17,8 @@ public class PriceEstimateDialog extends Dialog {
 
 	protected Object result;
 	protected Shell shell;
-	private Text ItemTextField;
-	private Text PriceEstimateTextField;
+	private Text listItem_txt;
+	private Text priceEstimate_txt;
 	private final int REGULAR_WORK = 45;
 	private final int PLANNING_WORK = 55;
 	private final int HELPING = 35;
@@ -113,16 +113,16 @@ public class PriceEstimateDialog extends Dialog {
 
 		addItem_btn.setText("Lis\u00E4\u00E4 tarvike");
 
-		ItemTextField = new Text(shell,
+		listItem_txt = new Text(shell,
 				SWT.BORDER | SWT.READ_ONLY | SWT.V_SCROLL);
-		ItemTextField.setBounds(309, 65, 245, 281);
+		listItem_txt.setBounds(309, 65, 245, 281);
 
 		Label lblHintaArvio = new Label(shell, SWT.NONE);
 		lblHintaArvio.setBounds(246, 354, 58, 15);
 		lblHintaArvio.setText("Hinta arvio");
 
-		PriceEstimateTextField = new Text(shell, SWT.BORDER | SWT.READ_ONLY);
-		PriceEstimateTextField.setBounds(309, 351, 245, 21);
+		priceEstimate_txt = new Text(shell, SWT.BORDER | SWT.READ_ONLY);
+		priceEstimate_txt.setBounds(309, 351, 245, 21);
 
 		Button close_btn = new Button(shell, SWT.NONE);
 		close_btn.setBounds(10, 344, 75, 25);
@@ -153,7 +153,7 @@ public class PriceEstimateDialog extends Dialog {
 				.setText("Lis\u00E4\u00E4 listan sis\u00E4lt\u00F6 urakkaan");
 		
 		Label result_label = new Label(shell, SWT.NONE);
-		result_label.setBounds(10, 179, 232, 15);
+		result_label.setBounds(10, 179, 271, 45);
 		
 		
 		// Adds work hours into the list.
@@ -180,9 +180,9 @@ public class PriceEstimateDialog extends Dialog {
 					// Save selected values into an array.
 					String [] hours = {workType_dropdown.getText(),String.valueOf(workHours_spinner.getSelection()),String.valueOf(price)};
 					selected_hours.add(hours);
-					ItemTextField.append(hoursAndType);
+					listItem_txt.append(hoursAndType);
 					totalPrice = totalPrice + price;
-					PriceEstimateTextField.setText(totalPrice + "€");
+					priceEstimate_txt.setText(totalPrice + "€");
 					workHours_spinner.setSelection(0);
 					workType_dropdown.select(0);
 				}
@@ -207,7 +207,7 @@ public class PriceEstimateDialog extends Dialog {
 						String itemInfo = ItemName_dropdown.getText() + " "
 								+ itemAmount_spinner.getSelection() + unit + "\n";
 						// Insert the item and the amount into the list.
-						ItemTextField.append(itemInfo);
+						listItem_txt.append(itemInfo);
 						double itemPrice = 0;
 
 						for (int i = 0; i < items.size(); i++) {
@@ -230,7 +230,7 @@ public class PriceEstimateDialog extends Dialog {
 
 						totalPrice = totalPrice + (itemPrice
 								* itemAmount_spinner.getSelection());
-						PriceEstimateTextField.setText(totalPrice + "€");
+						priceEstimate_txt.setText(totalPrice + "€");
 
 					} catch (Exception ex) {
 						ex.printStackTrace();
@@ -253,7 +253,9 @@ public class PriceEstimateDialog extends Dialog {
 					if(result) {
 						shell.dispose();
 					} else {
-						result_label.setText("Lisäys epäonnistui");
+						result_label.setText("Lisäys epäonnistui.\nTarkista ettei urakassa ole jo valittua tarviketta.");
+						listItem_txt.setText("");
+
 					}
 				} else {
 					result_label.setText("Epäonnistui. Tarkista antamasi tiedot.");

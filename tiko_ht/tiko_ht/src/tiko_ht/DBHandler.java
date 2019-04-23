@@ -65,7 +65,6 @@ public class DBHandler {
 	// Get customers.
 	public List<String> getCustomers() {
 		connect();
-		Connection con = getConnection();
 		List<String> customers = new ArrayList<String>();
 		try {
 			stmt = con.createStatement();
@@ -86,9 +85,8 @@ public class DBHandler {
 		int customer_id = 0;
 		String SQL = "INSERT INTO asiakas(asiakas_id,nimi,osoite,yritys,hetu) "
 				+ "VALUES(?,?,?,?,?)";
-
+		connect();
 		try {
-			connect();
 			prep_stmt = con.prepareStatement(SQL);
 			stmt = getConnection().createStatement();
 			ResultSet rts = stmt.executeQuery("SELECT asiakas_id from asiakas");
@@ -103,19 +101,15 @@ public class DBHandler {
 			prep_stmt.setString(5, ssn);
 			prep_stmt.executeUpdate();
 			con.commit();
-			stmt.close();
-			prep_stmt.clearParameters();
-			closeConnection();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		closeConnection();
 	}
 	// Create a new job.
 	public void createJob(String customer_name, String job_name, String address,
 			Boolean contract) {
 		connect();
-		Connection con = getConnection();
 		int customer_id = 0;
 		int job_id = 0;
 		String SQL = "INSERT INTO tyokohde(tyokohde_id,asiakas_id,nimi,osoite,valmis,urakka)"
@@ -149,18 +143,15 @@ public class DBHandler {
 			prep_stmt.setBoolean(6, contract);
 			prep_stmt.executeUpdate();
 			con.commit();
-			stmt.close();
-			prep_stmt.close();
-			closeConnection();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		closeConnection();
 	}
 	// Gets all items from database and return two dimensional arraylist.
 	public List<String[]> getAllItems() {
 		List<String[]> items = new ArrayList<String[]>();
 		connect();
-		con = getConnection();
 		try {
 			stmt = con.createStatement();
 			result = stmt.executeQuery(
@@ -180,21 +171,21 @@ public class DBHandler {
 
 	public void createTask(String job_name, String work_type, int hours,
 			DateTime date, List<String[]> items) {
-		// Get job id by its name
-		int job_id = getJobIdByName(job_name);
+
+		
 		// Get next available task id.
 		int task_id = getNextTaskId();
 		// Price of hours * work type cost.
 		double price = 0;
+		// Get connection.
+		connect();
+		// Get job id by its name
+		int job_id = getJobIdByName(job_name);
 
 		// Format date into a correct format.
 		Calendar cal = Calendar.getInstance();
 		cal.set(date.getYear(), date.getMonth(), date.getDay());
 		java.sql.Date sql_date = new java.sql.Date(cal.getTimeInMillis());
-		
-		// Get connection.
-		connect();
-		Connection con = getConnection();
 
 		// Initialize SQL statement strings.
 		String taskSQL = "INSERT INTO suoritus " + " VALUES(?,?,?,?,?,?)";
@@ -255,18 +246,17 @@ public class DBHandler {
 				}
 			}
 			con.commit();
-			closeConnection();
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		closeConnection();
 
 	}
 	// Fetch jobs and return them as array list.
 	public List<String[]> getJobs(boolean exceptContracts) {
 		List<String[]> jobs = new ArrayList<String[]>();
 		connect();
-		Connection con = getConnection();
+
 		try {
 			stmt = con.createStatement();
 			if (exceptContracts) {
@@ -298,17 +288,18 @@ public class DBHandler {
 			boolean closeConnection) {
 
 		List<String[]> items = new ArrayList<String[]>();
-
+		if(closeConnection){
+			connect();
+		}
 		// Get job identifier by its name
 		int job_id = getJobIdByName(job_name);
-		// SQL query string to get all items and their count and total price
+		// SQL query string to get item data
 		// from the job
 		String SQL = "SELECT tarvike.nimi, maara, tarvike.yksikko,stk.hinta,myynti_hinta,alennus_prosentti,kirjallisuus "
 				+ " FROM ((suoritus_tarvike as stk JOIN suoritus as st ON stk.suoritus_id = st.suoritus_id)JOIN tarvike ON stk.tarvike_id = tarvike.tarvike_id) "
 				+ " JOIN tyokohde ON st.tyokohde_id = tyokohde.tyokohde_id"
 				+ " WHERE tyokohde.tyokohde_id = ? ";
-		connect();
-		Connection con = getConnection();
+	
 		try {
 			prep_stmt = con.prepareStatement(SQL);
 			prep_stmt.setInt(1, job_id);
@@ -348,27 +339,24 @@ public class DBHandler {
 	// Sets the job finished value into true.
 	public void setJobFinished(String job_name) {
 		connect();
-		Connection con = getConnection();
 		try {
 			prep_stmt = con.prepareStatement(
 					"UPDATE tyokohde SET valmis = true WHERE nimi = ?");
 			prep_stmt.setString(1, job_name);
-			int did_update = prep_stmt.executeUpdate();
-			if (did_update == 0) {
-				System.out.println("Update failed, returned 0 affected rows.");
-			} else {
+			int updated = prep_stmt.executeUpdate();
+			if (updated > 0) {
 				con.commit();
+				closeConnection();
 			}
 			createInvoice(job_name);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		closeConnection();
 	}
 	// Gets the job finished boolean value.
 	public boolean getFinishedValue(String job_name) {
 		connect();
-		Connection con = getConnection();
+
 		boolean ready = false;
 		try {
 			prep_stmt = con.prepareStatement(
@@ -387,9 +375,8 @@ public class DBHandler {
 
 	// Returns the hours of done for a specific job.
 	public List<String> getTaskHours(String job_name) {
-		connect();
-		con = getConnection();
 		List<String> hoursAndTypes = new ArrayList<String>();
+		connect();
 		int job_id = getJobIdByName(job_name);
 		try {
 			prep_stmt = con.prepareStatement(
@@ -409,8 +396,6 @@ public class DBHandler {
 	}
 	// Get job id with the job name.
 	public int getJobIdByName(String job_name) {
-		connect();
-		con = getConnection();
 		int job_id = 0;
 		try {
 			// Get the job id with the job name.
@@ -422,8 +407,6 @@ public class DBHandler {
 				job_id = result.getInt(1);
 			}
 			prep_stmt.clearBatch();
-			prep_stmt.close();
-			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -431,9 +414,10 @@ public class DBHandler {
 	}
 
 	// Get job name with the job id.
-	public String getJobNameById(int job_id, boolean closeConnection) {
-		connect();
-		con = getConnection();
+	public String getJobNameById(int job_id, boolean connect) {
+		if (connect) {
+			connect();
+		}
 		String job_name = "";
 		try {
 			// Get the job id with the job name.
@@ -450,18 +434,19 @@ public class DBHandler {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if (closeConnection)
+		if (connect) {
 			closeConnection();
+		}
 		return job_name;
 	}
 	// Adds a discount to the work type hours.
 	public void addDiscount(String job_name, String work_type,
 			int discount_pct) {
 		connect();
-		con = getConnection();
 		double pct = Double.valueOf(discount_pct);
 		pct = (100 - pct) / 100;
 		int job_id = getJobIdByName(job_name);
+		
 
 		String SQL = "UPDATE suoritus SET hinta = ? * hinta  WHERE tyokohde_id = ? AND tyyppi = ?";
 		try {
@@ -483,7 +468,6 @@ public class DBHandler {
 	public List<String> getInvoicesIdAndName() {
 		List<String> invoices = new ArrayList<String>();
 		connect();
-		Connection con = getConnection();
 		try {
 			stmt = con.createStatement();
 			ResultSet new_result = stmt.executeQuery(
@@ -498,6 +482,7 @@ public class DBHandler {
 			new_result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
 		closeConnection();
 		return invoices;
@@ -507,7 +492,7 @@ public class DBHandler {
 	// invoice if that's the case.
 	public void checkInvoiceState() {
 		connect();
-		con = getConnection();
+
 		java.sql.Date currentDate = java.sql.Date
 				.valueOf(LocalDateTime.now().toLocalDate());
 		try {
@@ -537,14 +522,14 @@ public class DBHandler {
 				}
 				prep_stmt.clearParameters();
 			}
-			if (prep_result != null)
+			if (prep_result != null) {
 				prep_result.close();
+			}
 			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			closeConnection();
 		}
-
 		closeConnection();
 	}
 
@@ -552,7 +537,6 @@ public class DBHandler {
 	public Invoice getFullInvoice(int id) {
 		Invoice invoice = null;
 		connect();
-		con = getConnection();
 		try {
 			stmt = con.createStatement();
 			prep_stmt = con
@@ -572,17 +556,16 @@ public class DBHandler {
 				invoice = new Invoice(invoice_id, job_id, date, due_date, type,
 						count, hour_price, total_price, paid);
 			}
-			stmt.close();
-			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
 		closeConnection();
-
 		return invoice;
 	}
 
 	public void createInvoice(String job_name) {
+		connect();
 		// Get job id by its name
 		int job_id = getJobIdByName(job_name);
 		// Get next free task id.
@@ -598,8 +581,7 @@ public class DBHandler {
 		// Set due date to be 1 month after today.
 		java.sql.Date dueDate = java.sql.Date
 				.valueOf(LocalDateTime.now().plusMonths(1).toLocalDate());
-		connect();
-		con = getConnection();
+		
 
 		try {
 			// Check if the job is a contract.
@@ -719,19 +701,19 @@ public class DBHandler {
 			prep_stmt.setBoolean(9, false);
 			prep_stmt.executeUpdate();
 			con.commit();
+			closeConnection();
+			printInvoice(invoice_id);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			closeConnection();
 		}
-		printInvoice(invoice_id);
-		closeConnection();
 	}
 
 	// Deletes the selected job.
 	public boolean deleteJob(String job_name) {
 		connect();
-		con = getConnection();
 		int job_id = getJobIdByName(job_name);
+
 		try {
 			prep_stmt = con.prepareStatement(
 					"DELETE FROM tyokohde WHERE tyokohde_id = ?");
@@ -742,8 +724,10 @@ public class DBHandler {
 				closeConnection();
 				return true;
 			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
 		closeConnection();
 		return false;
@@ -755,15 +739,12 @@ public class DBHandler {
 		// If true, the job is a contract. Opposite if false.
 		boolean contract = false;
 
-		// Open connection.
-		connect();
-		con = getConnection();
-
 		// Get job id.
 		int job_id = invoice.getTyokohde_id();
 		// Get job name
-		String job_name = getJobNameById(job_id, false);
-
+		String job_name = getJobNameById(job_id, true);
+		// Connect to database
+		connect();
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream("lasku_" + invoice_id + ".txt"),
 				Charset.defaultCharset()))) {
@@ -794,7 +775,7 @@ public class DBHandler {
 				writer.newLine();
 				writer.newLine();
 			}
-			prep_stmt.clearBatch();
+			prep_stmt.close();
 
 			// Get customer info and print it.
 			prep_stmt = con.prepareStatement(
@@ -821,8 +802,10 @@ public class DBHandler {
 				writer.newLine();
 				writer.newLine();
 			}
-			prep_stmt.clearBatch();
-
+			result.close();
+			prep_stmt.close();
+			
+			
 			// Get all items used for the job.
 			writer.write("Käytetyt tarvikkeet");
 			writer.newLine();
@@ -844,7 +827,8 @@ public class DBHandler {
 					writer.newLine();
 					writer.write("Määrä: " + item[1] + " " + item[2]);
 					writer.newLine();
-					writer.write("Yksikköhinta: " + Double.parseDouble(item[4]) * taxPct + " euroa");
+					writer.write("Yksikköhinta: "
+							+ Double.parseDouble(item[4]) * taxPct + " euroa");
 					writer.newLine();
 					writer.write("Kokonaishinta: "
 							+ String.valueOf(
@@ -853,7 +837,7 @@ public class DBHandler {
 					writer.newLine();
 					writer.write("Alennusprosentti: " + item[5] + "%");
 					writer.newLine();
-					writer.write("Arvonlisävero %: " + ((taxPct-1)*100));
+					writer.write("Arvonlisävero %: " + ((taxPct - 1) * 100));
 					writer.newLine();
 					writer.write(
 							"Arvonlisäveroton-hinta: " + item[3] + " euroa");
@@ -880,7 +864,7 @@ public class DBHandler {
 									(Double.parseDouble(item[3]) * taxPct))
 							+ " euroa");
 					writer.newLine();
-					writer.write("Arvonlisävero %: " + ((taxPct-1)*100));
+					writer.write("Arvonlisävero %: " + ((taxPct - 1) * 100));
 					writer.newLine();
 					writer.write(
 							"Arvonlisäveroton-hinta: " + item[3] + " euroa");
@@ -896,11 +880,13 @@ public class DBHandler {
 							+ " FROM suoritus " + " WHERE tyokohde_id=? "
 							+ " GROUP BY 1");
 			prep_stmt.setInt(1, job_id);
+			
 			writer.write("Tuntierittely: ");
 			writer.newLine();
 			writer.write("-------------------------");
 			writer.newLine();
 			result = prep_stmt.executeQuery();
+			
 			while (result.next()) {
 				writer.write(result.getString(1));
 				writer.newLine();
@@ -910,7 +896,7 @@ public class DBHandler {
 				writer.newLine();
 				writer.newLine();
 			}
-			prep_stmt.clearBatch();
+			
 			writer.write("-------------------------");
 			// Get basic info for the invoice and print.
 			writer.newLine();
@@ -937,12 +923,13 @@ public class DBHandler {
 			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			closeConnection();
 		}
+		closeConnection();
 	}
-	// Delets the selected invoice.
+	// Deletes the selected invoice.
 	public boolean deleteInvoice(int invoice_id) {
 		connect();
-		con = getConnection();
 		int success = 0;
 		try {
 			prep_stmt = con
@@ -952,8 +939,11 @@ public class DBHandler {
 			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
 		closeConnection();
+		
+		// If there were deleted rows, return true. Else, return false.
 		if (success >= 1) {
 			return true;
 		} else {
@@ -964,7 +954,7 @@ public class DBHandler {
 	public List<String> getContracts() {
 		List<String> contracts = new ArrayList<String>();
 		connect();
-		con = getConnection();
+
 		try {
 			stmt = con.createStatement();
 			result = stmt.executeQuery(
@@ -974,14 +964,15 @@ public class DBHandler {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
 		closeConnection();
 		return contracts;
 	}
+	
 	// Returns the contracts which have offers made of as a list..
 	public List<String> getContractOffers() {
 		connect();
-		con = getConnection();
 		List<String> contractOffers = new ArrayList<String>();
 		try {
 			stmt = con.createStatement();
@@ -992,6 +983,7 @@ public class DBHandler {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
 		closeConnection();
 		return contractOffers;
@@ -999,9 +991,9 @@ public class DBHandler {
 
 	// Creates a contract and adds it to the database (urakkatarjous table)
 	public void createContract(String job_name, int instalments) {
-		connect();
-		con = getConnection();
+
 		int contract_id = 0;
+		connect();
 		int job_id = getJobIdByName(job_name);
 		try {
 			stmt = con.createStatement();
@@ -1029,20 +1021,22 @@ public class DBHandler {
 	// Adds items to urakka_Tarvike table and hours and types to suoritus table.
 	public boolean addToContract(String contract, List<String[]> items,
 			List<String[]> hours) {
-		// Get job id by its name.
-		int job_id = getJobIdByName(contract);
+
+		
 		// Identifier for the contract.
 		int contract_id = 0;
 		// Get next available task with the method.
 		int task_id = getNextTaskId();
+		// Connect to db.
+		connect();
 		// Get current date.
 		Calendar cal = Calendar.getInstance();
 		java.sql.Date sql_date = new java.sql.Date(cal.getTimeInMillis());
-
+		// Get job id by its name.
+		int job_id = getJobIdByName(contract);
 		String taskSQL = "INSERT INTO suoritus VALUES(?,?,?,?,?,?)";
 		String itemSQL = "INSERT INTO urakkalista VALUES (?,?,?)";
-		connect();
-		con = getConnection();
+	
 
 		try {
 
@@ -1090,10 +1084,12 @@ public class DBHandler {
 				insert_stmt.setDouble(3, Double.valueOf(item[1]));
 				insert_stmt.executeUpdate();
 			}
+			insert_stmt.close();
 			// Commit the changes.
 			con.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 			return false;
 		}
 		closeConnection();
@@ -1104,20 +1100,21 @@ public class DBHandler {
 			boolean closeConnection) {
 		// List for fetched items.
 		List<String[]> items = new ArrayList<String[]>();
-		int job_id = getJobIdByName(job_name);
+		
 		String itemSQL = "SELECT tarvike.nimi,maara,yksikko,(maara*myynti_hinta),kirjallisuus "
 				+ "FROM tarvike,urakkalista WHERE tarvike.tarvike_id = urakkalista.tarvike_id "
 				+ "AND urakka_id IN (SELECT urakka_id FROM urakkatarjous WHERE tyokohde_id = ?)";
-		connect();
-		con = getConnection();
 		try {
+			if (closeConnection || con.isClosed()) {
+				connect();
+			}
+			int job_id = getJobIdByName(job_name);
 			prep_stmt = con.prepareStatement(itemSQL);
 			prep_stmt.setInt(1, job_id);
 			result = prep_stmt.executeQuery();
 			while (result.next()) {
 				// Add the fetched item into a string array and the add the
 				// array into a list.
-				// Order is , , , ,
 				String[] item = new String[6];
 				// [0] name
 				item[0] = result.getString(1);
@@ -1129,10 +1126,12 @@ public class DBHandler {
 				item[3] = String.valueOf(result.getDouble(4));
 				// [4] tax identifier
 				item[4] = String.valueOf(result.getBoolean(5));
+				// Add array to a list
 				items.add(item);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
 		if (closeConnection) {
 			closeConnection();
@@ -1144,7 +1143,6 @@ public class DBHandler {
 	public int getNextTaskId() {
 		int task_id = 0;
 		connect();
-		con = getConnection();
 		// Find next task id, that's free.
 		try {
 			stmt = con.createStatement();
@@ -1156,9 +1154,13 @@ public class DBHandler {
 			}
 			// Add one into task id to make a new id.
 			task_id++;
+			stmt.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			closeConnection();
 		}
+		closeConnection();
 		return task_id;
 	}
 
@@ -1188,7 +1190,7 @@ public class DBHandler {
 		}
 		if (result != null) {
 			try {
-				stmt.close();
+				result.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
