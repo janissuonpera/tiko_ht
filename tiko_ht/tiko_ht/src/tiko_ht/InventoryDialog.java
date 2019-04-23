@@ -94,7 +94,11 @@ public class InventoryDialog extends Dialog {
 		for(int i=0; i<all_items.size(); i++) {
 			itemname_list.add(all_items.get(i)[0]);
 			itemquantity_list.add(all_items.get(i)[4] + " " + all_items.get(i)[2]);
-			itemprice_list.add(all_items.get(i)[1] + " e");
+			if(Boolean.parseBoolean(all_items.get(i)[3])) {
+				itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.10 + " e");
+			}else {
+				itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.24 + " e");
+			}
 		}
 		
 		//Button listeners
@@ -131,6 +135,20 @@ public class InventoryDialog extends Dialog {
 									db.updateItem(item.split(",")[0], Double.parseDouble(item.split(",")[1]));
 								}else {
 									db.addItem(nimi, req_price, units, literature, quantity);
+								}
+							}
+							//Refresh UI
+							all_items = db.getAllItems();
+							itemname_list.removeAll();
+							itemquantity_list.removeAll();
+							itemprice_list.removeAll();
+							for(int i=0; i<all_items.size(); i++) {
+								itemname_list.add(all_items.get(i)[0]);
+								itemquantity_list.add(all_items.get(i)[4] + " " + all_items.get(i)[2]);
+								if(Boolean.parseBoolean(all_items.get(i)[3])) {
+									itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.10 + " e");
+								}else {
+									itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.24 + " e");
 								}
 							}
 						} catch (UnsupportedEncodingException e) {

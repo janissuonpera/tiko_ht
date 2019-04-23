@@ -1197,11 +1197,7 @@ public class DBHandler {
 			prep_stmt.setInt(1, item_id);
 			prep_stmt.setString(2, name);
 			prep_stmt.setDouble(3, req_price);
-			
-			//Determines what alv is applied
-			double tax = literature ? 1.10 : 1.25;
-			prep_stmt.setDouble(4, req_price*tax);
-			
+			prep_stmt.setDouble(4, req_price*1.25);			
 			prep_stmt.setString(5, units);
 			prep_stmt.setBoolean(6, literature);
 			prep_stmt.setDouble(7, quantity);

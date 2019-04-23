@@ -3,3 +3,4 @@ Naula,00.30,kpl,false
 Moottorisaha,25.00,kpl,false
 Maapora,150.00,kpl,false
 Jakoavain,20,kpl,false,12
+Opas,50,kpl,true,2
