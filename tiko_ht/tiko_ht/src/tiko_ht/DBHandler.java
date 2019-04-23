@@ -1160,6 +1160,61 @@ public class DBHandler {
 		return task_id;
 	}
 
+	//Updates items new prices in inventory
+	public void updateItem(String name, double new_price) {
+		connect();
+		try {
+			prep_stmt = con.prepareStatement(
+					"UPDATE tarvike SET osto_hinta = ?, myynti_hinta = ? WHERE nimi = ?");
+			prep_stmt.setDouble(1, new_price);
+			prep_stmt.setDouble(2, new_price*1.25);
+			prep_stmt.setString(3, name);
+			int updated = prep_stmt.executeUpdate();
+			prep_stmt.close();
+			if (updated > 0) {
+				con.commit();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+	}
+	
+	//Adds a new item to the database
+	public void addItem(String name, double req_price, String units, boolean literature, double quantity) {
+		String SQL = "INSERT INTO tarvike(tarvike_id,nimi,osto_hinta,myynti_hinta,yksikko,kirjallisuus,varasto_tilanne) "
+				+ "VALUES(?,?,?,?,?,?,?)";
+		connect();
+		try {
+			int item_id = 0;
+			prep_stmt = con.prepareStatement(SQL);
+			stmt = con.createStatement();
+			ResultSet rts = stmt.executeQuery("SELECT MAX(tarvike_id) from tarvike");
+			while (rts.next()) {
+				item_id = rts.getInt(1);
+			}
+			item_id++;
+			prep_stmt.setInt(1, item_id);
+			prep_stmt.setString(2, name);
+			prep_stmt.setDouble(3, req_price);
+			
+			//Determines what alv is applied
+			double tax = literature ? 1.10 : 1.25;
+			prep_stmt.setDouble(4, req_price*tax);
+			
+			prep_stmt.setString(5, units);
+			prep_stmt.setBoolean(6, literature);
+			prep_stmt.setDouble(7, quantity);
+			
+			prep_stmt.executeUpdate();
+			con.commit();
+			prep_stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+	}
+	
 	// Close connection
 	public void closeConnection() {
 		if (con != null)

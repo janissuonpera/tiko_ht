@@ -9,6 +9,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
@@ -87,7 +91,6 @@ public class InventoryDialog extends Dialog {
 		
 		DBHandler db = new DBHandler();
 		all_items = db.getAllItems();
-		itemname_list.removeAll();
 		for(int i=0; i<all_items.size(); i++) {
 			itemname_list.add(all_items.get(i)[0]);
 			itemquantity_list.add(all_items.get(i)[4] + " " + all_items.get(i)[2]);
@@ -98,7 +101,7 @@ public class InventoryDialog extends Dialog {
 		newCatalogue_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
-				File inventory_file = new File("./uusi_hinnastox.txt");
+				File inventory_file = new File("./uusi_hinnasto.txt");
 				//Updating inventory happens by checking if a file named uusi_hinnasto.txt is in the local directory
 				//If it exists, it's read and the database is updated. The file is renamed to nykyinen_hinnasto and the old file
 				//is transfered to historia directory
@@ -110,6 +113,32 @@ public class InventoryDialog extends Dialog {
 
 					// open dialog and await user selection
 					int user_selection = dialog.open();
+					if(user_selection == SWT.OK) {
+						try {
+							//Read the uusi_hinnasto.txt file into a string, split it by lines
+							String[] new_items = new String(Files.readAllBytes(Paths.get("./uusi_hinnasto.txt")), "UTF-8").split("[\\r\\n]+");
+							for(String item : new_items) {
+								String nimi = item.split(",")[0];
+								double req_price = Double.parseDouble(item.split(",")[1]);
+								String units = item.split(",")[2];
+								boolean literature = Boolean.parseBoolean(item.split(",")[3]);
+								double quantity = 0;
+								if(item.split(",").length>4) {
+									quantity = Double.parseDouble(item.split(",")[4]);
+								}
+								//If read item from uusi_hinnasto.txt is not a completely new item, update its new price into the db
+								if(itemname_list.indexOf(item.split(",")[0])!=-1) {
+									db.updateItem(item.split(",")[0], Double.parseDouble(item.split(",")[1]));
+								}else {
+									db.addItem(nimi, req_price, units, literature, quantity);
+								}
+							}
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 				}else {
 					MessageBox dialog =
 						    new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
