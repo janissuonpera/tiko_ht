@@ -95,9 +95,9 @@ public class InventoryDialog extends Dialog {
 			itemname_list.add(all_items.get(i)[0]);
 			itemquantity_list.add(all_items.get(i)[4] + " " + all_items.get(i)[2]);
 			if(Boolean.parseBoolean(all_items.get(i)[3])) {
-				itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.10 + " e");
+				itemprice_list.add(Math.round(Double.parseDouble(all_items.get(i)[1])*1.10 * 100.0) / 100.0 + " e");
 			}else {
-				itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.24 + " e");
+				itemprice_list.add(Math.round(Double.parseDouble(all_items.get(i)[1])*1.24 * 100.0) / 100.0 + " e");
 			}
 		}
 		

@@ -10,6 +10,8 @@ Updatetkaa vaikka tätä kun teette isoja muokkauksia ja minkä parissa aiotte t
 - Korjasin työkohteiden aseta valmiiksi -napin toiminnallisuuden
 - Poistin kaikki db.connect(); kutsut luokissa ja lisäsin connect(); jokaiseen metodiin itse dbhandlerissa.
 - Muokkasin hieman buildpath, koska ei toiminut mulla. Saattaa aiheuttaa erroria tulevaisuudessa.
+- Loin InventoryDialog luokan, jolla näkee tarvikkeet. Tällä luokalla voi myös lukea tiedostosta uuden hinnaston tarvikkeille.
+- Lisää metodeja DBHandleriin
 ## Tuomas
 
 
