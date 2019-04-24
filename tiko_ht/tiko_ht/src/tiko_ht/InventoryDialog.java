@@ -61,6 +61,7 @@ public class InventoryDialog extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(333, 334);
 		shell.setText(getText());
 		
@@ -68,16 +69,19 @@ public class InventoryDialog extends Dialog {
 		itemname_list.setBounds(10, 59, 98, 202);
 		
 		Label itemName_lbl = new Label(shell, SWT.NONE);
+		itemName_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		itemName_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		itemName_lbl.setBounds(33, 23, 50, 30);
 		itemName_lbl.setText("Nimi\r\n");
 		
 		Label itemPrice_lbl = new Label(shell, SWT.NONE);
+		itemPrice_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		itemPrice_lbl.setText("Hinta");
 		itemPrice_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		itemPrice_lbl.setBounds(243, 23, 56, 30);
 		
 		Label itemQuantity_lbl = new Label(shell, SWT.NONE);
+		itemQuantity_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		itemQuantity_lbl.setText("Varastotilanne");
 		itemQuantity_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
 		itemQuantity_lbl.setBounds(111, 23, 101, 30);
@@ -93,6 +97,7 @@ public class InventoryDialog extends Dialog {
 		newCatalogue_btn.setText("Uusi hinnasto");
 		
 		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNewLabel.setBounds(244, 267, 55, 15);
 		lblNewLabel.setText("Sis. alv");
 		

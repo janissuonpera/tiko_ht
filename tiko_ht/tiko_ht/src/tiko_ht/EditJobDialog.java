@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class EditJobDialog extends Dialog {
 
@@ -59,36 +60,46 @@ public class EditJobDialog extends Dialog {
 	private void createContents() {
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
-		shell.setSize(477, 351);
+		shell.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		shell.setSize(488, 377);
 		shell.setText(getText());
 		DBHandler db = new DBHandler();
 		shell.setLayout(null);
 
 		Label lblValitseTykohde = new Label(shell, SWT.NONE);
+		lblValitseTykohde.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblValitseTykohde.setBounds(5, 5, 113, 15);
 		lblValitseTykohde.setText("Valitse ty\u00F6kohde");
 
 		Label lblTykohteenValinnat = new Label(shell, SWT.NONE);
+		lblTykohteenValinnat.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblTykohteenValinnat.setBounds(284, 5, 107, 15);
 		lblTykohteenValinnat.setText("Ty\u00F6kohteen valinnat");
 
-		List work_list = new List(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		List work_list = new List(shell,
+				SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		work_list.setBounds(5, 72, 160, 115);
 
-		List items_list = new List(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-		items_list.setBounds(249, 152, 172, 117);
+		List items_list = new List(shell,
+				SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		items_list.setBounds(253, 169, 172, 117);
 
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
-		
-		job_list = db.getJobs(false);
+
+		job_list = db.getJobs(false, false);
 		job_dropdown.add("");
 		for (String[] job : job_list) {
 			job_dropdown.add(job[0]);
 		}
 
 		Label resultLabel = new Label(shell, SWT.NONE);
-		resultLabel.setBounds(121, 292, 235, 15);
+		resultLabel.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		resultLabel.setBounds(117, 318, 235, 15);
 
 		Button finishJob_btn = new Button(shell, SWT.NONE);
 		finishJob_btn.setBounds(285, 24, 106, 25);
@@ -98,7 +109,7 @@ public class EditJobDialog extends Dialog {
 		finishJob_btn.setEnabled(false);
 
 		Button deleteJob_btn = new Button(shell, SWT.NONE);
-		deleteJob_btn.setBounds(284, 89, 107, 25);
+		deleteJob_btn.setBounds(284, 117, 107, 25);
 		deleteJob_btn.setToolTipText("Poista kohde tietokannasta.");
 		deleteJob_btn.setText("Poista kohde");
 		deleteJob_btn.setEnabled(false);
@@ -110,10 +121,14 @@ public class EditJobDialog extends Dialog {
 		getPrice_btn.setEnabled(false);
 
 		Label lblAnnaAlennustaTunneista = new Label(shell, SWT.NONE);
+		lblAnnaAlennustaTunneista.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblAnnaAlennustaTunneista.setBounds(4, 55, 114, 15);
 		lblAnnaAlennustaTunneista.setText("Suoritukset kohteessa");
 
 		Label lblAnnaAlennusta = new Label(shell, SWT.NONE);
+		lblAnnaAlennusta.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblAnnaAlennusta.setBounds(0, 193, 165, 15);
 		lblAnnaAlennusta.setText("Anna alennusta tuntityyppiin");
 
@@ -132,31 +147,53 @@ public class EditJobDialog extends Dialog {
 		addDiscount_btn.setEnabled(false);
 
 		Button close_btn = new Button(shell, SWT.NONE);
-		close_btn.setBounds(386, 287, 75, 25);
+		close_btn.setBounds(397, 313, 75, 25);
 		close_btn.setText("Sulje");
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNewLabel.setBounds(5, 243, 90, 15);
 		lblNewLabel.setText("Alennusprosentti");
 
 		Label lblKohteeseenKytetytTarvikkeet = new Label(shell, SWT.NONE);
-		lblKohteeseenKytetytTarvikkeet.setBounds(253, 131, 182, 15);
+		lblKohteeseenKytetytTarvikkeet.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		lblKohteeseenKytetytTarvikkeet.setBounds(253, 148, 182, 15);
 		lblKohteeseenKytetytTarvikkeet
 				.setText("Kohteeseen k\u00E4ytetyt tarvikkeet");
 
 		Label lblKohteenTyyppi = new Label(shell, SWT.BORDER);
+		lblKohteenTyyppi.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblKohteenTyyppi.setBounds(173, 55, 82, 25);
 		lblKohteenTyyppi.setText("Kohteen tyyppi");
 
 		Label jobtype_label = new Label(shell, SWT.NONE);
+		jobtype_label.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		jobtype_label.setBounds(171, 89, 55, 15);
 
+		Button information_btn = new Button(shell, SWT.NONE);
+		information_btn.setEnabled(false);
+		information_btn.setBounds(284, 86, 107, 25);
+		information_btn.setText("Tiedot");
+
+		Label lblEiSisllAlv = new Label(shell, SWT.NONE);
+		lblEiSisllAlv.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		lblEiSisllAlv.setBounds(253, 292, 82, 15);
+		lblEiSisllAlv.setText("Ei sisällä alv.");
+
 		/*
+		 * 
+		 * 
 		 * Click listener methods
 		 * 
 		 */
-		// Listens for changes in work type dropdown-list and sets discount
-		// button enabled or not..
+
+		// Listens for changes in work type dropdownlist and
+		// sets discount button enabled or disabled..
 		workType_dropdown.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
@@ -168,6 +205,7 @@ public class EditJobDialog extends Dialog {
 				}
 			}
 		});
+
 		// Changes the enabled value of discount button
 		taskDiscount_spinner.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -180,13 +218,14 @@ public class EditJobDialog extends Dialog {
 				}
 			}
 		});
+		
 		// Gets the tasks and items for selected job.
 		job_dropdown.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event arg0) {
-				// Check that the selection is not the first null value.
 				jobType = "";
+				// Check that the selection is not the first null value.
 				if (job_dropdown.getSelectionIndex() > 0) {
 					// Check if the job is a contract or not.
 					boolean contractBool = Boolean.valueOf(job_list
@@ -196,44 +235,51 @@ public class EditJobDialog extends Dialog {
 						jobType = "Urakka";
 					} else {
 						jobType = "Tuntityö";
-					}					
-
+					}
+					// Get task hours
 					task_list = db.getTaskHours(job_dropdown.getText());
 					work_list.removeAll();
 					for (int i = 0; i < task_list.size(); i++) {
 						work_list.add(task_list.get(i) + " e");
 					}
-					
-					if (jobType.equals("Tuntityö")) {
-						itemList = db.getJobItems(job_dropdown.getText(),
-								false,true);
-					} else if (jobType.equals("Urakka")) {
-						itemList = db.getContractItems(job_dropdown.getText(),true);
-					}
 
+					if (jobType.equals("Tuntityö")) {
+						itemList = db.getJobItems(job_dropdown.getText(), false,
+								true);
+					} else if (jobType.equals("Urakka")) {
+						itemList = db.getContractItems(job_dropdown.getText(),
+								true);
+					}
+					// Clear the items list of previous items.
 					items_list.removeAll();
 					for (String[] item : itemList) {
-						items_list.add(item[0] + " | "+item[1] + item[2] +" | "+ item[3] + "e");
+						items_list.add(item[0] + " | " + item[1] + item[2]
+								+ " | " + item[3] + "e");
 					}
 				}
 
 				jobtype_label.setText(jobType);
+				// Disable buttons if job selections is the empty character.
 				if (job_dropdown.getText().equals("")) {
 					deleteJob_btn.setEnabled(false);
 					getPrice_btn.setEnabled(false);
 					finishJob_btn.setEnabled(false);
+					information_btn.setEnabled(false);
 				} else {
 					deleteJob_btn.setEnabled(true);
 					getPrice_btn.setEnabled(true);
-					//Check if job is finished or not, and disable button accordingly
-					if(db.getFinishedValue(job_dropdown.getText())) {
+					information_btn.setEnabled(true);
+					// Check if job is finished or not, and disable button
+					// accordingly
+					if (db.getFinishedValue(job_dropdown.getText())) {
 						finishJob_btn.setEnabled(false);
-					}else {
+					} else {
 						finishJob_btn.setEnabled(true);
 					}
 				}
 			}
 		});
+		
 		// Closes the dialog window.
 		close_btn.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -241,15 +287,16 @@ public class EditJobDialog extends Dialog {
 				shell.dispose();
 			}
 		});
+		
 		// Adds a discount to hour type.
 		addDiscount_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
-				
+
 				db.addDiscount(job_dropdown.getText(),
 						workType_dropdown.getText(),
 						taskDiscount_spinner.getSelection());
-				
+
 				task_list = db.getTaskHours(job_dropdown.getText());
 				work_list.removeAll();
 				for (int i = 0; i < task_list.size(); i++) {
@@ -257,6 +304,7 @@ public class EditJobDialog extends Dialog {
 				}
 			}
 		});
+		
 		// Spawns price dialog window to show total price.
 		getPrice_btn.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -267,12 +315,23 @@ public class EditJobDialog extends Dialog {
 				price.open();
 			}
 		});
+
+		information_btn.addListener(SWT.Selection, new Listener() {
+
+			@Override
+			public void handleEvent(Event arg0) {
+				JobInformationDialog dialog = new JobInformationDialog(shell,
+						style, job_dropdown.getText());
+				dialog.open();
+			}
+		});
+
 		// Deletes the selected from database completely.
 		deleteJob_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override
 			public void handleEvent(Event arg0) {
-				
+
 				boolean deleted = db.deleteJob(job_dropdown.getText());
 				resultLabel.setText((deleted)
 						? "Työ poistettu."
@@ -289,7 +348,7 @@ public class EditJobDialog extends Dialog {
 		finishJob_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override
-			public void handleEvent(Event arg0) {				
+			public void handleEvent(Event arg0) {
 				db.setJobFinished(job_dropdown.getText());
 				resultLabel
 						.setText("Työ asetettu valmistuneeksi ja lasku luotu.");

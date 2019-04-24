@@ -16,6 +16,9 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class JobCreationDialog extends Dialog {
 
@@ -58,24 +61,23 @@ public class JobCreationDialog extends Dialog {
 	private void createContents() {
 		DBHandler db = new DBHandler();
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
-		shell.setSize(439, 186);
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		shell.setSize(439, 185);
 		shell.setText(getText());
-		shell.setLayout(new GridLayout(4, false));
+		shell.setLayout(null);
 
 		Label lblLuoUusiAsiakas = new Label(shell, SWT.NONE);
+		lblLuoUusiAsiakas.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		lblLuoUusiAsiakas.setBounds(5, 5, 98, 15);
 		lblLuoUusiAsiakas.setText("Luo uusi ty\u00F6kohde");
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		lblNewLabel.setBounds(5, 29, 73, 15);
 		lblNewLabel.setText("Valitse asiakas");
 
 		Combo customer_dropdown = new Combo(shell, SWT.READ_ONLY);
-		GridData gd_customer_dropdown = new GridData(SWT.LEFT, SWT.CENTER,
-				false, false, 2, 1);
-		gd_customer_dropdown.widthHint = 169;
-		customer_dropdown.setLayoutData(gd_customer_dropdown);
+		customer_dropdown.setBounds(108, 25, 195, 23);
 		
 		customers = db.getCustomers();
 
@@ -83,44 +85,38 @@ public class JobCreationDialog extends Dialog {
 			customer_dropdown.add(customers.get(i));
 		}
 
-		new Label(shell, SWT.NONE);
-
 		Label jobName_lbl = new Label(shell, SWT.NONE);
+		jobName_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		jobName_lbl.setBounds(5, 56, 71, 15);
 		jobName_lbl.setText("Kohteen nimi");
 
 		jobName_field = new Text(shell, SWT.BORDER);
-		GridData gd_jobName_field = new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 2, 1);
-		gd_jobName_field.widthHint = 171;
-		jobName_field.setLayoutData(gd_jobName_field);
-		new Label(shell, SWT.NONE);
+		jobName_field.setBounds(108, 53, 243, 21);
 
 		Label jobAddress_lbl = new Label(shell, SWT.NONE);
+		jobAddress_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		jobAddress_lbl.setBounds(5, 82, 79, 15);
 		jobAddress_lbl.setText("Kohteen osoite");
 
 		jobAddress_field = new Text(shell, SWT.BORDER);
-		GridData gd_jobAddress_field = new GridData(SWT.FILL, SWT.CENTER, false,
-				false, 2, 1);
-		gd_jobAddress_field.widthHint = 231;
-		jobAddress_field.setLayoutData(gd_jobAddress_field);
-		new Label(shell, SWT.NONE);
+		jobAddress_field.setBounds(108, 79, 243, 21);
 
 		Label lblUrakka = new Label(shell, SWT.NONE);
+		lblUrakka.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		lblUrakka.setBounds(5, 105, 36, 15);
 		lblUrakka.setText("Urakka");
 
 		Button radioButton_pos = new Button(shell, SWT.RADIO);
+		radioButton_pos.setBounds(108, 105, 45, 16);
 		radioButton_pos.setText("Kyllä");
 
 		Button radiobutton_neg = new Button(shell, SWT.RADIO);
+		radiobutton_neg.setBounds(158, 105, 30, 16);
 		radiobutton_neg.setSelection(true);
 		radiobutton_neg.setText("Ei");
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
-		new Label(shell, SWT.NONE);
 
 		Button btnCancel = new Button(shell, SWT.NONE);
-		btnCancel.setLayoutData(
-				new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+		btnCancel.setBounds(298, 126, 53, 25);
 		btnCancel.setText("Peruuta");
 		btnCancel.addListener(SWT.Selection, new Listener() {
 
@@ -131,6 +127,7 @@ public class JobCreationDialog extends Dialog {
 		});
 
 		Button btnCreateJob = new Button(shell, SWT.NONE);
+		btnCreateJob.setBounds(356, 126, 74, 25);
 		btnCreateJob.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
@@ -141,8 +138,6 @@ public class JobCreationDialog extends Dialog {
 				shell.dispose();
 			}
 		});
-		btnCreateJob.setLayoutData(
-				new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		btnCreateJob.setText("Lis\u00E4\u00E4 kohde");
 
 	}

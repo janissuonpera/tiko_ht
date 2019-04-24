@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class ItemListPopup extends Dialog {
 
@@ -49,7 +50,8 @@ public class ItemListPopup extends Dialog {
 	 */
 	private void createContents(java.util.List<String[]> selected_items) {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(202, 315);
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		shell.setSize(204, 321);
 		shell.setText(getText());
 		List list = new List(shell, SWT.BORDER);
 		list.setBounds(21, 31, 148, 224);
@@ -63,6 +65,7 @@ public class ItemListPopup extends Dialog {
 		btnOk.setText("OK");
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNewLabel.setBounds(21, 10, 148, 15);
 		lblNewLabel.setText("Tarvikkeen nimi ja m\u00E4\u00E4r\u00E4");
 
