@@ -68,19 +68,19 @@ public class InventoryDialog extends Dialog {
 		itemname_list.setBounds(10, 59, 98, 202);
 		
 		Label itemName_lbl = new Label(shell, SWT.NONE);
-		itemName_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 16, SWT.NORMAL));
-		itemName_lbl.setBounds(33, 18, 50, 30);
+		itemName_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
+		itemName_lbl.setBounds(33, 23, 50, 30);
 		itemName_lbl.setText("Nimi\r\n");
 		
 		Label itemPrice_lbl = new Label(shell, SWT.NONE);
 		itemPrice_lbl.setText("Hinta");
-		itemPrice_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 16, SWT.NORMAL));
-		itemPrice_lbl.setBounds(239, 18, 56, 30);
+		itemPrice_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
+		itemPrice_lbl.setBounds(243, 23, 56, 30);
 		
 		Label itemQuantity_lbl = new Label(shell, SWT.NONE);
-		itemQuantity_lbl.setText("M\u00E4\u00E4r\u00E4");
-		itemQuantity_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 16, SWT.NORMAL));
-		itemQuantity_lbl.setBounds(132, 18, 67, 30);
+		itemQuantity_lbl.setText("Varastotilanne");
+		itemQuantity_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
+		itemQuantity_lbl.setBounds(111, 23, 101, 30);
 		
 		List itemquantity_list = new List(shell, SWT.BORDER);
 		itemquantity_list.setBounds(114, 59, 98, 202);
@@ -91,6 +91,10 @@ public class InventoryDialog extends Dialog {
 		Button newCatalogue_btn = new Button(shell, SWT.NONE);
 		newCatalogue_btn.setBounds(10, 270, 100, 25);
 		newCatalogue_btn.setText("Uusi hinnasto");
+		
+		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBounds(244, 267, 55, 15);
+		lblNewLabel.setText("Sis. alv");
 		
 		DBHandler db = new DBHandler();
 		all_items = db.getAllItems();

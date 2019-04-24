@@ -44,19 +44,24 @@ public class MainMenu extends Composite {
 		db.checkInvoiceState();
 		setLayout(null);
 
-		Label createNew_lbl = new Label(this, SWT.NONE);
-		createNew_lbl.setBounds(51, 20, 45, 15);
+		Label createNew_lbl = new Label(this, SWT.BORDER | SWT.CENTER);
+		createNew_lbl.setFont(SWTResourceManager.getFont("System", 11, SWT.NORMAL));
+		createNew_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		createNew_lbl.setBounds(32, 20, 84, 18);
 		createNew_lbl.setText("Luo uusi");
 
-		Label edit_lbl = new Label(this, SWT.NONE);
-		edit_lbl.setBounds(207, 20, 55, 15);
+		Label edit_lbl = new Label(this, SWT.BORDER | SWT.CENTER);
+		edit_lbl.setForeground(SWTResourceManager.getColor(0, 0, 0));
+		edit_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+		edit_lbl.setFont(SWTResourceManager.getFont("System", 12, SWT.NORMAL));
+		edit_lbl.setBounds(173, 20, 128, 18);
 		edit_lbl.setText("Muokkaus");
 
 		Label label = new Label(this, SWT.SEPARATOR | SWT.HORIZONTAL);
 		label.setBounds(10, 227, 337, 2);
 
 		Button AddCustomer_btn = new Button(this, SWT.NONE);
-		AddCustomer_btn.setBounds(38, 62, 78, 25);
+		AddCustomer_btn.setBounds(32, 62, 84, 25);
 		AddCustomer_btn.setText("Asiakas");
 
 		Button SavePerf_btn = new Button(this, SWT.NONE);
@@ -65,29 +70,29 @@ public class MainMenu extends Composite {
 		SavePerf_btn.setText("Tallenna ty\u00F6suoritus");
 
 		Button createJob_btn = new Button(this, SWT.NONE);
-		createJob_btn.setBounds(38, 99, 78, 25);
+		createJob_btn.setBounds(32, 93, 84, 25);
 		createJob_btn.setText("Ty\u00F6kohde");
 
 		Button editJob_btn = new Button(this, SWT.NONE);
-		editJob_btn.setBounds(173, 99, 128, 25);
+		editJob_btn.setBounds(173, 93, 128, 25);
 		editJob_btn.setText("Muokkaa ty\u00F6kohdetta");
 
 		// Price calculation dialog.
 		Button pricecalc_btn = new Button(this, SWT.NONE);
-		pricecalc_btn.setBounds(38, 130, 78, 25);
+		pricecalc_btn.setBounds(32, 124, 84, 25);
 		pricecalc_btn.setText("Hinta-arvio");
 
 		Button invoices_btn = new Button(this, SWT.NONE);
-		invoices_btn.setBounds(173, 161, 128, 25);
+		invoices_btn.setBounds(173, 155, 128, 25);
 		invoices_btn.setText("Laskut");
 
 		Button newContract_btn = new Button(this, SWT.NONE);
-		newContract_btn.setBounds(38, 161, 84, 25);
+		newContract_btn.setBounds(32, 155, 84, 25);
 
 		newContract_btn.setText("Urakkatarjous");
 		
 		Button items_btn = new Button(this, SWT.NONE);
-		items_btn.setBounds(173, 130, 128, 25);
+		items_btn.setBounds(173, 124, 128, 25);
 		items_btn.setText("Tarvikkeet");
 
 		/* Button listener for dialogs. */
