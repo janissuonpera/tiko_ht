@@ -59,7 +59,7 @@ public class PriceDialog extends Dialog {
 
 		// Adds all the tasks to task_list list-element in dialog and sums their
 		// total price at the bottom.
-		List taskList = new List(shell, SWT.BORDER);
+		List taskList = new List(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		taskList.setBounds(75, 5, 250, 150);
 		double task_sum = 0;
 		double taxless_task_sum = 0;
@@ -78,7 +78,7 @@ public class PriceDialog extends Dialog {
 		// total price at the bottom.
 		double item_sum = 0;
 		double taxless_item_sum = 0;
-		List itemList = new List(shell, SWT.BORDER);
+		List itemList = new List(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		itemList.setBounds(75, 185, 250, 150);
 
 		// If the item_list's array length is 6, then it is a contract. Hourly
@@ -93,9 +93,6 @@ public class PriceDialog extends Dialog {
 		// Go through every item and add their name, amount, unit and price to
 		// the list.
 		for (String[] item : item_list) {
-			for(int i = 0; i < item.length; i++) {
-				System.out.println(i + " : " + item[i]);
-			}
 			double item_price = 0;
 			// If the job is a contract, add with a different structured array.
 			if (contract) {
@@ -167,7 +164,6 @@ public class PriceDialog extends Dialog {
 		
 		// Taxless sum calculation
 		double taxless_sum = taxless_task_sum + taxless_item_sum;
-		System.out.println(taxless_sum);
 		Label taxless_sumLabel = new Label(shell, SWT.NONE);
 		taxless_sumLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		taxless_sumLabel

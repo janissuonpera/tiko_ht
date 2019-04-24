@@ -22,6 +22,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Table;
 
 public class InventoryDialog extends Dialog {
 
@@ -62,54 +63,54 @@ public class InventoryDialog extends Dialog {
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		shell.setSize(333, 334);
+		shell.setSize(422, 339);
 		shell.setText(getText());
 		
-		List itemname_list = new List(shell, SWT.BORDER);
-		itemname_list.setBounds(10, 59, 98, 202);
+		List itemname_list = new List(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		itemname_list.setBounds(10, 59, 141, 202);
 		
 		Label itemName_lbl = new Label(shell, SWT.NONE);
 		itemName_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		itemName_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
-		itemName_lbl.setBounds(33, 23, 50, 30);
+		itemName_lbl.setBounds(60, 23, 50, 30);
 		itemName_lbl.setText("Nimi\r\n");
 		
 		Label itemPrice_lbl = new Label(shell, SWT.NONE);
 		itemPrice_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		itemPrice_lbl.setText("Hinta");
+		itemPrice_lbl.setText("Yksikk\u00F6hinta");
 		itemPrice_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
-		itemPrice_lbl.setBounds(243, 23, 56, 30);
+		itemPrice_lbl.setBounds(303, 23, 88, 30);
 		
 		Label itemQuantity_lbl = new Label(shell, SWT.NONE);
 		itemQuantity_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		itemQuantity_lbl.setText("Varastotilanne");
 		itemQuantity_lbl.setFont(SWTResourceManager.getFont("Segoe UI", 12, SWT.NORMAL));
-		itemQuantity_lbl.setBounds(111, 23, 101, 30);
+		itemQuantity_lbl.setBounds(167, 23, 101, 30);
 		
-		List itemquantity_list = new List(shell, SWT.BORDER);
-		itemquantity_list.setBounds(114, 59, 98, 202);
+		List itemquantity_list = new List(shell, SWT.BORDER | SWT.V_SCROLL);
+		itemquantity_list.setBounds(157, 59, 120, 202);
 		
-		List itemprice_list = new List(shell, SWT.BORDER);
-		itemprice_list.setBounds(220, 59, 98, 202);
+		List itemprice_list = new List(shell, SWT.BORDER | SWT.V_SCROLL);
+		itemprice_list.setBounds(294, 59, 112, 202);
 		
 		Button newCatalogue_btn = new Button(shell, SWT.NONE);
-		newCatalogue_btn.setBounds(10, 270, 100, 25);
+		newCatalogue_btn.setBounds(10, 281, 100, 25);
 		newCatalogue_btn.setText("Uusi hinnasto");
 		
 		Label lblNewLabel = new Label(shell, SWT.NONE);
 		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		lblNewLabel.setBounds(244, 267, 55, 15);
+		lblNewLabel.setBounds(314, 267, 55, 15);
 		lblNewLabel.setText("Sis. alv");
 		
 		DBHandler db = new DBHandler();
 		all_items = db.getAllItems();
 		for(int i=0; i<all_items.size(); i++) {
-			itemname_list.add(all_items.get(i)[0]);
-			itemquantity_list.add(all_items.get(i)[4] + " " + all_items.get(i)[2]);
+			itemname_list.add("["+i +"] "+ all_items.get(i)[0]);
+			itemquantity_list.add("["+i +"] "+ all_items.get(i)[4] + " " + all_items.get(i)[2]);
 			if(Boolean.parseBoolean(all_items.get(i)[3])) {
-				itemprice_list.add(Math.round(Double.parseDouble(all_items.get(i)[1])*1.10 * 100.0) / 100.0 + " e");
+				itemprice_list.add("["+i +"] "+ Math.round(Double.parseDouble(all_items.get(i)[1])*1.10 * 100.0) / 100.0 + " e");
 			}else {
-				itemprice_list.add(Math.round(Double.parseDouble(all_items.get(i)[1])*1.24 * 100.0) / 100.0 + " e");
+				itemprice_list.add("["+i +"] "+  Math.round(Double.parseDouble(all_items.get(i)[1])*1.24 * 100.0) / 100.0 + " e");
 			}
 		}
 		
@@ -155,12 +156,12 @@ public class InventoryDialog extends Dialog {
 							itemquantity_list.removeAll();
 							itemprice_list.removeAll();
 							for(int i=0; i<all_items.size(); i++) {
-								itemname_list.add(all_items.get(i)[0]);
-								itemquantity_list.add(all_items.get(i)[4] + " " + all_items.get(i)[2]);
+								itemname_list.add("["+i +"] "+ all_items.get(i)[0]);
+								itemquantity_list.add("["+i +"] "+ all_items.get(i)[4] + " " + all_items.get(i)[2]);
 								if(Boolean.parseBoolean(all_items.get(i)[3])) {
-									itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.10 + " e");
+									itemprice_list.add("["+i +"] "+ Double.parseDouble(all_items.get(i)[1])*1.10 + " e");
 								}else {
-									itemprice_list.add(Double.parseDouble(all_items.get(i)[1])*1.24 + " e");
+									itemprice_list.add("["+i +"] "+ Double.parseDouble(all_items.get(i)[1])*1.24 + " e");
 								}
 							}
 							//The archived file is renamed after the date when it was archived

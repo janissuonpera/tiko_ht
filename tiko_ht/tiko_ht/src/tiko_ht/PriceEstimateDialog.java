@@ -119,7 +119,7 @@ public class PriceEstimateDialog extends Dialog {
 		addItem_btn.setText("Lis\u00E4\u00E4 tarvike");
 
 		listItem_txt = new Text(shell,
-				SWT.BORDER | SWT.READ_ONLY | SWT.V_SCROLL);
+				SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 		listItem_txt.setBounds(309, 65, 245, 281);
 
 		Label lblHintaArvio = new Label(shell, SWT.NONE);
@@ -239,7 +239,7 @@ public class PriceEstimateDialog extends Dialog {
 
 						totalPrice = totalPrice + (itemPrice
 								* itemAmount_spinner.getSelection());
-						priceEstimate_txt.setText(totalPrice + "€");
+						priceEstimate_txt.setText(Math.round(totalPrice*100.0)/100.0 + "€");
 
 					} catch (Exception ex) {
 						ex.printStackTrace();
