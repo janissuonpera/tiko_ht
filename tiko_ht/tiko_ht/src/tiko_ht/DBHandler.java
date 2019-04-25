@@ -58,24 +58,7 @@ public class DBHandler {
 		}
 
 	}
-	// Get customers.
-	public List<String> getCustomers() {
-		connect();
-		List<String> customers = new ArrayList<String>();
-		try {
-			stmt = con.createStatement();
-			result = stmt.executeQuery("select nimi from asiakas");
-			while (result.next()) {
-				customers.add(result.getString(1));
-			}
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-		}
-		closeConnection();
-		return customers;
-
-	}
+	// Creates a new customer
 	public void createCustomer(String name, String address, boolean company,
 			String ssn) {
 		int customer_id = 0;
@@ -102,6 +85,68 @@ public class DBHandler {
 		}
 		closeConnection();
 	}
+	// Get all customers name.
+	public List<String> getCustomers() {
+		connect();
+		List<String> customers = new ArrayList<String>();
+		try {
+			stmt = con.createStatement();
+			result = stmt.executeQuery("select nimi from asiakas");
+			while (result.next()) {
+				customers.add(result.getString(1));
+			}
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		closeConnection();
+		return customers;
+	}
+	// Get the customer for the selected job and return its info as an array.
+	public String[] getCustomerByJobName(String job_name) {
+		connect();
+		String[] customer = new String[4];
+		try {
+			prep_stmt = con.prepareStatement(
+					"select nimi,osoite,yritys,hetu from asiakas "
+					+ "WHERE asiakas_id = (SELECT asiakas_id FROM tyokohde WHERE nimi = ?)");
+			prep_stmt.setString(1, job_name);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				// Fill the array with the results.
+				for (int i = 0; i < customer.length; i++) {
+					customer[i] = result.getString(i + 1);
+				}
+			}
+		} catch (SQLException e) {
+			closeConnection();
+			e.printStackTrace();
+		}
+		closeConnection();
+		return customer;
+	}
+	// Get basic information of selected job
+	public String[] getJobInformation(String job_name) {
+		connect();
+		String[] job = new String[3];
+		try {
+			prep_stmt = con.prepareStatement("select nimi,osoite,valmis from tyokohde WHERE nimi = ?");
+			prep_stmt.setString(1, job_name);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				// Fill the array with the results.
+				for (int i = 0; i < job.length; i++) {
+					job[i] = result.getString(i + 1);
+				}
+			}
+		} catch (SQLException e) {
+			closeConnection();
+			e.printStackTrace();
+		}
+		closeConnection();
+		return job;
+	}
+
 	// Create a new job.
 	public void createJob(String customer_name, String job_name, String address,
 			Boolean contract) {
@@ -154,7 +199,8 @@ public class DBHandler {
 					"select nimi,myynti_hinta,yksikko,kirjallisuus,varasto_tilanne from tarvike WHERE varasto_tilanne > 0");
 			while (result.next()) {
 				String[] item = {result.getString(1), result.getString(2),
-						result.getString(3), result.getString(4), result.getString(5)};
+						result.getString(3), result.getString(4),
+						result.getString(5)};
 				items.add(item);
 			}
 			stmt.close();
@@ -168,7 +214,6 @@ public class DBHandler {
 	public void createTask(String job_name, String work_type, int hours,
 			DateTime date, List<String[]> items) {
 
-		
 		// Get next available task id.
 		int task_id = getNextTaskId();
 		// Price of hours * work type cost.
@@ -249,23 +294,26 @@ public class DBHandler {
 
 	}
 	// Fetch jobs and return them as array list.
-	public List<String[]> getJobs(boolean exceptContracts) {
+	public List<String[]> getJobs(boolean exceptContracts,
+			boolean exceptFinished) {
 		List<String[]> jobs = new ArrayList<String[]>();
 		connect();
 
+		String barebonesSQL = "SELECT nimi from tyokohde WHERE urakka = false AND valmis = false";
+		String normalSQL = "Select nimi,urakka from tyokohde";
+
 		try {
 			stmt = con.createStatement();
-			if (exceptContracts) {
+			if (exceptContracts && exceptFinished) {
 				// Return name only of jobs that aren't contracts.
-				result = stmt.executeQuery(
-						"select nimi from tyokohde WHERE urakka=false");
+				result = stmt.executeQuery(barebonesSQL);
 				while (result.next()) {
 					String[] job = {result.getString(1)};
 					jobs.add(job);
 				}
 			} else {
 				// Return name and contract boolean value of all jobs.
-				result = stmt.executeQuery("select nimi,urakka from tyokohde");
+				result = stmt.executeQuery(normalSQL);
 				while (result.next()) {
 					String[] job = {result.getString(1),
 							String.valueOf(result.getBoolean(2))};
@@ -284,7 +332,7 @@ public class DBHandler {
 			boolean closeConnection) {
 
 		List<String[]> items = new ArrayList<String[]>();
-		if(closeConnection){
+		if (closeConnection) {
 			connect();
 		}
 		// Get job identifier by its name
@@ -295,7 +343,7 @@ public class DBHandler {
 				+ " FROM ((suoritus_tarvike as stk JOIN suoritus as st ON stk.suoritus_id = st.suoritus_id)JOIN tarvike ON stk.tarvike_id = tarvike.tarvike_id) "
 				+ " JOIN tyokohde ON st.tyokohde_id = tyokohde.tyokohde_id"
 				+ " WHERE tyokohde.tyokohde_id = ? ";
-	
+
 		try {
 			prep_stmt = con.prepareStatement(SQL);
 			prep_stmt.setInt(1, job_id);
@@ -319,7 +367,7 @@ public class DBHandler {
 					// Insert discount pct
 					item[5] = String.valueOf(result.getInt(6));
 					// Insert tax identifier
-					item[6] = result.getString(7);
+					item[6] = String.valueOf(result.getBoolean(7));
 				}
 				items.add(item);
 			}
@@ -369,7 +417,7 @@ public class DBHandler {
 		return ready;
 	}
 
-	// Returns the hours of done for a specific job.
+	// Returns the types,prices and hours done for a specific job.
 	public List<String> getTaskHours(String job_name) {
 		List<String> hoursAndTypes = new ArrayList<String>();
 		connect();
@@ -442,9 +490,8 @@ public class DBHandler {
 		double pct = Double.valueOf(discount_pct);
 		pct = (100 - pct) / 100;
 		int job_id = getJobIdByName(job_name);
-		
-
-		String SQL = "UPDATE suoritus SET hinta = ? * hinta  WHERE tyokohde_id = ? AND tyyppi = ?";
+		// Calculate given discount
+		String SQL = "UPDATE suoritus SET hinta = (? * hinta)  WHERE tyokohde_id = ? AND tyyppi = ?";
 		try {
 			prep_stmt = con.prepareStatement(SQL);
 			prep_stmt.setDouble(1, pct);
@@ -577,7 +624,6 @@ public class DBHandler {
 		// Set due date to be 1 month after today.
 		java.sql.Date dueDate = java.sql.Date
 				.valueOf(LocalDateTime.now().plusMonths(1).toLocalDate());
-		
 
 		try {
 			// Check if the job is a contract.
@@ -720,7 +766,7 @@ public class DBHandler {
 				closeConnection();
 				return true;
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			closeConnection();
@@ -800,8 +846,7 @@ public class DBHandler {
 			}
 			result.close();
 			prep_stmt.close();
-			
-			
+
 			// Get all items used for the job.
 			writer.write("Käytetyt tarvikkeet");
 			writer.newLine();
@@ -832,7 +877,7 @@ public class DBHandler {
 							+ " euroa");
 					writer.newLine();
 					writer.write(
-                            "Arvonlisäveroton-hinta: " + item[3] + " euroa");
+							"Arvonlisäveroton-hinta: " + item[3] + " euroa");
 					writer.newLine();
 					writer.write("Alennusprosentti: " + item[5] + "%");
 					writer.newLine();
@@ -861,7 +906,7 @@ public class DBHandler {
 							+ " euroa");
 					writer.newLine();
 					writer.write(
-                            "Arvonlisäveroton-hinta: " + item[3] + " euroa");
+							"Arvonlisäveroton-hinta: " + item[3] + " euroa");
 					writer.newLine();
 					writer.write("Arvonlisävero %: " + ((taxPct - 1) * 100));
 					writer.newLine();
@@ -876,25 +921,27 @@ public class DBHandler {
 							+ " FROM suoritus " + " WHERE tyokohde_id=? "
 							+ " GROUP BY 1");
 			prep_stmt.setInt(1, job_id);
-			
+
 			writer.write("Tuntierittely: ");
 			writer.newLine();
 			writer.write("-------------------------");
 			writer.newLine();
 			result = prep_stmt.executeQuery();
-			
+
 			while (result.next()) {
-				writer.write("Tyyppi: "+result.getString(1));
+				writer.write("Tyyppi: " + result.getString(1));
 				writer.newLine();
-				writer.write("Määrä: " + String.valueOf(result.getInt(2)) + " tuntia");
+				writer.write("Määrä: " + String.valueOf(result.getInt(2))
+						+ " tuntia");
 				writer.newLine();
-				writer.write("Hinta: " + String.valueOf(result.getDouble(3)) + " euroa");
+				writer.write("Hinta: " + String.valueOf(result.getDouble(3))
+						+ " euroa");
 				writer.newLine();
 				writer.write("Arvonlisävero: 24%");
 				writer.newLine();
 				writer.newLine();
 			}
-			
+
 			writer.write("-------------------------");
 			// Get basic info for the invoice and print.
 			writer.newLine();
@@ -940,7 +987,7 @@ public class DBHandler {
 			closeConnection();
 		}
 		closeConnection();
-		
+
 		// If there were deleted rows, return true. Else, return false.
 		if (success >= 1) {
 			return true;
@@ -967,7 +1014,7 @@ public class DBHandler {
 		closeConnection();
 		return contracts;
 	}
-	
+
 	// Returns the contracts which have offers made of as a list..
 	public List<String> getContractOffers() {
 		connect();
@@ -1020,7 +1067,6 @@ public class DBHandler {
 	public boolean addToContract(String contract, List<String[]> items,
 			List<String[]> hours) {
 
-		
 		// Identifier for the contract.
 		int contract_id = 0;
 		// Get next available task with the method.
@@ -1034,7 +1080,6 @@ public class DBHandler {
 		int job_id = getJobIdByName(contract);
 		String taskSQL = "INSERT INTO suoritus VALUES(?,?,?,?,?,?)";
 		String itemSQL = "INSERT INTO urakkalista VALUES (?,?,?)";
-	
 
 		try {
 
@@ -1098,7 +1143,7 @@ public class DBHandler {
 			boolean closeConnection) {
 		// List for fetched items.
 		List<String[]> items = new ArrayList<String[]>();
-		
+
 		String itemSQL = "SELECT tarvike.nimi,maara,yksikko,(maara*myynti_hinta),kirjallisuus "
 				+ "FROM tarvike,urakkalista WHERE tarvike.tarvike_id = urakkalista.tarvike_id "
 				+ "AND urakka_id IN (SELECT urakka_id FROM urakkatarjous WHERE tyokohde_id = ?)";
@@ -1162,14 +1207,14 @@ public class DBHandler {
 		return task_id;
 	}
 
-	//Updates items new prices in inventory
+	// Updates items new prices in inventory
 	public void updateItem(String name, double new_price) {
 		connect();
 		try {
 			prep_stmt = con.prepareStatement(
 					"UPDATE tarvike SET osto_hinta = ?, myynti_hinta = ? WHERE nimi = ?");
 			prep_stmt.setDouble(1, new_price);
-			prep_stmt.setDouble(2, new_price*1.25);
+			prep_stmt.setDouble(2, new_price * 1.25);
 			prep_stmt.setString(3, name);
 			int updated = prep_stmt.executeUpdate();
 			prep_stmt.close();
@@ -1181,9 +1226,10 @@ public class DBHandler {
 		}
 		closeConnection();
 	}
-	
-	//Adds a new item to the database
-	public void addItem(String name, double req_price, String units, boolean literature, double quantity) {
+
+	// Adds a new item to the database
+	public void addItem(String name, double req_price, String units,
+			boolean literature, double quantity) {
 		String SQL = "INSERT INTO tarvike(tarvike_id,nimi,osto_hinta,myynti_hinta,yksikko,kirjallisuus,varasto_tilanne) "
 				+ "VALUES(?,?,?,?,?,?,?)";
 		connect();
@@ -1191,19 +1237,19 @@ public class DBHandler {
 			int item_id = 0;
 			prep_stmt = con.prepareStatement(SQL);
 			stmt = con.createStatement();
-			ResultSet rts = stmt.executeQuery("SELECT MAX(tarvike_id) from tarvike");
-			while (rts.next()) {
-				item_id = rts.getInt(1);
+			result = stmt.executeQuery("SELECT MAX(tarvike_id) from tarvike");
+			while (result.next()) {
+				item_id = result.getInt(1);
 			}
 			item_id++;
 			prep_stmt.setInt(1, item_id);
 			prep_stmt.setString(2, name);
 			prep_stmt.setDouble(3, req_price);
-			prep_stmt.setDouble(4, req_price*1.25);			
+			prep_stmt.setDouble(4, req_price * 1.25);
 			prep_stmt.setString(5, units);
 			prep_stmt.setBoolean(6, literature);
 			prep_stmt.setDouble(7, quantity);
-			
+
 			prep_stmt.executeUpdate();
 			con.commit();
 			prep_stmt.close();
@@ -1212,7 +1258,7 @@ public class DBHandler {
 		}
 		closeConnection();
 	}
-	
+
 	// Close connection
 	public void closeConnection() {
 		if (con != null)

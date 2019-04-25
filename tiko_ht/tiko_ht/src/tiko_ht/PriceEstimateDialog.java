@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class PriceEstimateDialog extends Dialog {
 
@@ -68,15 +69,18 @@ public class PriceEstimateDialog extends Dialog {
 		DBHandler db = new DBHandler();
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(565, 405);
 		shell.setText(getText());
 		shell.setLayout(null);
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNewLabel.setBounds(5, 10, 51, 15);
 		lblNewLabel.setText("Ty\u00F6tunnit");
 
 		Combo workType_dropdown = new Combo(shell, SWT.READ_ONLY);
+		workType_dropdown.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		workType_dropdown.setBounds(61, 5, 171, 23);
 		workType_dropdown.setItems(
 				new String[]{"", "Ty\u00F6", "Suunnittelu", "Aputy\u00F6"});
@@ -91,6 +95,7 @@ public class PriceEstimateDialog extends Dialog {
 		addWorkHours_btn.setText("Lis\u00E4\u00E4 ty\u00F6tunnit");
 
 		Label lblTarvike = new Label(shell, SWT.NONE);
+		lblTarvike.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblTarvike.setBounds(5, 40, 37, 15);
 		lblTarvike.setText("Tarvike");
 
@@ -114,10 +119,11 @@ public class PriceEstimateDialog extends Dialog {
 		addItem_btn.setText("Lis\u00E4\u00E4 tarvike");
 
 		listItem_txt = new Text(shell,
-				SWT.BORDER | SWT.READ_ONLY | SWT.V_SCROLL);
+				SWT.BORDER | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 		listItem_txt.setBounds(309, 65, 245, 281);
 
 		Label lblHintaArvio = new Label(shell, SWT.NONE);
+		lblHintaArvio.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblHintaArvio.setBounds(246, 354, 58, 15);
 		lblHintaArvio.setText("Hinta arvio");
 
@@ -144,15 +150,18 @@ public class PriceEstimateDialog extends Dialog {
 		}
 
 		Label lblUrakat = new Label(shell, SWT.NONE);
+		lblUrakat.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblUrakat.setBounds(10, 275, 55, 15);
 		lblUrakat.setText("Urakat");
 
 		Label lblLisListanSislt = new Label(shell, SWT.BORDER);
+		lblLisListanSislt.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblLisListanSislt.setBounds(10, 244, 160, 15);
 		lblLisListanSislt
 				.setText("Lis\u00E4\u00E4 listan sis\u00E4lt\u00F6 urakkaan");
 		
 		Label result_label = new Label(shell, SWT.NONE);
+		result_label.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		result_label.setBounds(10, 179, 271, 45);
 		
 		
@@ -230,7 +239,7 @@ public class PriceEstimateDialog extends Dialog {
 
 						totalPrice = totalPrice + (itemPrice
 								* itemAmount_spinner.getSelection());
-						priceEstimate_txt.setText(totalPrice + "€");
+						priceEstimate_txt.setText(Math.round(totalPrice*100.0)/100.0 + "€");
 
 					} catch (Exception ex) {
 						ex.printStackTrace();

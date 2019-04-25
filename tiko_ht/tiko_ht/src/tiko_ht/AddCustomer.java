@@ -11,6 +11,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class AddCustomer extends Dialog {
 
@@ -55,11 +56,13 @@ public class AddCustomer extends Dialog {
 	 */
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(381, 169);
 		shell.setText(getText());
 		shell.setLayout(null);
 
 		Label lblNimi = new Label(shell, SWT.NONE);
+		lblNimi.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNimi.setBounds(9, 8, 31, 15);
 		lblNimi.setText("Nimi*");
 
@@ -71,6 +74,7 @@ public class AddCustomer extends Dialog {
 		lblNewLabel.setText("");
 
 		Label lblOsoite = new Label(shell, SWT.NONE);
+		lblOsoite.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblOsoite.setBounds(5, 34, 39, 15);
 		lblOsoite.setText("Osoite*");
 
@@ -78,12 +82,13 @@ public class AddCustomer extends Dialog {
 		address_text.setBounds(49, 31, 150, 21);
 
 		Label lblYritys = new Label(shell, SWT.NONE);
+		lblYritys.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblYritys.setBounds(8, 61, 33, 15);
 		lblYritys.setText("Yritys*");
 
 		Button negative_radio = new Button(shell, SWT.RADIO);
 		negative_radio.setSelection(true);
-		negative_radio.setBounds(65, 57, 44, 23);
+		negative_radio.setBounds(65, 57, 31, 23);
 		negative_radio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -93,7 +98,7 @@ public class AddCustomer extends Dialog {
 		negative_radio.setText("Ei");
 
 		Button positive_radio = new Button(shell, SWT.RADIO);
-		positive_radio.setBounds(131, 60, 68, 16);
+		positive_radio.setBounds(110, 57, 45, 23);
 		positive_radio.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -103,6 +108,7 @@ public class AddCustomer extends Dialog {
 		positive_radio.setText("Kyllä");
 
 		Label lblHetu = new Label(shell, SWT.NONE);
+		lblHetu.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblHetu.setBounds(11, 88, 26, 15);
 		lblHetu.setText("Hetu");
 
@@ -110,6 +116,7 @@ public class AddCustomer extends Dialog {
 		ssn_text.setBounds(49, 85, 150, 21);
 
 		Label lblVaaditutTiedot = new Label(shell, SWT.NONE);
+		lblVaaditutTiedot.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblVaaditutTiedot.setBounds(5, 116, 85, 15);
 		lblVaaditutTiedot.setText("* Vaaditut tiedot");
 

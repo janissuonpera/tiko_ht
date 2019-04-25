@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class SaveTaskDialog extends Dialog {
 
@@ -62,28 +63,36 @@ public class SaveTaskDialog extends Dialog {
 		DBHandler db = new DBHandler();
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
+		shell.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(448, 272);
 		shell.setText(getText());
 		shell.setLayout(null);
 
 		Label queryResultLabel = new Label(shell, SWT.NONE);
+		queryResultLabel.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		queryResultLabel.setBounds(259, 189, 178, 15);
 
 		Label lblValitseKohde = new Label(shell, SWT.NONE);
+		lblValitseKohde.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblValitseKohde.setBounds(20, 9, 74, 15);
 		lblValitseKohde.setText("Valitse kohde*");
 
 		Combo job_dropdown = new Combo(shell, SWT.READ_ONLY);
 		job_dropdown.setBounds(115, 5, 234, 23);
-		
+
 		// Populate the job dropdown list.
-		jobs = db.getJobs(true);
+		jobs = db.getJobs(true, true);
 		job_dropdown.add("");
-		for(String [] job : jobs) {
+		for (String[] job : jobs) {
 			job_dropdown.add(job[0]);
 		}
 
 		Label lblAnnaPivmr = new Label(shell, SWT.NONE);
+		lblAnnaPivmr.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblAnnaPivmr.setBounds(9, 37, 97, 15);
 		lblAnnaPivmr.setText("Anna p\u00E4iv\u00E4m\u00E4\u00E4r\u00E4*");
 
@@ -91,6 +100,8 @@ public class SaveTaskDialog extends Dialog {
 		date_time.setBounds(115, 33, 76, 24);
 
 		Label lblAnnaTehdytTunnit = new Label(shell, SWT.NONE);
+		lblAnnaTehdytTunnit.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblAnnaTehdytTunnit.setBounds(5, 65, 105, 15);
 		lblAnnaTehdytTunnit.setText("Anna tehdyt tunnit*");
 
@@ -98,6 +109,8 @@ public class SaveTaskDialog extends Dialog {
 		hour_spinner.setBounds(115, 62, 47, 22);
 
 		Label lblAnnaTynTyyppy = new Label(shell, SWT.NONE);
+		lblAnnaTynTyyppy.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblAnnaTynTyyppy.setBounds(9, 93, 96, 15);
 		lblAnnaTynTyyppy.setText("Anna ty\u00F6n tyyppi*");
 
@@ -107,16 +120,18 @@ public class SaveTaskDialog extends Dialog {
 				new String[]{"", "Ty\u00F6", "Suunnittelu", "Aputy\u00F6"});
 
 		Label lblLisTarvike = new Label(shell, SWT.NONE);
+		lblLisTarvike.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblLisTarvike.setBounds(22, 127, 71, 15);
 		lblLisTarvike.setText("Valitse tarvike");
 
 		Combo item_dropdown = new Combo(shell, SWT.READ_ONLY);
 		item_dropdown.setBounds(115, 123, 88, 23);
-		
+
 		// Populate the item dropdown list.
 		item_dropdown.add("");
 		itemList = db.getAllItems();
-		for(String [] item : itemList) {
+		for (String[] item : itemList) {
 			item_dropdown.add(item[0]);
 		}
 
@@ -125,6 +140,8 @@ public class SaveTaskDialog extends Dialog {
 		selectedItems_btn.setText("Tarvikelista");
 
 		Label lblMr = new Label(shell, SWT.NONE);
+		lblMr.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblMr.setBounds(41, 160, 33, 15);
 		lblMr.setText("M\u00E4\u00E4r\u00E4");
 
@@ -134,6 +151,8 @@ public class SaveTaskDialog extends Dialog {
 		item_amount_spinner.setMinimum(1);
 
 		Label lblAlennus = new Label(shell, SWT.NONE);
+		lblAlennus.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblAlennus.setBounds(208, 160, 61, 15);
 		lblAlennus.setText("Alennus(%)");
 
@@ -148,12 +167,26 @@ public class SaveTaskDialog extends Dialog {
 		addItem_btn.setText("Lis\u00E4\u00E4 tarvike");
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
+		lblNewLabel.setBackground(SWTResourceManager
+				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNewLabel.setBounds(5, 219, 97, 15);
 		lblNewLabel.setText("* Tarvittavat tiedot");
 
 		Button cancel_btn = new Button(shell, SWT.NONE);
 		cancel_btn.setBounds(296, 214, 53, 25);
 		cancel_btn.setText("Sulje");
+
+		/*
+		 * 
+		 * 
+		 * 
+		 * Button listeners methods
+		 * 
+		 * 
+		 * 
+		 */
+
+		// Closes the window
 		cancel_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
@@ -230,13 +263,13 @@ public class SaveTaskDialog extends Dialog {
 						|| item_amount_spinner.getSelection() > 0
 								&& !item_dropdown.getText().equals("")
 								&& !selected_items.isEmpty()) {
-					
+
 					// Create a new task with the selected information.
 					db.createTask(job_dropdown.getText(),
 							worktype_dropdown.getText(),
 							hour_spinner.getSelection(), date_time,
 							selected_items);
-					clearLists();
+					selected_items.clear();
 					job_dropdown.select(0);
 					item_dropdown.select(0);
 					worktype_dropdown.select(0);
@@ -246,8 +279,5 @@ public class SaveTaskDialog extends Dialog {
 				}
 			}
 		});
-	}
-	public void clearLists() {
-		selected_items.clear();
 	}
 }
