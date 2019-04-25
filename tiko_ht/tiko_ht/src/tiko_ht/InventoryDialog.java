@@ -134,6 +134,7 @@ public class InventoryDialog extends Dialog {
 									quantity = Double.parseDouble(item.split(",")[4]);
 								}
 								//If read item from uusi_hinnasto.txt is not a completely new item, update its new price into the db
+								//Else add the item into the db
 								if(itemname_list.indexOf(item.split(",")[0])!=-1) {
 									db.updateItem(item.split(",")[0], Double.parseDouble(item.split(",")[1]));
 								}else {

@@ -6,3 +6,4 @@ Jakoavain,10,kpl,false,12
 Opas,20,kpl,true,2
 Ruuvi,0.10,kpl,false,500
 Ovi,120,kpl,false,5
+Tiili,0.2,kpl,false,330
