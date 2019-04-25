@@ -13,8 +13,12 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Button;
 
+/*
+ * Creates a graphical dialog for viewing and deleting invoices.
+ */
 public class InvoiceDialog extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	List<String> invoices_names;
@@ -29,22 +33,13 @@ public class InvoiceDialog extends Dialog {
 	private Text hinta_text;
 	private Text maksettu_text;
 
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	//Constructor
 	public InvoiceDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Invoices");
 	}
 
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -58,9 +53,7 @@ public class InvoiceDialog extends Dialog {
 		return result;
 	}
 
-	/**
-	 * Create contents of the dialog.
-	 */
+	//Create the contents of the dialog
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));

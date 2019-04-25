@@ -11,9 +11,16 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.DateTime;
 
+
+/*
+* This class is for handling queries and inserting data into the database.
+* In our implementation, the database is hosted locally on the user's own computer using PostgreSQL.
+* 
+* Each method that opens a connection to the database, also closes the connection when the query is completed.
+*/
 public class DBHandler {
 
-	// tietokannan ja kayttajan tiedot
+	//Attributes. Also contains log in information required by JDBC driver
 	private static final String PROTOKOLLA = "jdbc:postgresql:";
 	private static final String PALVELIN = "localhost";
 	private static final int PORTTI = 5432;
@@ -28,12 +35,12 @@ public class DBHandler {
 	public Statement stmt;
 	public ResultSet result;
 
-	// Setter
+	// Setter for connection attribute
 	public void setConnection(Connection new_con) {
 		con = new_con;
 	}
-	// Vaihe 1: yhteyden ottaminen tietokantaan
 
+	//Creates a connection to the database using JDBC driver
 	public void connect() {
 		Connection con = null;
 		try {
@@ -41,24 +48,22 @@ public class DBHandler {
 					+ PORTTI + "/" + TIETOKANTA, KAYTTAJA, SALASANA);
 			setConnection(con);
 
-			// Set proper schema.
 			stmt = con.createStatement();
-
+			
+			// Set proper schema.
 			stmt.execute("SET search_path TO tiko_ht");
 
 			// Set auto commit to false to avoid mistakes.
 			con.setAutoCommit(false);
 
 		} catch (SQLException poikkeus) {
-
-			// Vaihe 3.2: tahan toiminta mahdollisessa virhetilanteessa
-
 			System.out.println(
 					"Tapahtui seuraava virhe: " + poikkeus.getMessage());
 		}
 
 	}
-	// Creates a new customer
+	
+	// Creates a new customer in the database
 	public void createCustomer(String name, String address, boolean company,
 			String ssn) {
 		int customer_id = 0;
@@ -85,6 +90,7 @@ public class DBHandler {
 		}
 		closeConnection();
 	}
+	
 	// Get all customers name.
 	public List<String> getCustomers() {
 		connect();
@@ -102,7 +108,8 @@ public class DBHandler {
 		closeConnection();
 		return customers;
 	}
-	// Get the customer for the selected job and return its info as an array.
+	
+	// Get the customer for the selected job and return its info as an array
 	public String[] getCustomerByJobName(String job_name) {
 		connect();
 		String[] customer = new String[4];
@@ -125,7 +132,8 @@ public class DBHandler {
 		closeConnection();
 		return customer;
 	}
-	// Get basic information of selected job
+	
+	// Get name, address and ready_state of selected job
 	public String[] getJobInformation(String job_name) {
 		connect();
 		String[] job = new String[3];
@@ -147,7 +155,7 @@ public class DBHandler {
 		return job;
 	}
 
-	// Create a new job.
+	// Create a new job
 	public void createJob(String customer_name, String job_name, String address,
 			Boolean contract) {
 		connect();
@@ -189,6 +197,7 @@ public class DBHandler {
 		}
 		closeConnection();
 	}
+	
 	// Gets all items from database and return two dimensional arraylist.
 	public List<String[]> getAllItems() {
 		List<String[]> items = new ArrayList<String[]>();
@@ -211,6 +220,8 @@ public class DBHandler {
 		return items;
 	}
 
+	//Creates a new task that has been completed on a specific job
+	//Different work types have different rates. Their rates are stored as attributes.
 	public void createTask(String job_name, String work_type, int hours,
 			DateTime date, List<String[]> items) {
 
@@ -293,6 +304,7 @@ public class DBHandler {
 		closeConnection();
 
 	}
+	
 	// Fetch jobs and return them as array list.
 	public List<String[]> getJobs(boolean exceptContracts,
 			boolean exceptFinished) {
@@ -327,6 +339,7 @@ public class DBHandler {
 		closeConnection();
 		return jobs;
 	}
+	
 	// Gets the used items for the chosen job.
 	public List<String[]> getJobItems(String job_name, boolean getOnlyPrices,
 			boolean closeConnection) {
@@ -380,7 +393,7 @@ public class DBHandler {
 		return items;
 	}
 
-	// Sets the job finished value into true.
+	// Sets the job finished value into true
 	public void setJobFinished(String job_name) {
 		connect();
 		try {
@@ -397,6 +410,7 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 	}
+	
 	// Gets the job finished boolean value.
 	public boolean getFinishedValue(String job_name) {
 		connect();
@@ -438,6 +452,7 @@ public class DBHandler {
 		closeConnection();
 		return hoursAndTypes;
 	}
+	
 	// Get job id with the job name.
 	public int getJobIdByName(String job_name) {
 		int job_id = 0;
@@ -483,6 +498,7 @@ public class DBHandler {
 		}
 		return job_name;
 	}
+	
 	// Adds a discount to the work type hours.
 	public void addDiscount(String job_name, String work_type,
 			int discount_pct) {
@@ -576,7 +592,7 @@ public class DBHandler {
 		closeConnection();
 	}
 
-	// Returns all invoice data
+	// Returns all invoice data as an invoice object
 	public Invoice getFullInvoice(int id) {
 		Invoice invoice = null;
 		connect();
@@ -607,6 +623,9 @@ public class DBHandler {
 		return invoice;
 	}
 
+	//Creates different types of invoices depending on if the job is a contract or not
+	//and if it's the first invoice for the job or not.
+	//Also creates a text file of the invoice in the directory.
 	public void createInvoice(String job_name) {
 		connect();
 		// Get job id by its name
@@ -774,17 +793,21 @@ public class DBHandler {
 		closeConnection();
 		return false;
 	}
+	
 	// Writes all data from invoice to a text file.
 	public void printInvoice(int invoice_id) {
 		// Get the full invoice.
 		Invoice invoice = getFullInvoice(invoice_id);
+		
 		// If true, the job is a contract. Opposite if false.
 		boolean contract = false;
 
 		// Get job id.
 		int job_id = invoice.getTyokohde_id();
+		
 		// Get job name
 		String job_name = getJobNameById(job_id, true);
+		
 		// Connect to database
 		connect();
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
@@ -972,6 +995,7 @@ public class DBHandler {
 		}
 		closeConnection();
 	}
+	
 	// Deletes the selected invoice.
 	public boolean deleteInvoice(int invoice_id) {
 		connect();
@@ -995,6 +1019,7 @@ public class DBHandler {
 			return false;
 		}
 	}
+	
 	// Fetches all contracts from the database and returns their name as a list.
 	public List<String> getContracts() {
 		List<String> contracts = new ArrayList<String>();
@@ -1138,6 +1163,7 @@ public class DBHandler {
 		closeConnection();
 		return true;
 	}
+	
 	// Returns all items that are used in the chosen contract.
 	public List<String[]> getContractItems(String job_name,
 			boolean closeConnection) {
@@ -1257,6 +1283,28 @@ public class DBHandler {
 			e.printStackTrace();
 		}
 		closeConnection();
+	}
+	
+	//Check if db has certain item
+	public boolean itemInDB(String name) {
+		boolean db_has_item = false;
+		connect();
+		try {
+			prep_stmt = con.prepareStatement(
+					"SELECT * from tarvike WHERE nimi = ?");
+			prep_stmt.setString(1, name);
+			result = prep_stmt.executeQuery();
+			while (result.next()) {
+				db_has_item = true;
+			}
+			result.close();
+			prep_stmt.close();
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
+		closeConnection();
+		return db_has_item;
 	}
 
 	// Close connection

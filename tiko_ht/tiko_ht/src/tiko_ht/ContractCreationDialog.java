@@ -17,27 +17,24 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Spinner;
 
-
+/*
+ * Class for creating a graphical dialog for creating and adding a new contract
+ * 
+ */
 public class ContractCreationDialog extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	List<String> contracts = new ArrayList<String>();
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	
+	//Constructor
 	public ContractCreationDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Luo urakkatarjous");
 	}
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -50,9 +47,8 @@ public class ContractCreationDialog extends Dialog {
 		}
 		return result;
 	}
-	/**
-	 * Create contents of the dialog.
-	 */
+	
+	//Create contents of dialog
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setSize(407, 172);
@@ -64,9 +60,10 @@ public class ContractCreationDialog extends Dialog {
 		lblValitseTykohde.setBounds(10, 10, 90, 15);
 		lblValitseTykohde.setText("Valitse ty\u00F6kohde");
 
-		
+		//Fetches all the contracts from the database into a List<String>
 		contracts = db.getContracts();
 
+		//Adds the contracts to the dropdown list. Shows only the contracts that dont have an offer yet
 		Combo contract_dropdown = new Combo(shell, SWT.NONE);
 		contract_dropdown.setToolTipText("Listassa n\u00E4kyy vain ty\u00F6kohteet, joista ei ole viel\u00E4 tehty urakkatarjousta.");
 		contract_dropdown.setBounds(106, 7, 191, 23);
@@ -75,6 +72,7 @@ public class ContractCreationDialog extends Dialog {
 			contract_dropdown.add(contract);
 		}
 
+		
 		Label lblMaksuOsissa = new Label(shell, SWT.NONE);
 		lblMaksuOsissa.setBounds(10, 51, 75, 15);
 		lblMaksuOsissa.setText("Maksu osissa?");
@@ -108,6 +106,8 @@ public class ContractCreationDialog extends Dialog {
 		instalments_label.setText("Osat");
 
 		Button insertItems_btn = new Button(shell, SWT.NONE);
+		
+		//Listener for button "Lis‰‰ tarvikkeita", for adding items to the offer
 		insertItems_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {

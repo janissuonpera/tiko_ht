@@ -14,8 +14,13 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+/*
+ * Class for creating a graphical dialog for editing a job and viewing information about it.
+ * Allows the user to finish the job which creates an invoice as well and delete the job from the database.
+ */
 public class EditJobDialog extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	protected int style;
@@ -26,22 +31,14 @@ public class EditJobDialog extends Dialog {
 	java.util.List<String[]> job_list = new ArrayList<String[]>();
 	// Task list containing all task for the selected job.
 	java.util.List<String> task_list = new ArrayList<String>();
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+
+	//Constructor
 	public EditJobDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Muokkaa ty\u00F6kohdetta");
 	}
 
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -54,9 +51,8 @@ public class EditJobDialog extends Dialog {
 		}
 		return result;
 	}
-	/**
-	 * Create contents of the dialog.
-	 */
+	
+	//Create the contents of the dialog
 	private void createContents() {
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
@@ -90,6 +86,7 @@ public class EditJobDialog extends Dialog {
 		Combo job_dropdown = new Combo(shell, SWT.NONE);
 		job_dropdown.setBounds(5, 26, 201, 23);
 
+		//Get all the jobs from the database and add them to the job dropdown list
 		job_list = db.getJobs(false, false);
 		job_dropdown.add("");
 		for (String[] job : job_list) {

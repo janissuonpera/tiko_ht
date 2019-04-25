@@ -24,26 +24,25 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Table;
 
+/*
+ * Class for creating a graphical dialog for viewing inventory status.
+ * Also allows user to a new catalogue given by the vendor
+ *
+ */
 public class InventoryDialog extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	java.util.List<String[]> all_items = new ArrayList<String[]>();
 	
-	/**
-	 * Create the dialog.
-	 * @param parent
-	 * @param style
-	 */
+	//Constructor
 	public InventoryDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Tarvikkeet");
 	}
 
-	/**
-	 * Open the dialog.
-	 * @return the result
-	 */
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -57,9 +56,7 @@ public class InventoryDialog extends Dialog {
 		return result;
 	}
 
-	/**
-	 * Create contents of the dialog.
-	 */
+	//Create the contents of the dialog
 	private void createContents() {
 		shell = new Shell(getParent(), getStyle());
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -103,7 +100,9 @@ public class InventoryDialog extends Dialog {
 		lblNewLabel.setText("Sis. alv");
 		
 		DBHandler db = new DBHandler();
+		//Fetches all the items from the database that have more than 0 in stock
 		all_items = db.getAllItems();
+		//Adds item name, selling price and stock to lists for viewing.
 		for(int i=0; i<all_items.size(); i++) {
 			itemname_list.add("["+i +"] "+ all_items.get(i)[0]);
 			itemquantity_list.add("["+i +"] "+ all_items.get(i)[4] + " " + all_items.get(i)[2]);
@@ -114,7 +113,14 @@ public class InventoryDialog extends Dialog {
 			}
 		}
 		
-		//Button listeners
+		//Listener for button "Uusi hinnasto". Updates item prices and adds new items to the database according
+		//to the vendors new catalogue.
+		//Requires a text file "uusi_hinnasto.txt" in the local directory.
+		//Each item in "uusi_hinnasto.txt" should be in a new line and 
+		//formatted this way: Pistorasia,10.00,kpl,false
+		//Each values is separated by a comma. The first value is the name of the product.
+		//Second value is requisition price. Third value is physical quantity, for example 'kpl' or 'cm'.
+		//Last value is whether the item is literature or not.
 		newCatalogue_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
@@ -145,8 +151,8 @@ public class InventoryDialog extends Dialog {
 								}
 								//If read item from uusi_hinnasto.txt is not a completely new item, update its new price into the db
 								//Else add the item into the db
-								if(itemname_list.indexOf(item.split(",")[0])!=-1) {
-									db.updateItem(item.split(",")[0], Double.parseDouble(item.split(",")[1]));
+								if(db.itemInDB(nimi)) {
+									db.updateItem(nimi, req_price);
 								}else {
 									db.addItem(nimi, req_price, units, literature, quantity);
 								}
@@ -160,9 +166,9 @@ public class InventoryDialog extends Dialog {
 								itemname_list.add("["+i +"] "+ all_items.get(i)[0]);
 								itemquantity_list.add("["+i +"] "+ all_items.get(i)[4] + " " + all_items.get(i)[2]);
 								if(Boolean.parseBoolean(all_items.get(i)[3])) {
-									itemprice_list.add("["+i +"] "+ Double.parseDouble(all_items.get(i)[1])*1.10 + " e");
+									itemprice_list.add("["+i +"] "+ Math.round(Double.parseDouble(all_items.get(i)[1])*1.10 * 100.0) / 100.0 + " e");
 								}else {
-									itemprice_list.add("["+i +"] "+ Double.parseDouble(all_items.get(i)[1])*1.24 + " e");
+									itemprice_list.add("["+i +"] "+ Math.round(Double.parseDouble(all_items.get(i)[1])*1.24 * 100.0) / 100.0 + " e");
 								}
 							}
 							//The archived file is renamed after the date when it was archived

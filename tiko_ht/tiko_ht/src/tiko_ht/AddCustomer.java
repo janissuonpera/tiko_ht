@@ -13,8 +13,14 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+/*
+ * Class that creates a graphical dialog for creating and adding
+ * a new customer to the database.
+ * 
+ */
 public class AddCustomer extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	private Text ssn_text;
@@ -22,22 +28,13 @@ public class AddCustomer extends Dialog {
 	private Text address_text;
 	private boolean Company;
 
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	//Constructor
 	public AddCustomer(Shell parent, int style) {
 		super(parent, style);
 		setText("Lis‰‰ asiakas");
 	}
 
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	//Opens the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -51,9 +48,7 @@ public class AddCustomer extends Dialog {
 		return result;
 	}
 
-	/**
-	 * Create contents of the dialog.
-	 */
+	//Creates contents of the dialog
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -86,6 +81,7 @@ public class AddCustomer extends Dialog {
 		lblYritys.setBounds(8, 61, 33, 15);
 		lblYritys.setText("Yritys*");
 
+		//Radio button for deciding if the customer is a company or not
 		Button negative_radio = new Button(shell, SWT.RADIO);
 		negative_radio.setSelection(true);
 		negative_radio.setBounds(65, 57, 31, 23);
@@ -97,6 +93,7 @@ public class AddCustomer extends Dialog {
 		});
 		negative_radio.setText("Ei");
 
+		//Radio button for deciding if the customer is a company or not
 		Button positive_radio = new Button(shell, SWT.RADIO);
 		positive_radio.setBounds(110, 57, 45, 23);
 		positive_radio.addSelectionListener(new SelectionAdapter() {
@@ -130,6 +127,7 @@ public class AddCustomer extends Dialog {
 		
 		done_btn.setText("Lis‰‰ Asiakas");
 		
+		//Listener for the button "Lis‰‰ asiakas"
 		done_btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -137,6 +135,8 @@ public class AddCustomer extends Dialog {
 				shell.dispose();
 			}
 		});
+		
+		//Listener for the button "Peruuta"
 		cancel_btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -145,10 +145,12 @@ public class AddCustomer extends Dialog {
 		});
 	}
 
+	//Getter for company attribute
 	public boolean getCompany() {
 		return this.Company;
 	}
 
+	//Sends the customer data to DBHandler object which adds the customer to the database
 	public void sendData() {
 		try {
 			DBHandler db = new DBHandler();

@@ -2,7 +2,13 @@ package tiko_ht;
 
 import java.sql.Date;
 
+/*
+ * Class for an invoice object.
+ * All attributes are values from 'lasku' table in the database.
+ */
 public class Invoice {
+	
+	//Attributes
 	int lasku_id;
 	int tyokohde_id;
 	Date pvm;
@@ -29,6 +35,8 @@ public class Invoice {
 		this.maksettu = maksettu;
 	}
 
+	//Only getters and setters below
+	
 	public int getLasku_id() {
 		return lasku_id;
 	}
