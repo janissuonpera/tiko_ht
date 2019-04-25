@@ -51,12 +51,15 @@ public class ContractCreationDialog extends Dialog {
 
 	//Create contents of dialog
 	private void createContents() {
+		DBHandler db = new DBHandler();
+		
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(407, 172);
 		shell.setText("Luo uusi urakka");
 		shell.setLayout(null);
-		DBHandler db = new DBHandler();
+		
 
 		Label lblValitseTykohde = new Label(shell, SWT.NONE);
 		lblValitseTykohde.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -110,7 +113,8 @@ public class ContractCreationDialog extends Dialog {
 		instalments_label.setText("Osat");
 
 		Button insertItems_btn = new Button(shell, SWT.NONE);
-
+		//=============================GUI ELEMENTS END HERE========================================
+		
 		//Listener for button "Lis�� tarvikkeita", for adding items to the offer
 		insertItems_btn.addListener(SWT.Selection, new Listener() {
 			@Override

@@ -11,7 +11,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+//Driver class for the program. MainMenu of the graphical user interface.
 public class MainMenu extends Composite {
+	
+	//Main method
 	public static void main(String[] args) {
 
 		Display display = new Display();
@@ -28,22 +31,19 @@ public class MainMenu extends Composite {
 		display.dispose();
 	}
 
-	/**
-	 * Create the composite.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	//Constructor
 	public MainMenu(Composite parent, int style) {
 		super(parent, style);
 		setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
+		
 		DBHandler db = new DBHandler();
 		
 		db.checkInvoiceState();
 		setLayout(null);
-
+		
+		//===========================GUI ELEMENTS START HERE======================================
 		Label createNew_lbl = new Label(this, SWT.BORDER | SWT.CENTER);
 		createNew_lbl.setFont(SWTResourceManager.getFont("System", 11, SWT.NORMAL));
 		createNew_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -94,9 +94,11 @@ public class MainMenu extends Composite {
 		Button items_btn = new Button(this, SWT.NONE);
 		items_btn.setBounds(173, 124, 128, 25);
 		items_btn.setText("Tarvikkeet");
-
+		//=============================GUI ELEMENTS END HERE========================================
+		
 		/* Button listener for dialogs. */
-
+		
+		//Listener for "Laskut" button. Opens dialogue for viewing invoices
 		invoices_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
@@ -108,6 +110,7 @@ public class MainMenu extends Composite {
 			}
 		});
 
+		//Listener for "Asiakas" button. Opens dialogue for creating a new customer
 		AddCustomer_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -120,7 +123,8 @@ public class MainMenu extends Composite {
 
 			}
 		});
-
+		
+		//Listener for "Tallenna työsuoritus" button. Opens dialogue for creating a new task
 		SavePerf_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event event) {
@@ -132,6 +136,7 @@ public class MainMenu extends Composite {
 			}
 		});
 
+		//Listener for "Urakkatarjous" button. Opens dialogue for creating a new contract
 		newContract_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
@@ -143,6 +148,7 @@ public class MainMenu extends Composite {
 			}
 		});
 
+		//Listener for "Hinta-arvio" button. Opens dialogue for creating a new price evaluation
 		pricecalc_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
@@ -154,6 +160,7 @@ public class MainMenu extends Composite {
 			}
 		});
 
+		//Listener for "Muokkaa työkohdetta" button. Opens dialogue for editing and finishing a job
 		editJob_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override
@@ -166,6 +173,8 @@ public class MainMenu extends Composite {
 			}
 
 		});
+		
+		//Listener for "Työkohde" button. Opens dialogue for creating a new job.
 		createJob_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override

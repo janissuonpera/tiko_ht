@@ -12,27 +12,22 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+//Class for creating a graphical dialog for showing the items used
+//in a task.
 public class ItemListPopup extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	
+	//Constructor
 	public ItemListPopup(Shell parent, int style) {
 		super(parent, style);
 		setText("Tarvikelista");
 
 	}
 
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	//Open the dialog
 	public Object open(java.util.List<String[]> selected_items) {
 		createContents(selected_items);
 		shell.open();
@@ -45,9 +40,8 @@ public class ItemListPopup extends Dialog {
 		}
 		return result;
 	}
-	/**
-	 * Create contents of the dialog.
-	 */
+	
+	//Create the contents of the dialog
 	private void createContents(java.util.List<String[]> selected_items) {
 		shell = new Shell(getParent(), getStyle());
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -69,6 +63,7 @@ public class ItemListPopup extends Dialog {
 		lblNewLabel.setBounds(28, 10, 181, 15);
 		lblNewLabel.setText("Tarvikkeen nimi,m\u00E4\u00E4r\u00E4 ja alennus");
 
+		//Listener for "Ok" button. Closes the dialog window.
 		btnOk.addListener(SWT.Selection, new Listener() {
 
 			@Override

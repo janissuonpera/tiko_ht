@@ -14,29 +14,25 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+//Class for creating a graphical dialog for adding a new task into the database
+//In the dialog you choose the customer who its for, the job's name, the job's address
+//and whether it's a contract
 public class JobCreationDialog extends Dialog {
-
+	
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	private Text jobAddress_field;
 	private Text jobName_field;
 	List<String> customers = new ArrayList<String>();
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	
+	//Constructor
 	public JobCreationDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Luo työkohde");
-
 	}
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -49,11 +45,12 @@ public class JobCreationDialog extends Dialog {
 		}
 		return result;
 	}
-	/**
-	 * Create contents of the dialog.
-	 */
+	
+	//Create the contents of the dialog
 	private void createContents() {
 		DBHandler db = new DBHandler();
+		
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(439, 185);
@@ -64,7 +61,7 @@ public class JobCreationDialog extends Dialog {
 		lblLuoUusiAsiakas.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblLuoUusiAsiakas.setBounds(5, 5, 98, 15);
 		lblLuoUusiAsiakas.setText("Luo uusi ty\u00F6kohde");
-
+		
 		Label lblNewLabel = new Label(shell, SWT.NONE);
 		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNewLabel.setBounds(5, 29, 73, 15);
@@ -72,12 +69,6 @@ public class JobCreationDialog extends Dialog {
 
 		Combo customer_dropdown = new Combo(shell, SWT.READ_ONLY);
 		customer_dropdown.setBounds(108, 25, 195, 23);
-		
-		customers = db.getCustomers();
-
-		for (int i = 0; i < customers.size(); i++) {
-			customer_dropdown.add(customers.get(i));
-		}
 
 		Label jobName_lbl = new Label(shell, SWT.NONE);
 		jobName_lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -112,6 +103,21 @@ public class JobCreationDialog extends Dialog {
 		Button btnCancel = new Button(shell, SWT.NONE);
 		btnCancel.setBounds(298, 126, 53, 25);
 		btnCancel.setText("Peruuta");
+		
+		Button btnCreateJob = new Button(shell, SWT.NONE);
+		btnCreateJob.setBounds(356, 126, 74, 25);
+		btnCreateJob.setText("Lis\u00E4\u00E4 kohde");		
+		//=============================GUI ELEMENTS END HERE========================================
+		
+		//Get all customers from database
+		customers = db.getCustomers();
+
+		//Populate the customer dropdown list
+		for (int i = 0; i < customers.size(); i++) {
+			customer_dropdown.add(customers.get(i));
+		}
+		
+		//Listener for 'Peruuta' button. Exits the dialog window
 		btnCancel.addListener(SWT.Selection, new Listener() {
 
 			@Override
@@ -119,24 +125,20 @@ public class JobCreationDialog extends Dialog {
 				shell.dispose();
 			}
 		});
-
-		Button btnCreateJob = new Button(shell, SWT.NONE);
-		btnCreateJob.setBounds(356, 126, 74, 25);
+		
+		//Listener for "Lisää kohde" button. Adds a new job into the database
 		btnCreateJob.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				
-				db.createJob(customer_dropdown.getText(),
-						jobName_field.getText(), jobAddress_field.getText(),
-						radioButton_pos.getSelection());
-				shell.dispose();
+				if(customer_dropdown.getText().length()>0 && jobName_field.getText().length()>0 && jobAddress_field.getText().length()>0) {
+					db.createJob(customer_dropdown.getText(),
+							jobName_field.getText(), jobAddress_field.getText(),
+							radioButton_pos.getSelection());
+					shell.dispose();
+				}
 			}
 		});
-		btnCreateJob.setText("Lis\u00E4\u00E4 kohde");
+		
 
-	}
-	public List<String> getCustomers() {
-		List<String> names = new ArrayList<String>();
-		return names;
 	}
 }

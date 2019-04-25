@@ -8,7 +8,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+//Class for creating a graphical dialog for viewing expenses of a specific job
 public class PriceDialog extends Dialog {
+	
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	protected int style;
@@ -16,9 +19,7 @@ public class PriceDialog extends Dialog {
 	java.util.List<String> task_list = null;
 	private boolean contract = false;
 
-	/**
-	 * Constructor. Dialog for the current price. Tasks + items = price.
-	 */
+	//Constructor. Dialog for the current price. Tasks + items = price. 
 	public PriceDialog(Shell parent, int style,
 			java.util.List<String[]> itemList,
 			java.util.List<String> task_list) {
@@ -28,6 +29,7 @@ public class PriceDialog extends Dialog {
 		this.task_list = (java.util.List<String>) task_list;
 	}
 
+	//Opens dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -40,6 +42,8 @@ public class PriceDialog extends Dialog {
 		}
 		return result;
 	}
+	
+	//Creates the contents of the dialog
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager

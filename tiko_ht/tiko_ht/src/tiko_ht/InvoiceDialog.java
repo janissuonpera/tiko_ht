@@ -55,11 +55,13 @@ public class InvoiceDialog extends Dialog {
 
 	//Create the contents of the dialog
 	private void createContents() {
+		DBHandler db = new DBHandler();
+		
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(365, 540);
-		shell.setText(getText());
-		DBHandler db = new DBHandler();
+		shell.setText(getText());	
 		shell.setLayout(null);
 
 		Label invoiceLabel = new Label(shell, SWT.NONE);
@@ -211,6 +213,9 @@ public class InvoiceDialog extends Dialog {
 		Label status_label = new Label(shell, SWT.NONE);
 		status_label.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		status_label.setBounds(172, 486, 166, 15);
+		//=============================GUI ELEMENTS END HERE========================================
+		
+		//Listener for "Poista lasku" button. Deletes the invoice from database
 		delete_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override
@@ -227,11 +232,15 @@ public class InvoiceDialog extends Dialog {
 
 		});
 
-		
+		//Get all invoice ids and the jobs name
+		//Add both to the dropdown list
 		invoices_names = db.getInvoicesIdAndName();
 		for (int i = 0; i < invoices_names.size(); i++) {
 			invoice_dropdown.add(invoices_names.get(i));
 		}
+		
+		//Listener for the dropdown list. Choosing one of the invoices
+		//shows that invoice's info on the labels and textboxes below
 		invoice_dropdown.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event arg0) {
@@ -243,7 +252,9 @@ public class InvoiceDialog extends Dialog {
 			}
 		});
 	}
-
+	
+	//Fetches all the invoice information from the invoice object using getters
+	//and updates the textboxes
 	public void updateTexts() {
 		DBHandler db = new DBHandler();
 		

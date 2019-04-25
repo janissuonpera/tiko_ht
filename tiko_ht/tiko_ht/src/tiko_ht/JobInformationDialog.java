@@ -8,8 +8,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+//Creates a graphical dialog for viewing information about a specific job. Includes
+//information about the customer and the job.
 public class JobInformationDialog extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	private Text custName_txt;
@@ -20,20 +23,15 @@ public class JobInformationDialog extends Dialog {
 	private String job_name;
 	private String [] customer_info = new String [4];
 	private String [] job_info = new String [3];
-	/**
-	 * Create the dialog.
-	 * @param parent
-	 * @param style
-	 */
+	
+	//Constructor
 	public JobInformationDialog(Shell parent, int style,String job_name) {
 		super(parent, style);
 		this.job_name = job_name;
 		setText("Kohteen tiedot");
 	}
-	/**
-	 * Open the dialog.
-	 * @return the result
-	 */
+	
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -46,15 +44,16 @@ public class JobInformationDialog extends Dialog {
 		}
 		return result;
 	}
-	/**
-	 * Create contents of the dialog.
-	 */
+	
+	//Create contents of the dialog
 	private void createContents() {
+		DBHandler db = new DBHandler();
+		
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(386, 198);
-		shell.setText(getText());
-		DBHandler db = new DBHandler();
+		shell.setText(getText());		
 		
 		Label lblAsiakas = new Label(shell, SWT.NONE);
 		lblAsiakas.setFont(SWTResourceManager.getFont("System", 9, SWT.NORMAL));
@@ -136,7 +135,7 @@ public class JobInformationDialog extends Dialog {
 		Label vertical_border = new Label(shell, SWT.SEPARATOR | SWT.VERTICAL);
 		vertical_border.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		vertical_border.setBounds(188, 10, 10, 154);
-		
+		//=============================GUI ELEMENTS END HERE========================================
 		
 		// Fetch info for customer and job.
 		customer_info = db.getCustomerByJobName(job_name);
@@ -147,8 +146,7 @@ public class JobInformationDialog extends Dialog {
 		custAdd_txt.setText(customer_info[1]);
 		company_label.setText(customer_info[2].equals("f")?"Ei":"Kyllä");
 		ssn_txt.setText(customer_info[3]==null? "Ei tietokannassa":customer_info[3]);
-		
-		
+				
 		
 		// Display job information
 		jobName_txt.setText(job_info[0]);

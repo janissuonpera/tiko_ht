@@ -54,13 +54,14 @@ public class EditJobDialog extends Dialog {
 	
 	//Create the contents of the dialog
 	private void createContents() {
-
+		DBHandler db = new DBHandler();
+		
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(488, 377);
-		shell.setText(getText());
-		DBHandler db = new DBHandler();
+		shell.setText(getText());		
 		shell.setLayout(null);
 
 		Label lblValitseTykohde = new Label(shell, SWT.NONE);
@@ -182,7 +183,8 @@ public class EditJobDialog extends Dialog {
 				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblEiSisllAlv.setBounds(253, 292, 82, 15);
 		lblEiSisllAlv.setText("Ei sisällä alv.");
-
+		//=============================GUI ELEMENTS END HERE========================================
+		
 		/*
 		 * 
 		 * 

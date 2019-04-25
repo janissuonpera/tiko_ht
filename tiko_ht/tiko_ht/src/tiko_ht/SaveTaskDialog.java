@@ -16,33 +16,25 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+//Class for creating a graphical dialog for saving task hours and items
 public class SaveTaskDialog extends Dialog {
 
+	//Attributes
 	protected Object result;
 	protected Shell shell;
-	public List<String[]> jobs = new ArrayList<String[]>();
-	// Contains user selected items
-	// public List<String> selected_items = new ArrayList<String>();
-
+	public List<String[]> jobs = new ArrayList<String[]>();	
 	// Contains all items from database and their price.
 	public List<String[]> itemList = new ArrayList<String[]>();
-
+	// Contains user selected items
 	public List<String[]> selected_items = new ArrayList<String[]>();
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	
+	//Constructor
 	public SaveTaskDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Tallenna ty\u00F6suoritus");
 	}
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -55,13 +47,13 @@ public class SaveTaskDialog extends Dialog {
 		}
 		return result;
 	}
-	/**
-	 * Create contents of the dialog.
-	 */
+	
+	//Create the contents of the dialog
 	private void createContents() {
 		// Initialize database handler.
 		DBHandler db = new DBHandler();
 
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
 		shell.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -175,6 +167,15 @@ public class SaveTaskDialog extends Dialog {
 		Button cancel_btn = new Button(shell, SWT.NONE);
 		cancel_btn.setBounds(296, 214, 53, 25);
 		cancel_btn.setText("Sulje");
+		
+		// Save data and add task.
+		Button done_btn = new Button(shell, SWT.NONE);
+		done_btn.setBounds(354, 214, 83, 25);
+		done_btn.setText("Lis\u00E4\u00E4 suoritus");
+		done_btn.setEnabled(false);
+		
+		//=============================GUI ELEMENTS END HERE========================================
+		
 
 		/*
 		 * 
@@ -193,12 +194,6 @@ public class SaveTaskDialog extends Dialog {
 				shell.dispose();
 			}
 		});
-
-		// Save data and add task.
-		Button done_btn = new Button(shell, SWT.NONE);
-		done_btn.setBounds(354, 214, 83, 25);
-		done_btn.setText("Lis\u00E4\u00E4 suoritus");
-		done_btn.setEnabled(false);
 
 		// If job hasn't been selected, disable done button.
 		job_dropdown.addListener(SWT.Selection, new Listener() {

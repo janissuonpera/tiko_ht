@@ -14,8 +14,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+//Class for creating a graphical dialog for making a price estimation for a job
+//Also allows adding tasks and items into contracts
 public class PriceEstimateDialog extends Dialog {
-
+	
+	//Attributes
 	protected Object result;
 	protected Shell shell;
 	private Text listItem_txt;
@@ -33,22 +36,13 @@ public class PriceEstimateDialog extends Dialog {
 	// Contains contract offers.
 	List<String> contractOffers = new ArrayList<String>();
 
-	/**
-	 * Create the dialog.
-	 * 
-	 * @param parent
-	 * @param style
-	 */
+	//Constructor
 	public PriceEstimateDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Hinta-arvio");
 	}
 
-	/**
-	 * Open the dialog.
-	 * 
-	 * @return the result
-	 */
+	//Open the dialog
 	public Object open() {
 		createContents();
 		shell.open();
@@ -62,12 +56,11 @@ public class PriceEstimateDialog extends Dialog {
 		return result;
 	}
 
-	/**
-	 * Create contents of the dialog.
-	 */
+	//Create the contents of the dialog
 	private void createContents() {
 		DBHandler db = new DBHandler();
 
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.PRIMARY_MODAL);
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(565, 405);
@@ -101,12 +94,6 @@ public class PriceEstimateDialog extends Dialog {
 
 		Combo ItemName_dropdown = new Combo(shell, SWT.READ_ONLY);
 		ItemName_dropdown.setBounds(61, 35, 171, 23);
-		
-		items = db.getAllItems();
-		ItemName_dropdown.add("");
-		for (String[] item : items) {
-			ItemName_dropdown.add(item[0]);
-		}
 
 		Spinner itemAmount_spinner = new Spinner(shell, SWT.BORDER);
 		itemAmount_spinner.setBounds(237, 36, 67, 22);
@@ -142,12 +129,6 @@ public class PriceEstimateDialog extends Dialog {
 		Combo contracts_dropdown = new Combo(shell, SWT.NONE);
 		contracts_dropdown.setToolTipText("Listassa n\u00E4kyy vain urakat, joihin ei ole viel\u00E4 lis\u00E4tty tarvikkeita tai tunteja.");
 		contracts_dropdown.setBounds(10, 300, 179, 23);
-		// Get the contract offers into a list.
-		
-		contractOffers = db.getContractOffers();
-		for (String contract : contractOffers) {
-			contracts_dropdown.add(contract);
-		}
 
 		Label lblUrakat = new Label(shell, SWT.NONE);
 		lblUrakat.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -163,7 +144,21 @@ public class PriceEstimateDialog extends Dialog {
 		Label result_label = new Label(shell, SWT.NONE);
 		result_label.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		result_label.setBounds(10, 179, 271, 45);
+		//=============================GUI ELEMENTS END HERE========================================
 		
+		
+		//Get the items into a list
+		items = db.getAllItems();
+		ItemName_dropdown.add("");
+		for (String[] item : items) {
+			ItemName_dropdown.add(item[0]);
+		}
+		
+		// Get the contract offers into a list.		
+		contractOffers = db.getContractOffers();
+		for (String contract : contractOffers) {
+			contracts_dropdown.add(contract);
+		}
 		
 		// Adds work hours into the list.
 		addWorkHours_btn.addListener(SWT.Selection, new Listener() {
@@ -197,6 +192,7 @@ public class PriceEstimateDialog extends Dialog {
 				}
 			}
 		});
+		
 		// Adds an item to the list.
 		addItem_btn.addListener(SWT.Selection, new Listener() {
 			@Override
@@ -250,6 +246,7 @@ public class PriceEstimateDialog extends Dialog {
 			}
 		});
 
+		//Listener for "Lis‰‰ urakkaan" button. Adds the hours and items to the contract
 		addToContract_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
@@ -271,7 +268,8 @@ public class PriceEstimateDialog extends Dialog {
 				}
 			}
 		});
-
+		
+		//Listener for closing the window
 		close_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {

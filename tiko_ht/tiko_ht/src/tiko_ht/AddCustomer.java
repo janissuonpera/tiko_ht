@@ -131,8 +131,11 @@ public class AddCustomer extends Dialog {
 		done_btn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				sendData();
-				shell.dispose();
+				//Check that fields are not empty.
+				if(name_text.getText().length()>0 && address_text.getText().length()>0 && ssn_text.getText().length()>0) {
+					sendData();
+					shell.dispose();
+				}
 			}
 		});
 		

@@ -58,6 +58,9 @@ public class InventoryDialog extends Dialog {
 
 	//Create the contents of the dialog
 	private void createContents() {
+		DBHandler db = new DBHandler();
+		
+		//===========================GUI ELEMENTS START HERE======================================
 		shell = new Shell(getParent(), getStyle());
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(422, 339);
@@ -98,8 +101,8 @@ public class InventoryDialog extends Dialog {
 		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblNewLabel.setBounds(314, 267, 55, 15);
 		lblNewLabel.setText("Sis. alv");
+		//=============================GUI ELEMENTS END HERE========================================
 		
-		DBHandler db = new DBHandler();
 		//Fetches all the items from the database that have more than 0 in stock
 		all_items = db.getAllItems();
 		//Adds item name, selling price and stock to lists for viewing.
