@@ -230,11 +230,31 @@ public class SaveTaskDialog extends Dialog {
 		addItem_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				// Add selected items into a list.
+				// Add selected items into an array.
 				String[] item = {item_dropdown.getText(),
 						String.valueOf(item_amount_spinner.getSelection()),
 						String.valueOf(discount_spinner.getSelection())};
-				selected_items.add(item);
+				
+				// Boolean to determine if the added item is already in the list.
+				boolean duplicate = false;
+				// Loop through list of arrays and see if the item has already been added.
+				for(String [] curr_item : selected_items) {
+					if(curr_item[0].equals(item_dropdown.getText())){
+						// Parse the previous amount into an integer.
+						int amount = Integer.parseInt(curr_item[1]);
+						// Add the new amount to the old amount.
+						amount += item_amount_spinner.getSelection();
+						// Set the new amount back into the array.
+						curr_item[1] = String.valueOf(amount);
+						// Mark the boolean true, so the item won't be added into the list.
+						duplicate = true;
+					}
+				}
+				// If the item was a duplicate, don't add into a list (other than the amount).
+				if(!duplicate) {
+					selected_items.add(item);
+				}
+				
 				item_dropdown.select(0);
 				item_amount_spinner.setSelection(0);
 				discount_spinner.setSelection(0);
