@@ -94,9 +94,10 @@ public class EditJobDialog extends Dialog {
 		}
 
 		Label resultLabel = new Label(shell, SWT.NONE);
+		resultLabel.setFont(SWTResourceManager.getFont("Segoe UI", 10, SWT.NORMAL));
 		resultLabel.setBackground(SWTResourceManager
 				.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		resultLabel.setBounds(117, 318, 235, 15);
+		resultLabel.setBounds(96, 318, 256, 20);
 
 		Button finishJob_btn = new Button(shell, SWT.NONE);
 		finishJob_btn.setBounds(285, 24, 106, 25);
@@ -323,7 +324,7 @@ public class EditJobDialog extends Dialog {
 			}
 		});
 
-		// Deletes the selected from database completely.
+		// Deletes the selected job from database completely.
 		deleteJob_btn.addListener(SWT.Selection, new Listener() {
 
 			@Override

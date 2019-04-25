@@ -2,13 +2,10 @@ package tiko_ht;
 
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class JobInformationDialog extends Dialog {

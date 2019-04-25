@@ -116,7 +116,7 @@ public class DBHandler {
 		try {
 			prep_stmt = con.prepareStatement(
 					"select nimi,osoite,yritys,hetu from asiakas "
-					+ "WHERE asiakas_id = (SELECT asiakas_id FROM tyokohde WHERE nimi = ?)");
+							+ "WHERE asiakas_id = (SELECT asiakas_id FROM tyokohde WHERE nimi = ?)");
 			prep_stmt.setString(1, job_name);
 			result = prep_stmt.executeQuery();
 			while (result.next()) {
@@ -138,7 +138,8 @@ public class DBHandler {
 		connect();
 		String[] job = new String[3];
 		try {
-			prep_stmt = con.prepareStatement("select nimi,osoite,valmis from tyokohde WHERE nimi = ?");
+			prep_stmt = con.prepareStatement(
+					"select nimi,osoite,valmis from tyokohde WHERE nimi = ?");
 			prep_stmt.setString(1, job_name);
 			result = prep_stmt.executeQuery();
 			while (result.next()) {
@@ -883,7 +884,7 @@ public class DBHandler {
 					taxlessPrice += Double.valueOf(item[3]);
 					// Calculate tax
 					if (Boolean.valueOf(item[4])) {
-						taxPct = 1.1;
+						taxPct = 1.10;
 					} else {
 						taxPct = 1.24;
 					}
@@ -894,10 +895,11 @@ public class DBHandler {
 					writer.write("Yksikköhinta: "
 							+ Double.parseDouble(item[4]) * taxPct + " euroa");
 					writer.newLine();
-					writer.write("Kokonaishinta: "
-							+ String.valueOf(
-									Double.parseDouble(item[3]) * taxPct)
-							+ " euroa");
+					writer.write(
+							"Kokonaishinta: "
+									+ Math.round(Double.parseDouble(item[3])
+											* taxPct * 100.0) / 100.0
+									+ " euroa");
 					writer.newLine();
 					writer.write(
 							"Arvonlisäveroton-hinta: " + item[3] + " euroa");
@@ -923,10 +925,11 @@ public class DBHandler {
 					writer.newLine();
 					writer.write("Määrä: " + item[1] + " " + item[2]);
 					writer.newLine();
-					writer.write("Kokonaishinta: "
-							+ String.valueOf(
-									(Double.parseDouble(item[3]) * taxPct))
-							+ " euroa");
+					writer.write(
+							"Kokonaishinta: "
+									+ Math.round(Double.parseDouble(item[3])
+											* taxPct * 100.0) / 100.0
+									+ " euroa");
 					writer.newLine();
 					writer.write(
 							"Arvonlisäveroton-hinta: " + item[3] + " euroa");

@@ -16,10 +16,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 /*
  * Class for creating a graphical dialog for creating and adding a new contract
- * 
+ *
  */
 public class ContractCreationDialog extends Dialog {
 
@@ -27,13 +28,13 @@ public class ContractCreationDialog extends Dialog {
 	protected Object result;
 	protected Shell shell;
 	List<String> contracts = new ArrayList<String>();
-	
+
 	//Constructor
 	public ContractCreationDialog(Shell parent, int style) {
 		super(parent, style);
 		setText("Luo urakkatarjous");
 	}
-	
+
 	//Open the dialog
 	public Object open() {
 		createContents();
@@ -47,24 +48,25 @@ public class ContractCreationDialog extends Dialog {
 		}
 		return result;
 	}
-	
+
 	//Create contents of dialog
 	private void createContents() {
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM);
+		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		shell.setSize(407, 172);
 		shell.setText("Luo uusi urakka");
 		shell.setLayout(null);
 		DBHandler db = new DBHandler();
 
 		Label lblValitseTykohde = new Label(shell, SWT.NONE);
+		lblValitseTykohde.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblValitseTykohde.setBounds(10, 10, 90, 15);
 		lblValitseTykohde.setText("Valitse ty\u00F6kohde");
 
 		//Fetches all the contracts from the database into a List<String>
 		contracts = db.getContracts();
 
-		//Adds the contracts to the dropdown list. Shows only the contracts that dont have an offer yet
-		Combo contract_dropdown = new Combo(shell, SWT.NONE);
+		Combo contract_dropdown = new Combo(shell, SWT.READ_ONLY);
 		contract_dropdown.setToolTipText("Listassa n\u00E4kyy vain ty\u00F6kohteet, joista ei ole viel\u00E4 tehty urakkatarjousta.");
 		contract_dropdown.setBounds(106, 7, 191, 23);
 		// Insert contracts into the dropdown list.
@@ -72,19 +74,20 @@ public class ContractCreationDialog extends Dialog {
 			contract_dropdown.add(contract);
 		}
 
-		
+
 		Label lblMaksuOsissa = new Label(shell, SWT.NONE);
+		lblMaksuOsissa.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		lblMaksuOsissa.setBounds(10, 51, 75, 15);
 		lblMaksuOsissa.setText("Maksu osissa?");
 
 		Button positive_radio = new Button(shell, SWT.RADIO);
 
-		positive_radio.setBounds(94, 50, 55, 16);
+		positive_radio.setBounds(94, 50, 45, 16);
 		positive_radio.setText("Kyll\u00E4");
 
 		Button negative_radio = new Button(shell, SWT.RADIO);
 		negative_radio.setSelection(true);
-		negative_radio.setBounds(155, 50, 55, 16);
+		negative_radio.setBounds(155, 50, 45, 16);
 		negative_radio.setText("Ei");
 
 		Button done_btn = new Button(shell, SWT.NONE);
@@ -102,12 +105,13 @@ public class ContractCreationDialog extends Dialog {
 		instalments_spinner.setEnabled(false);
 
 		Label instalments_label = new Label(shell, SWT.NONE);
+		instalments_label.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		instalments_label.setBounds(10, 82, 32, 15);
 		instalments_label.setText("Osat");
 
 		Button insertItems_btn = new Button(shell, SWT.NONE);
-		
-		//Listener for button "Lisää tarvikkeita", for adding items to the offer
+
+		//Listener for button "Lisï¿½ï¿½ tarvikkeita", for adding items to the offer
 		insertItems_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
@@ -124,7 +128,7 @@ public class ContractCreationDialog extends Dialog {
 		done_btn.addListener(SWT.Selection, new Listener() {
 			@Override
 			public void handleEvent(Event e) {
-				
+
 				if (positive_radio.getSelection()) {
 					int instalments = instalments_spinner.getSelection();
 					db.createContract(contract_dropdown.getText(), instalments);

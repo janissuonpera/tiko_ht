@@ -51,23 +51,23 @@ public class ItemListPopup extends Dialog {
 	private void createContents(java.util.List<String[]> selected_items) {
 		shell = new Shell(getParent(), getStyle());
 		shell.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		shell.setSize(204, 321);
+		shell.setSize(245, 321);
 		shell.setText(getText());
 		List list = new List(shell, SWT.BORDER);
-		list.setBounds(21, 31, 148, 224);
+		list.setBounds(10, 31, 219, 224);
 		// Populate the item list.
-		for (int i = 0; i < selected_items.size(); i++) {
-			list.add(selected_items.get(i)[0]);
+		for(String [] item : selected_items) {
+			list.add(item[0] + " | " + item[1] + " | " + item[2] + "%");
 		}
 
 		Button btnOk = new Button(shell, SWT.NONE);
-		btnOk.setBounds(57, 261, 75, 25);
+		btnOk.setBounds(77, 261, 75, 25);
 		btnOk.setText("OK");
 
 		Label lblNewLabel = new Label(shell, SWT.NONE);
 		lblNewLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		lblNewLabel.setBounds(21, 10, 148, 15);
-		lblNewLabel.setText("Tarvikkeen nimi ja m\u00E4\u00E4r\u00E4");
+		lblNewLabel.setBounds(28, 10, 181, 15);
+		lblNewLabel.setText("Tarvikkeen nimi,m\u00E4\u00E4r\u00E4 ja alennus");
 
 		btnOk.addListener(SWT.Selection, new Listener() {
 
